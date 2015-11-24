@@ -20,17 +20,19 @@ public class RegisterScreen {
     Button buttonRegister, buttonExit;
     int sceneHeight = 600;
     int sceneWidth = 500;
+    Button registerUser;
+
     int buttonWidth = sceneWidth/3;
 
-    RegisterScreen() {
+    public RegisterScreen() {
         setupScene();
+
     }
 
     private void setupScene() {
         TilePane layout = new TilePane();
-        layout.setPrefSize(sceneWidth/2,buttonWidth/8);
         layout.setHgap(10);
-        layout.setHgap(5);
+        layout.setVgap(5);
         Scene scene = new Scene(layout, sceneWidth, sceneHeight);
 
         registerScreen.setTitle("User registration");
@@ -42,14 +44,16 @@ public class RegisterScreen {
         firstName = new TextField();
         Label ln = new Label("Last name");
         lastName = new TextField();
+        registerUser = new Button("Register user");
 
-        layout.getChildren().addAll(un,userName,pw,password,fn, firstName, ln, lastName);
+        layout.getChildren().addAll(un,userName,pw,password,fn, firstName, ln, lastName, registerUser);
         registerScreen.setScene(scene);
         registerScreen.show();
-
-
+        registerScreen.setOnCloseRequest(event -> {
+            registerScreen.close();
+            new LoginScreen();
+        }); //Kas see on hea m6te, et siit tagasi p88rab?
+        //Kui on registreeritud, siis üks lahtihyppav teavitusbox ka teha
 
     }
-
-
 }

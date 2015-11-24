@@ -25,8 +25,9 @@ public class LoginScreen {
     int sceneWidth = 600;
     int buttonWidth = sceneWidth/3;
 
+//katsetan esialgu selle Kristeri sql näite loogikaga, sest minu algne versioon meetodite viimisest Main alla tundub kohmakas ja kahtlane. Pealegi ei saa psvm (ja ka start?) kasutada mittestatic meetodeid.
 
-    LoginScreen() {
+    public LoginScreen() {
         setupScene();
         setupRegister();
     }
@@ -34,11 +35,12 @@ public class LoginScreen {
     private void setupScene() {
 
         VBox layoutMain = new VBox();
-        Scene sceneMain = new Scene(layoutMain,sceneHeight,sceneWidth);
+        Scene sceneMain = new Scene(layoutMain,sceneWidth,sceneHeight);
 
         screenMain.setTitle("Main window");
+        screenMain.setOnCloseRequest(event -> screenMain.close());
+
         //Kujundus normaalseks teha. nt lahtrite pikkused, asetused jms
-        //set on close request lisada
         Text programTitle = new Text("Eriti Vinge Programm");
         programTitle.setFont(Font.font("Arial", 20));
         programTitle.setFill(Color.MEDIUMVIOLETRED);
@@ -49,14 +51,14 @@ public class LoginScreen {
         password = new PasswordField();
         buttonLogin = new Button ("Log in");
         buttonLogin.setPrefWidth(buttonWidth);
+        Text ifUserNotExist = new Text("If you don't have an account, sign up");
         buttonAddUser = new Button ("Sign up");
         buttonAddUser.setPrefWidth(buttonWidth);
 
-        layoutMain.getChildren().addAll(programTitle,unLabel,userName,pwLabel,password, buttonLogin, buttonAddUser);
+        layoutMain.getChildren().addAll(programTitle,unLabel,userName,pwLabel,password, buttonLogin, ifUserNotExist,buttonAddUser);
 
         screenMain.setScene(sceneMain);
         screenMain.show();
-
     }
 
     private void setupRegister() {
