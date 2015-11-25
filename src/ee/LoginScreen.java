@@ -1,6 +1,5 @@
 package ee;
 
-import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -29,9 +28,13 @@ public class LoginScreen {
 
     public LoginScreen() {
         setupScene();
-        setupRegister();
+        toRegisterScreen();
+        toInputScreen();
     }
 
+
+
+    //Esimene aken, kustkaudu saab sisselogida ja kasutajat registreerima hakata
     private void setupScene() {
 
         VBox layoutMain = new VBox();
@@ -60,11 +63,19 @@ public class LoginScreen {
         screenMain.setScene(sceneMain);
         screenMain.show();
     }
-
-    private void setupRegister() {
+    //viska registreerimisaken lahti. Tegelikult ei ole neil meetoditel siin eriilst mõtet. need võiks ju kohe buttni alla panna.
+    private void toRegisterScreen() {
         buttonAddUser.setOnAction(event -> {
             screenMain.close();
             new RegisterScreen();
+        });
+    }
+
+    //Kui parool on õige, siis viska sisestuse aken lahti. tegelikult võiks vist mingi vaheasja siia teha, aga hiljem
+    private void toInputScreen() {
+        buttonLogin.setOnAction(event -> {
+            screenMain.close();
+            new ProgramScreen();
         });
 
     }

@@ -5,7 +5,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
 
@@ -17,16 +16,15 @@ public class RegisterScreen {
     Stage registerScreen = new Stage();
     TextField userName, firstName, lastName;
     PasswordField password;
-    Button buttonRegister, buttonExit;
     int sceneHeight = 600;
     int sceneWidth = 500;
-    Button registerUser;
+    Button buttonRegUser;
 
     int buttonWidth = sceneWidth/3;
 
     public RegisterScreen() {
         setupScene();
-
+        register();
     }
 
     private void setupScene() {
@@ -44,9 +42,9 @@ public class RegisterScreen {
         firstName = new TextField();
         Label ln = new Label("Last name");
         lastName = new TextField();
-        registerUser = new Button("Register user");
+        buttonRegUser = new Button("Register user");
 
-        layout.getChildren().addAll(un,userName,pw,password,fn, firstName, ln, lastName, registerUser);
+        layout.getChildren().addAll(un,userName,pw,password,fn, firstName, ln, lastName, buttonRegUser);
         registerScreen.setScene(scene);
         registerScreen.show();
         registerScreen.setOnCloseRequest(event -> {
@@ -55,5 +53,17 @@ public class RegisterScreen {
         }); //Kas see on hea m6te, et siit tagasi p88rab?
         //Kui on registreeritud, siis üks lahtihyppav teavitusbox ka teha
 
+    }
+    private void register() {
+        buttonRegUser.setOnAction(event -> {
+            String s1 = userName.getText();
+            String s2 = password.getText();
+            String s3 = firstName.getText();
+            String s4 = lastName.getText();
+            DatabaseUsers dbUsers = new DatabaseUsers();
+            dbUsers.registerUser(s1,s2,s3,s4);
+            dbUsers.closeConnection();
+            registerScreen.close();
+        });
     }
 }
