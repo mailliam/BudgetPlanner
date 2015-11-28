@@ -11,6 +11,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.util.Scanner;
+
 
 /**
  * Created by Maila on 14/11/2015.
@@ -20,6 +22,7 @@ public class LoginScreen {
     TextField userName;
     PasswordField password;
     Button buttonLogin, buttonAddUser;
+    Button test;
     int sceneHeight = 600;
     int sceneWidth = 600;
     int buttonWidth = sceneWidth/3;
@@ -31,8 +34,6 @@ public class LoginScreen {
         toRegisterScreen();
         toInputScreen();
     }
-
-
 
     //Esimene aken, kustkaudu saab sisselogida ja kasutajat registreerima hakata
     private void setupScene() {
@@ -58,7 +59,14 @@ public class LoginScreen {
         buttonAddUser = new Button ("Sign up");
         buttonAddUser.setPrefWidth(buttonWidth);
 
-        layoutMain.getChildren().addAll(programTitle,unLabel,userName,pwLabel,password, buttonLogin, ifUserNotExist,buttonAddUser);
+        test = new Button("Test: db output");
+        test.setOnAction(event -> {
+            DatabaseUsers dbUsers = new DatabaseUsers();
+            dbUsers.checkUser();
+
+        });
+
+        layoutMain.getChildren().addAll(programTitle,unLabel,userName,pwLabel,password, buttonLogin, ifUserNotExist,buttonAddUser,test);
 
         screenMain.setScene(sceneMain);
         screenMain.show();

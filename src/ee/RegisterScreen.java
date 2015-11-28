@@ -64,6 +64,7 @@ public class RegisterScreen {
             dbUsers.registerUser(s1,s2,s3,s4);
             dbUsers.closeConnection();
             registerScreen.close();
+
         });
     }
 }
