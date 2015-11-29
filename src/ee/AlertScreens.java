@@ -14,8 +14,8 @@ import javafx.stage.Stage;
  */
 public class AlertScreens {
     Stage alertScreen = new Stage();
-    int sceneHeight = 200;
-    int sceneWidth = 50;
+    int sceneHeight = 100;
+    int sceneWidth = 400;
 
     public void userRegistered() {
         StackPane sp = new StackPane();
@@ -43,7 +43,6 @@ public class AlertScreens {
         Button buttonOK = new Button("OK");
         buttonOK.setOnAction(event -> {
             alertScreen.close();
-            new LoginScreen();
         });
 
         alertScreen.setTitle("Notification");

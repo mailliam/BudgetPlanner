@@ -45,20 +45,32 @@ public class DatabaseUsers {
     public void registerUser(String userName, String password, String firstName, String lastName) {
         AlertScreens userReg = new AlertScreens();
         String sql = "INSERT INTO USERS (USERNAME, PASSWORD, FIRSTNAME, LASTNAME) VALUES('"+userName+"','"+password+"','"+firstName+"','"+lastName+"')";
-        if (!userExists) {
+
+
             saveDB(sql);
             userReg.userRegistered();
-            //Hiljem teen selle asemele ühe uue hüpiku? see peaks aga äkki hoopis seal screeni all olema.
-        } else {
-            userReg.userAlreadyExists();
         }
-    }
 
-    private boolean userExists(String userName) {
+        //Hiljem teen selle asemele ühe uue hüpiku? see peaks aga äkki hoopis seal screeni all olema.
 
+    public boolean checkUserExistance(String username) {
+        try {
+            System.out.println(username);
+            Statement stat = conn.createStatement();
+            String sql = "SELECT * FROM USERS WHERE USERNAME = '"+username+"'; ";
+            ResultSet rs = stat.executeQuery(sql);
+            String dbUsername = rs.getString("USERNAME");
 
+            rs.close();
+            stat.close();
+            return username.equals(dbUsername);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return false;
     }
+
 
     public void checkUser() { //see kood pärineb http://www.tutorialspoint.com/sqlite/sqlite_java.htm
                               //Katsetan, kas registreeritud tegelased eksisteerivad, see jupp on ainult testi jaoks
