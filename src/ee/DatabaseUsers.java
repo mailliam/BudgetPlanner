@@ -57,9 +57,10 @@ public class DatabaseUsers {
         try {
             System.out.println(username);
             Statement stat = conn.createStatement();
-            String sql = "SELECT * FROM USERS WHERE USERNAME = '"+username+"'; ";
+            String sql = "select exists(SELECT 1 FROM USERS WHERE USERNAME = '"+username+"'); ";
             ResultSet rs = stat.executeQuery(sql);
-            String dbUsername = rs.getString("USERNAME");
+            Boolean dbUsername = rs.getBoolean(1);
+            System.out.println(dbUsername);
 
             rs.close();
             stat.close();
