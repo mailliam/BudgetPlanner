@@ -17,7 +17,7 @@ public class DatabaseUsers {
         try {
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection("jdbc:sqlite:budgetplanner.db");
-        } catch (ClassNotFoundException e) { //Kas peaks muid erroreid ka püüdma?
+        } catch (ClassNotFoundException e) { //Kas peaks muid erroreid ka pï¿½ï¿½dma?
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -25,12 +25,12 @@ public class DatabaseUsers {
         System.out.println("DB opened");
     }
 
-    private void createTable() { //kas see peaks private või public olema?
+    private void createTable() { //kas see peaks private vï¿½i public olema?
         String sql = "CREATE TABLE IF NOT EXISTS USERS (ID INT PRIMARY KEY AUTOINCREMENT, USERNAME TEXT, PASSWORD TEXT, FIRSTNAME TEXT, LASTNAME TEXT);";
         saveDB(sql);
     }
 
-    private void saveDB(String sql) { //sellise tegemise loogika pärineb Krister V. sql näitest
+    private void saveDB(String sql) { //sellise tegemise loogika pï¿½rineb Krister V. sql nï¿½itest
         try {
             Statement stat = conn.createStatement();
             stat.executeUpdate(sql);
@@ -40,31 +40,29 @@ public class DatabaseUsers {
         }
     }
 
-    //siia tuleb nüüd tegelikult kirjutada kontroll, kas kasutaja eksisteerib
+    //siia tuleb nï¿½ï¿½d tegelikult kirjutada kontroll, kas kasutaja eksisteerib
 
     public void registerUser(String userName, String password, String firstName, String lastName) {
         AlertScreens userReg = new AlertScreens();
         String sql = "INSERT INTO USERS (USERNAME, PASSWORD, FIRSTNAME, LASTNAME) VALUES('"+userName+"','"+password+"','"+firstName+"','"+lastName+"')";
-
-
             saveDB(sql);
             userReg.userRegistered();
         }
 
-        //Hiljem teen selle asemele ühe uue hüpiku? see peaks aga äkki hoopis seal screeni all olema.
+        //Hiljem teen selle asemele ï¿½he uue hï¿½piku? see peaks aga ï¿½kki hoopis seal screeni all olema.
 
     public boolean checkUserExistance(String username) {
         try {
             System.out.println(username);
             Statement stat = conn.createStatement();
-            String sql = "select exists(SELECT 1 FROM USERS WHERE USERNAME = '"+username+"'); ";
+            String sql = "SELECT EXISTS(SELECT 1 FROM USERS WHERE USERNAME = '"+username+"'); ";
             ResultSet rs = stat.executeQuery(sql);
             Boolean dbUsername = rs.getBoolean(1);
             System.out.println(dbUsername);
 
             rs.close();
             stat.close();
-            return username.equals(dbUsername);
+            return dbUsername;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -73,7 +71,7 @@ public class DatabaseUsers {
     }
 
 
-    public void checkUser() { //see kood pärineb http://www.tutorialspoint.com/sqlite/sqlite_java.htm
+    public void checkUser() { //see kood pï¿½rineb http://www.tutorialspoint.com/sqlite/sqlite_java.htm
                               //Katsetan, kas registreeritud tegelased eksisteerivad, see jupp on ainult testi jaoks
         try {
             Statement stat = conn.createStatement();

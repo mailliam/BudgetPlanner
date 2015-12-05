@@ -57,8 +57,6 @@ public class RegisterScreen {
 
 
     private void register() {
-
-
         buttonRegUser.setOnAction(event -> {
             String s1 = userName.getText();
             String s2 = password.getText();
@@ -70,12 +68,11 @@ public class RegisterScreen {
             if (!userExists){
                 dbUsers.registerUser(s1,s2,s3,s4);
                 dbUsers.closeConnection();
-                System.out.println("Sattus siia kontrollima");
                 registerScreen.close();
             } else {
                 AlertScreens as = new AlertScreens();
                 as.userAlreadyExists();
-                System.out.println("Ei sattunud siia kontrollima");
+                dbUsers.closeConnection();
             }
 
         });

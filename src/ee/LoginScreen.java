@@ -11,8 +11,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.util.Scanner;
-
 
 /**
  * Created by Maila on 14/11/2015.
@@ -32,7 +30,7 @@ public class LoginScreen {
     public LoginScreen() {
         setupScene();
         toRegisterScreen();
-        toInputScreen();
+        toProgram();
     }
 
     //Esimene aken, kustkaudu saab sisselogida ja kasutajat registreerima hakata
@@ -80,12 +78,10 @@ public class LoginScreen {
     }
 
     //Kui parool on õige, siis viska sisestuse aken lahti. tegelikult võiks vist mingi vaheasja siia teha, aga hiljem
-    private void toInputScreen() {
+    private void toProgram() {
         buttonLogin.setOnAction(event -> {
             screenMain.close();
             new ProgramScreen();
         });
-
     }
-
 }
