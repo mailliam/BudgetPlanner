@@ -69,6 +69,32 @@ public class DatabaseUsers {
         }
         return false;
     }
+    public boolean checkPassword(String username, String password) {
+        try {
+            Statement stat = conn.createStatement();
+            String sql = "SELECT PASSWORD FROM USERS WHERE USERNAME = '"+username+"';";
+            ResultSet rs = stat.executeQuery(sql);
+            String dbPassword = rs.getString("PASSWORD");
+            rs.close();
+            stat.close();
+            return dbPassword.equals(password);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void deleteUser(String username) { //http://www.tutorialspoint.com/sqlite/sqlite_java.htm
+        try {
+            Statement stat = conn.createStatement();
+            String sql = "DELETE FROM USERS WHERE USERNAME = '"+username+"';";
+            stat.executeUpdate(sql);
+            stat.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
     public void checkUser() { //see kood p�rineb http://www.tutorialspoint.com/sqlite/sqlite_java.htm
@@ -103,4 +129,6 @@ public class DatabaseUsers {
         }
         System.out.println("DB closed");
     }
+
+
 }

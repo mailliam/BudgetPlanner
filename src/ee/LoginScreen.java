@@ -61,6 +61,7 @@ public class LoginScreen {
         test.setOnAction(event -> {
             DatabaseUsers dbUsers = new DatabaseUsers();
             dbUsers.checkUser();
+            dbUsers.closeConnection();
 
         });
 
@@ -77,11 +78,22 @@ public class LoginScreen {
         });
     }
 
-    //Kui parool on õige, siis viska sisestuse aken lahti. tegelikult võiks vist mingi vaheasja siia teha, aga hiljem
+    //Kui parool on õige, siis viska programmi aken lahti. Lisaks paroolile on vaja kontrolli, kui sisestatakse vale kasutajanimi
     private void toProgram() {
         buttonLogin.setOnAction(event -> {
-            screenMain.close();
-            new ProgramScreen();
+            String s1 = userName.getText();
+            String s2 = password.getText();
+            DatabaseUsers dbUsers = new DatabaseUsers();
+            boolean passwordCorrect = dbUsers.checkPassword(s1,s2);
+            if(passwordCorrect) {
+                screenMain.close();
+                new ProgramScreen();
+            } else {
+                AlertScreens as = new AlertScreens();
+                as.passwordIncorrect();
+            }
+            dbUsers.closeConnection(); //Kas siin on ikka 6ige koht yhendust sulgeda? Kas peaks j2tma lahti kuniks on v2lja logitud?
+
         });
     }
 }
