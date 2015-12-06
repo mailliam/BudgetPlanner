@@ -4,6 +4,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -22,11 +24,17 @@ public class InputScreen {
     int buttonWidth = 100;
     int labelWidth =100;
     int textFieldWidth = 100;
+    int amount;
+    TextField fieldQuantity,fieldPrice,fieldAmount;
+
     Button cancel,save;
 
     public InputScreen() {
         setupScene();
+        calculateRowAmount();
+        purchaseInsertion();
     }
+
 
     private void setupScene() {
         inputScreen.setTitle("Cost Input");
@@ -80,19 +88,25 @@ public class InputScreen {
         Label labelQuantity = new Label("Quantity");
         labelQuantity.setPrefWidth(labelWidth);
 
-        TextField fieldQuantity = new TextField();
+        fieldQuantity = new TextField();
         fieldQuantity.setPrefWidth(textFieldWidth);
 
         Label labelPrice = new Label("Price");
         labelPrice.setPrefWidth(labelWidth);
 
-        TextField fieldPrice = new TextField();
+        Label labelAmount = new Label("Amount");
+        labelAmount.setPrefWidth(labelWidth);
+
+        fieldPrice = new TextField();
         fieldPrice.setPrefWidth(textFieldWidth);
 
+        fieldAmount = new TextField();
+        fieldAmount.setPrefWidth(textFieldWidth);
+
         HBox purchaseContentLabels = new HBox();
-        purchaseContentLabels.getChildren().addAll(labelItem,labelCostgroup,labelQuantity,labelPrice);
+        purchaseContentLabels.getChildren().addAll(labelRow_id,labelItem,labelCostgroup,labelQuantity,labelPrice, labelAmount);
         HBox purchaseContentFields = new HBox();
-        purchaseContentFields.getChildren().addAll(fieldItem,fieldCostgroup,fieldQuantity,fieldPrice);
+        purchaseContentFields.getChildren().addAll(fieldRow_id, fieldItem,fieldCostgroup,fieldQuantity,fieldPrice, fieldAmount);
 
         purchaseTotal.getChildren().addAll(purchaseHeaderLabels, purchaseHeaderFields,purchaseContentLabels,purchaseContentFields);
         Scene sc = new Scene(purchaseTotal, sceneWidth, sceneHeight);
@@ -100,5 +114,19 @@ public class InputScreen {
         inputScreen.show();
     }
 
+    private int calculateRowAmount() {
+        int quantity = Integer.parseInt(fieldQuantity.getText()); //http://stackoverflow.com/questions/15314205/using-gettext-to-get-an-integer
+        int price = Integer.parseInt(fieldPrice.getText());  //http://stackoverflow.com/questions/15314205/using-gettext-to-get-an-integer
+        amount=quantity*price;
+        return amount;
+    }
+
+    private void purchaseInsertion() { //Nimi pole just hea
+        fieldPrice.setOnAction(event -> {
+            fieldAmount.setText(Integer.toString(amount));
+
+        });
+
+    }
 
 }

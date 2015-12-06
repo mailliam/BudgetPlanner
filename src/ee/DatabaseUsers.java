@@ -22,7 +22,7 @@ public class DatabaseUsers {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("DB opened");
+        System.out.println("DB Users opened");
     }
 
     private void createTable() { //kas see peaks private v�i public olema?
@@ -127,7 +127,7 @@ public class DatabaseUsers {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("DB closed");
+        System.out.println("DB Users closed");
     }
 
 
