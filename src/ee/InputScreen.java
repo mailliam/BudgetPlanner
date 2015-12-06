@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import jdk.internal.util.xml.impl.Input;
 
@@ -16,9 +17,11 @@ public class InputScreen {
     //Siia tuleb kulude sisestamine
 
     Stage inputScreen = new Stage();
-    int sceneHeight = 400;
+    int sceneHeight = 1000;
     int sceneWidth = 600;
     int buttonWidth = 100;
+    int labelWidth =100;
+    int textFieldWidth = 100;
     Button cancel,save;
 
     public InputScreen() {
@@ -31,29 +34,68 @@ public class InputScreen {
             inputScreen.close();
             new ProgramScreen();
         });
+
         VBox purchaseTotal = new VBox();
         Label labelBuyer = new Label("Buyer");
+        labelBuyer.setPrefWidth(labelWidth);
+
         TextField fieldBuyer = new TextField();
+        fieldBuyer.setPrefWidth(textFieldWidth);
+
         Label labelStore = new Label("Store");
+        labelStore.setPrefWidth(labelWidth);
+
         TextField fieldStore = new TextField();
+        fieldStore.setPrefWidth(textFieldWidth);
+
         Label labelDate = new Label("Date");
+        labelDate.setPrefWidth(labelWidth);
+
         TextField fieldDate = new TextField();
-        HBox purchaseHeader = new HBox();
-        purchaseHeader.getChildren().addAll(labelBuyer, fieldBuyer, labelStore, fieldStore, labelDate, fieldDate);
+        fieldDate.setPrefWidth(textFieldWidth);
+
+        HBox purchaseHeaderLabels = new HBox();
+        purchaseHeaderLabels.getChildren().addAll(labelBuyer, labelStore, labelDate);
+        HBox purchaseHeaderFields = new HBox();
+        purchaseHeaderFields.getChildren().addAll(fieldBuyer, fieldStore, fieldDate);
+
+        Label labelRow_id = new Label("Row nr.");
+        labelRow_id.setPrefWidth(labelWidth);
+
+        TextField fieldRow_id = new TextField();
+        fieldRow_id.setPrefWidth(textFieldWidth);
 
         Label labelItem = new Label("Item");
-        TextField fieldItem = new TextField();
-        Label labelCostgroup = new Label("Costgroup");
-        TextField fieldCostgroup = new TextField();
-        Label labelQuantity = new Label("Quantity");
-        TextField fieldQuantity = new TextField();
-        Label labelPrice = new Label("Price");
-        TextField fieldPrice = new TextField();
-        HBox purchaseContent = new HBox();
-        purchaseContent.getChildren().addAll(labelItem,fieldItem,labelCostgroup,fieldCostgroup,labelQuantity,fieldQuantity,labelPrice,fieldPrice);
+        labelItem.setPrefWidth(labelWidth);
 
-        purchaseTotal.getChildren().addAll(purchaseHeader,purchaseContent);
-        Scene sc = new Scene(purchaseTotal);
+        TextField fieldItem = new TextField();
+        fieldItem.setPrefWidth(textFieldWidth);
+
+        Label labelCostgroup = new Label("Costgroup");
+        labelCostgroup.setPrefWidth(labelWidth);
+
+        TextField fieldCostgroup = new TextField();
+        fieldCostgroup.setPrefWidth(textFieldWidth);
+
+        Label labelQuantity = new Label("Quantity");
+        labelQuantity.setPrefWidth(labelWidth);
+
+        TextField fieldQuantity = new TextField();
+        fieldQuantity.setPrefWidth(textFieldWidth);
+
+        Label labelPrice = new Label("Price");
+        labelPrice.setPrefWidth(labelWidth);
+
+        TextField fieldPrice = new TextField();
+        fieldPrice.setPrefWidth(textFieldWidth);
+
+        HBox purchaseContentLabels = new HBox();
+        purchaseContentLabels.getChildren().addAll(labelItem,labelCostgroup,labelQuantity,labelPrice);
+        HBox purchaseContentFields = new HBox();
+        purchaseContentFields.getChildren().addAll(fieldItem,fieldCostgroup,fieldQuantity,fieldPrice);
+
+        purchaseTotal.getChildren().addAll(purchaseHeaderLabels, purchaseHeaderFields,purchaseContentLabels,purchaseContentFields);
+        Scene sc = new Scene(purchaseTotal, sceneWidth, sceneHeight);
         inputScreen.setScene(sc);
         inputScreen.show();
     }
