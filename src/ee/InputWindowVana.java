@@ -16,7 +16,7 @@ import javafx.stage.Stage;
 /**
  * Created by Maila on 14/11/2015.
  */
-public class InputWindow {
+public class InputWindowVana {
     static int windowHeight = 1000;
     static int windowWidth = 1000;
     static int buttonWidth=200;

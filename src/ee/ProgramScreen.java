@@ -20,11 +20,14 @@ public class ProgramScreen {
     Button input, query, logout, deleteUser;
 
     public ProgramScreen() {
-        createScene();
+        setupScene();
+        toCostInputScreen();
         deleteAccount();
+        logoutUser();
     }
 
-    private void createScene() {
+
+    private void setupScene() {
         programScreen.setTitle("Saidki edukalt sisse logitud!");
         programScreen.setOnCloseRequest(event -> programScreen.close());
         BorderPane bp = new BorderPane();
@@ -47,8 +50,24 @@ public class ProgramScreen {
         programScreen.show();
     }
 
+    private void toCostInputScreen() {
+        input.setOnAction(event -> {
+            programScreen.close();
+            new InputScreen();
+        });
+
+    }
+
+    private void logoutUser() {
+        logout.setOnAction(event -> {
+            programScreen.close();
+            new LoginScreen();
+        });
+    }
+
     private void deleteAccount() {
         deleteUser.setOnAction(event -> {
+            programScreen.close();
             new DeleteUserScreen();
         });
     }
