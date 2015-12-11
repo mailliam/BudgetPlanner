@@ -13,7 +13,7 @@ public class DatabaseUsers {
         createTable();
     }
 
-    private void createConnection() {
+    private void createConnection() { //Loob ühenduse andmebaasiga
         try {
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection("jdbc:sqlite:budgetplanner.db");
@@ -25,12 +25,12 @@ public class DatabaseUsers {
         System.out.println("DB Users opened");
     }
 
-    private void createTable() { //kas see peaks private v�i public olema?
+    private void createTable() { //Tekitab kasutajate tabeli kui seda veel ei ole
         String sql = "CREATE TABLE IF NOT EXISTS USERS (ID INT PRIMARY KEY AUTOINCREMENT, USERNAME TEXT, PASSWORD TEXT, FIRSTNAME TEXT, LASTNAME TEXT);";
         saveDB(sql);
     }
 
-    private void saveDB(String sql) { //sellise tegemise loogika p�rineb Krister V. sql n�itest
+    private void saveDB(String sql) { //sellise tegemise loogika p�rineb Krister V. sql n�itest. salvestab andmebaasi
         try {
             Statement stat = conn.createStatement();
             stat.executeUpdate(sql);
@@ -40,18 +40,14 @@ public class DatabaseUsers {
         }
     }
 
-    //siia tuleb n��d tegelikult kirjutada kontroll, kas kasutaja eksisteerib
-
-    public void registerUser(String userName, String password, String firstName, String lastName) {
+    public void registerUser(String userName, String password, String firstName, String lastName) { //sisestab kirje andmebaasi tabelisse
         AlertScreens userReg = new AlertScreens();
         String sql = "INSERT INTO USERS (USERNAME, PASSWORD, FIRSTNAME, LASTNAME) VALUES('"+userName+"','"+password+"','"+firstName+"','"+lastName+"')";
             saveDB(sql);
             userReg.userRegistered();
         }
 
-        //Hiljem teen selle asemele �he uue h�piku? see peaks aga �kki hoopis seal screeni all olema.
-
-    public boolean checkUserExistance(String username) {
+    public boolean checkUserExistance(String username) { //kontrollib, kas kasutaja on olemas (registreerimisel)
         try {
             System.out.println(username);
             Statement stat = conn.createStatement();
@@ -69,7 +65,7 @@ public class DatabaseUsers {
         }
         return false;
     }
-    public boolean checkPassword(String username, String password) {
+    public boolean checkPassword(String username, String password) { //Kontrollib, kas parool sisselogimisel on õige
         try {
             Statement stat = conn.createStatement();
             String sql = "SELECT PASSWORD FROM USERS WHERE USERNAME = '"+username+"';";
@@ -84,7 +80,7 @@ public class DatabaseUsers {
         return false;
     }
 
-    public void deleteUser(String username) { //http://www.tutorialspoint.com/sqlite/sqlite_java.htm
+    public void deleteUser(String username) { //Kustutab kasutaja kasutajate tabelist //http://www.tutorialspoint.com/sqlite/sqlite_java.htm
         try {
             Statement stat = conn.createStatement();
             String sql = "DELETE FROM USERS WHERE USERNAME = '"+username+"';";
@@ -121,7 +117,7 @@ public class DatabaseUsers {
         }
     }
 
-    public void closeConnection() {
+    public void closeConnection() { //sulgeb baasi ühenduse
         try {
             conn.close();
         } catch (SQLException e) {

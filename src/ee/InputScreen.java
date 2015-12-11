@@ -42,10 +42,12 @@ public class InputScreen {
     public InputScreen() {
         setupScene();
         calculateRowAmount();
+        savePurchase();
 
     }
 
-    private void setupScene() {
+
+    private void setupScene() { //Kulude sisestuse akna seadistus
         inputScreen.setTitle("Cost Input");
         inputScreen.setOnCloseRequest(event ->{
             inputScreen.close();
@@ -97,7 +99,7 @@ public class InputScreen {
         labelAmount.setPrefWidth(labelWidth);
 
         HBox purchaseContentLabels = new HBox();
-        purchaseContentLabels.setPadding(new Insets(10,0,10,0));
+        purchaseContentLabels.setPadding(new Insets(10, 0, 10, 0));
         purchaseContentLabels.getChildren().addAll(labelRow_id,labelItem,labelCostgroup,labelQuantity,labelPrice, labelAmount);
 
         basket = new GridPane();
@@ -140,7 +142,7 @@ public class InputScreen {
         inputScreen.show();
     }
 
-    private void calculateRowAmount() {
+    private void calculateRowAmount() { //Arvutab rea summa, korrutades hinna ja koguse
         for (int i = 0; i <numberOfRows; i++) {
             fieldPrice[i].setOnAction(event -> {
                 TextField am = (TextField) event.getTarget(); //loogika laevadefx-st
@@ -151,6 +153,10 @@ public class InputScreen {
                 fieldAmount[row].setText(Double.toString(amount));
             });
         }
+
+    }
+
+    private void savePurchase() { //Salvestab ostu andmed ostude baasi
 
     }
 }

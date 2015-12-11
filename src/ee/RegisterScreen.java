@@ -27,7 +27,7 @@ public class RegisterScreen {
         register();
     }
 
-    private void setupScene() {
+    private void setupScene() { //Registreerimisakna seadistus
         TilePane layout = new TilePane();
         layout.setHgap(10);
         layout.setVgap(5);
@@ -50,13 +50,13 @@ public class RegisterScreen {
         registerScreen.setOnCloseRequest(event -> {
             registerScreen.close();
             new LoginScreen();
-        }); //Kas see on hea m6te, et siit tagasi p88rab?
-        //Kui on registreeritud, siis üks lahtihyppav teavitusbox ka teha
+        });
+
 
     }
 
 
-    private void register() {
+    private void register() { //Registreerimisnupu seadistus: kontrollib läbi andmebaasi, kas kasutaja on olemas. kui ei, siis registreerib, kui jah, teavitab, et valitagu uus kasutajanimi
         buttonRegUser.setOnAction(event -> {
             String s1 = userName.getText();
             String s2 = password.getText();

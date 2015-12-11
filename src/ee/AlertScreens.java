@@ -12,12 +12,12 @@ import javafx.stage.Stage;
 /**
  * Created by Maila on 28/11/2015.
  */
-public class AlertScreens {
+public class AlertScreens {  //Erinevad teavitusaknad
     Stage alertScreen = new Stage();
     int sceneHeight = 100;
     int sceneWidth = 400;
 
-    public void userRegistered() {
+    public void userRegistered() { //Teavitus, kui kasutaja on edukalt registreeritud
         StackPane sp = new StackPane();
         Scene sc = new Scene(sp,sceneWidth,sceneHeight);
         Text message = new Text("User succesfully registered");
@@ -35,7 +35,7 @@ public class AlertScreens {
         alertScreen.show();
     }
 
-    public void userAlreadyExists() {
+    public void userAlreadyExists() { //Teavitus kui selline kasutaja on juba olemas
         StackPane sp = new StackPane();
         Scene sc = new Scene(sp,sceneWidth,sceneHeight);
         Text message = new Text("Username already exists. Pick another username or log in");
@@ -52,7 +52,7 @@ public class AlertScreens {
         alertScreen.show();
     }
 
-    public void passwordIncorrect() {
+    public void passwordIncorrect() { //Teavitus vale parooli sisestamisest
         StackPane sp = new StackPane();
         Scene sc = new Scene (sp, sceneWidth,sceneHeight);
         Text message = new Text ("Incorrect password. If you have forgotten your password then try to remember it");

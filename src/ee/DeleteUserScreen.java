@@ -26,7 +26,7 @@ public class DeleteUserScreen {
     Stage deleteUserScreen;
 
 
-    private void setupScene() {
+    private void setupScene() { //Kasutaja kustutamise akna seadistus
         deleteUserScreen = new Stage();
         deleteUserScreen.setOnCloseRequest(event -> deleteUserScreen.close());
         VBox v = new VBox();
@@ -42,7 +42,7 @@ public class DeleteUserScreen {
         deleteUserScreen.show();
     }
 
-    private void delete() {
+    private void delete() { //kustutamise nupu seadistus. Kontrollib läbi andmebaasi, kas parool on õige, ehk et kas kasutajal on õigus seda teha
         delete.setOnAction(event -> {
             String s1 = fieldUsername.getText();
             String s2 = fieldPassword.getText();
