@@ -32,7 +32,7 @@ public class DeleteUserScreen {
         VBox v = new VBox();
         labelUN = new Label("Username");
         fieldUsername = new TextField();
-        fieldUsername.setPromptText("ff"); //V6iks olla näidatud, kes on sisse logitud, et see automaatselt
+        fieldUsername.setPromptText("ff"); //V6iks olla nï¿½idatud, kes on sisse logitud, et see automaatselt
         labelPW = new Label("Password");
         fieldPassword = new PasswordField();
         delete = new Button ("Delete user");
@@ -42,11 +42,11 @@ public class DeleteUserScreen {
         deleteUserScreen.show();
     }
 
-    private void delete() { //kustutamise nupu seadistus. Kontrollib läbi andmebaasi, kas parool on õige, ehk et kas kasutajal on õigus seda teha
+    private void delete() { //kustutamise nupu seadistus. Kontrollib lï¿½bi andmebaasi, kas parool on ï¿½ige, ehk et kas kasutajal on ï¿½igus seda teha
         delete.setOnAction(event -> {
             String s1 = fieldUsername.getText();
             String s2 = fieldPassword.getText();
-            DatabaseUsers dbUsers = new DatabaseUsers();
+            Databases dbUsers = new Databases();
             boolean passwordCorrect = dbUsers.checkPassword(s1,s2);
             if (passwordCorrect) {
                 dbUsers.deleteUser(s1);

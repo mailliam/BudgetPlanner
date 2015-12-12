@@ -5,12 +5,13 @@ import java.sql.*;
 /**
  * Created by Maila on 25/11/2015.
  */
-public class DatabaseUsers { //Kasutatud Kristeri sql alust
+public class Databases { //Kasutatud Kristeri sql alust
     Connection conn;
 
-    public DatabaseUsers() {
+    public Databases() {
         createConnection();
-        createTable();
+        createUsersTable();
+        createPurchaseTable(); //tundub nagu mõttetu luua kasutaja juures ostutabelit ja vastupidi
     }
 
     private void createConnection() { //Loob ühenduse andmebaasiga
@@ -22,13 +23,19 @@ public class DatabaseUsers { //Kasutatud Kristeri sql alust
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("DB Users opened");
+        System.out.println("DB opened");
     }
 
-    private void createTable() { //Tekitab kasutajate tabeli kui seda veel ei ole
+    private void createUsersTable() { //Tekitab kasutajate tabeli kui seda veel ei ole
         String sql = "CREATE TABLE IF NOT EXISTS USERS (ID INT PRIMARY KEY AUTOINCREMENT, USERNAME TEXT, PASSWORD TEXT, FIRSTNAME TEXT, LASTNAME TEXT);";
         saveDB(sql);
     }
+
+    private void createPurchaseTable() { //Tekitab ostude tabeli kui seda veel ei ole
+        String sql = "CREATE TABLE IF NOT EXISTS PURCHASE (BUYER TEXT, DATE INTEGER, STORE TEXT, PURCHASEROWID INTEGER, ITEM TEXT, COSTGROUP TEXT, QUANTITY REAL, PRICE REAL);";
+        saveDB(sql);
+    }
+
 
     private void saveDB(String sql) { //sellise tegemise loogika p�rineb Krister V. sql n�itest. salvestab andmebaasi
         try {
@@ -46,6 +53,12 @@ public class DatabaseUsers { //Kasutatud Kristeri sql alust
             saveDB(sql);
             as.userRegistered();
         }
+
+    public void savePurchase(String buyer, int date, String store, int purchaseRowID, String item, String costgroup, double quantity, double price) {
+        String sql = "INSERT INTO PURCHASE (BUYER, DATE, STORE, PURCHASEROWID, ITEM, COSTGROUP, QUANTITY, PRICE) VALUES('"+buyer+"','"+date+"','"+store+"','"+purchaseRowID+",'"+item+"','"+costgroup+"','"+quantity+"','"+price+"')";
+        saveDB(sql);
+
+    }
 
     public boolean checkUserExistance(String username) { //kontrollib, kas kasutaja on olemas (registreerimisel)
         try {

@@ -56,13 +56,13 @@ public class RegisterScreen {
     }
 
 
-    private void register() { //Registreerimisnupu seadistus: kontrollib läbi andmebaasi, kas kasutaja on olemas. kui ei, siis registreerib, kui jah, teavitab, et valitagu uus kasutajanimi
+    private void register() { //Registreerimisnupu seadistus: kontrollib lï¿½bi andmebaasi, kas kasutaja on olemas. kui ei, siis registreerib, kui jah, teavitab, et valitagu uus kasutajanimi
         buttonRegUser.setOnAction(event -> {
             String s1 = userName.getText();
             String s2 = password.getText();
             String s3 = firstName.getText();
             String s4 = lastName.getText();
-            DatabaseUsers dbUsers = new DatabaseUsers();
+            Databases dbUsers = new Databases();
             boolean userExists = dbUsers.checkUserExistance(s1);
             System.out.println(userExists);
             if (!userExists){

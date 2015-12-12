@@ -3,10 +3,7 @@ package ee;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
@@ -16,6 +13,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import jdk.internal.util.xml.impl.Input;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Created by Maila on 25/11/2015.
@@ -70,8 +70,13 @@ public class InputScreen {
         Label labelDate = new Label("Date");
         labelDate.setPrefWidth(labelWidth);
 
-        fieldDate = new TextField();
-        fieldDate.setPrefWidth(textFieldWidth);
+        final DatePicker fieldDate = new DatePicker(); //https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/DatePicker.html
+        fieldDate.setOnAction(event -> {
+            LocalDate date = fieldDate.getValue();
+            System.err.println("Selected date: " +date); //Seda pole tegelikult vaja
+        });
+
+        fieldDate.setPrefWidth(textFieldWidth+50); //kuupäev ei mahu muidu ära
 
         HBox purchaseHeaderLabels = new HBox();
         purchaseHeaderLabels.setSpacing(5);
@@ -155,12 +160,12 @@ public class InputScreen {
         }
     }
 
-    private void savePurchase() { //Salvestab ostu andmed ostude baasi
+    private void savePurchase() { //Salvestab ostu andmed ostude baasi. Kas võib kasutada sama meetodi nime, mis on database juures?
         save.setOnAction(event -> {
-           DatabasePurchase dbPurchase = new DatabasePurchase();
+           Databases dbPurchase = new Databases();
             for (int i = 0; i < numberOfRows; i++) {
                 String buyer = fieldBuyer.getText();
-                int date = Integer.parseInt(fieldDate.getText()); //tegelikult selle peab vist kuidagi �ra formattima
+                int date = Integer.parseInt(fieldDate.getText()); //tegelikult selle peab vist kuidagi �ra formattima
                 String store = fieldStore.getText();
                 int purchaseRowID = Integer.parseInt(fieldRow_id[i].getText());
                 String item = fieldItem[i].getText();

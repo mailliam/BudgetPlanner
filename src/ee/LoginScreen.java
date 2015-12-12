@@ -25,7 +25,7 @@ public class LoginScreen {
     int sceneWidth = 600;
     int buttonWidth = sceneWidth/3;
 
-//katsetan esialgu selle Kristeri sql näite loogikaga, sest minu algne versioon meetodite viimisest Main alla tundub kohmakas ja kahtlane. Pealegi ei saa psvm (ja ka start?) kasutada mittestatic meetodeid.
+//katsetan esialgu selle Kristeri sql nï¿½ite loogikaga, sest minu algne versioon meetodite viimisest Main alla tundub kohmakas ja kahtlane. Pealegi ei saa psvm (ja ka start?) kasutada mittestatic meetodeid.
 
     public LoginScreen() {
         setupScene();
@@ -59,7 +59,7 @@ public class LoginScreen {
 
         test = new Button("Test: db output");
         test.setOnAction(event -> {
-            DatabaseUsers dbUsers = new DatabaseUsers();
+            Databases dbUsers = new Databases();
             dbUsers.checkUser();
             dbUsers.closeConnection();
 
@@ -70,7 +70,7 @@ public class LoginScreen {
         screenMain.setScene(sceneMain);
         screenMain.show();
     }
-    //viska registreerimisaken lahti. Tegelikult ei ole neil meetoditel siin eriilst mõtet. need võiks ju kohe buttni alla panna.
+    //viska registreerimisaken lahti. Tegelikult ei ole neil meetoditel siin eriilst mï¿½tet. need vï¿½iks ju kohe buttni alla panna.
     private void toRegisterScreen() {
         buttonAddUser.setOnAction(event -> {
             screenMain.close();
@@ -78,12 +78,12 @@ public class LoginScreen {
         });
     }
 
-    //Kui parool on õige, siis viska programmi aken lahti. Lisaks paroolile on vaja kontrolli, kui sisestatakse vale kasutajanimi, hetkel viskab errorisse
+    //Kui parool on ï¿½ige, siis viska programmi aken lahti. Lisaks paroolile on vaja kontrolli, kui sisestatakse vale kasutajanimi, hetkel viskab errorisse
     private void toProgram() {
         buttonLogin.setOnAction(event -> {
             String s1 = userName.getText();
             String s2 = password.getText();
-            DatabaseUsers dbUsers = new DatabaseUsers();
+            Databases dbUsers = new Databases();
             boolean passwordCorrect = dbUsers.checkPassword(s1,s2);
             if(passwordCorrect) {
                 screenMain.close();
