@@ -12,20 +12,19 @@ import javafx.stage.Stage;
  * Created by Maila on 25/11/2015.
  */
 public class ProgramScreen {
-    //Siia tuleb see aken, kust saab valida, kas tahad kulusid sisestada või päringuid teha
+    //Siia tuleb see aken, kust saab valida, kas tahad kulusid sisestada vï¿½i pï¿½ringuid teha
     Stage programScreen = new Stage();
     int sceneHeight = 200;
     int sceneWidth = 400;
     int buttonWidth_1 = 100;
     Button input, query, logout, deleteUser;
-
     public ProgramScreen() {
         setupScene();
         toCostInputScreen();
         deleteAccount();
+
         logoutUser();
     }
-
 
     private void setupScene() {
         programScreen.setTitle("Saidki edukalt sisse logitud!");
@@ -43,12 +42,15 @@ public class ProgramScreen {
         HBox h = new HBox();
         logout = new Button("Log out");
         deleteUser = new Button("Delete user account");
+
         h.getChildren().addAll(logout,deleteUser);
         bp.setLeft(v);
         bp.setBottom(h);
         programScreen.setScene(sc);
         programScreen.show();
     }
+
+
 
     private void toCostInputScreen() {
         input.setOnAction(event -> {

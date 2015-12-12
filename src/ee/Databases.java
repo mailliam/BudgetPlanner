@@ -104,7 +104,6 @@ public class Databases { //Kasutatud Kristeri sql alust
         }
     }
 
-
     public void checkUser() { //see kood p�rineb http://www.tutorialspoint.com/sqlite/sqlite_java.htm
                               //Katsetan, kas registreeritud tegelased eksisteerivad, see jupp on ainult testi jaoks
         try {
@@ -135,7 +134,7 @@ public class Databases { //Kasutatud Kristeri sql alust
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("DB Users closed");
+        System.out.println("DB closed");
     }
 
 

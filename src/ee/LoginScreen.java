@@ -20,7 +20,7 @@ public class LoginScreen {
     TextField userName;
     PasswordField password;
     Button buttonLogin, buttonAddUser;
-    Button test;
+    Button test, katseNupp;
     int sceneHeight = 600;
     int sceneWidth = 600;
     int buttonWidth = sceneWidth/3;
@@ -31,6 +31,7 @@ public class LoginScreen {
         setupScene();
         toRegisterScreen();
         toProgram();
+        katsetusScreen();
     }
 
     //Esimene aken, kustkaudu saab sisselogida ja kasutajat registreerima hakata
@@ -56,6 +57,7 @@ public class LoginScreen {
         Text ifUserNotExist = new Text("If you don't have an account, sign up");
         buttonAddUser = new Button ("Sign up");
         buttonAddUser.setPrefWidth(buttonWidth);
+        katseNupp = new Button("Katsetus");
 
         test = new Button("Test: db output");
         test.setOnAction(event -> {
@@ -65,7 +67,7 @@ public class LoginScreen {
 
         });
 
-        layoutMain.getChildren().addAll(programTitle,unLabel,userName,pwLabel,password, buttonLogin, ifUserNotExist,buttonAddUser,test);
+        layoutMain.getChildren().addAll(programTitle,unLabel,userName,pwLabel,password, buttonLogin, ifUserNotExist,buttonAddUser,test,katseNupp);
 
         screenMain.setScene(sceneMain);
         screenMain.show();
@@ -94,6 +96,13 @@ public class LoginScreen {
             }
             dbUsers.closeConnection(); //Kas siin on ikka 6ige koht yhendust sulgeda? Kas peaks j2tma lahti kuniks on v2lja logitud?
 
+        });
+    }
+
+    private void katsetusScreen() {
+
+        katseNupp.setOnAction(event -> {
+            new Katsetus();
         });
     }
 
