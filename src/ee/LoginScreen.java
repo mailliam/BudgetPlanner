@@ -78,7 +78,7 @@ public class LoginScreen {
         });
     }
 
-    //Kui parool on õige, siis viska programmi aken lahti. Lisaks paroolile on vaja kontrolli, kui sisestatakse vale kasutajanimi
+    //Kui parool on õige, siis viska programmi aken lahti. Lisaks paroolile on vaja kontrolli, kui sisestatakse vale kasutajanimi, hetkel viskab errorisse
     private void toProgram() {
         buttonLogin.setOnAction(event -> {
             String s1 = userName.getText();

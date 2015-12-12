@@ -30,6 +30,7 @@ public class InputScreen {
     int labelWidth = 100;
     int textFieldWidth = 100;
     double amount;
+    TextField fieldBuyer, fieldStore, fieldDate;
     TextField[] fieldRow_id,fieldItem,fieldCostgroup,fieldQuantity,fieldPrice,fieldAmount;
     int numberOfRows = 20;
     int rowCounter=1;
@@ -46,7 +47,6 @@ public class InputScreen {
 
     }
 
-
     private void setupScene() { //Kulude sisestuse akna seadistus
         inputScreen.setTitle("Cost Input");
         inputScreen.setOnCloseRequest(event ->{
@@ -58,19 +58,19 @@ public class InputScreen {
         Label labelBuyer = new Label("Buyer");
         labelBuyer.setPrefWidth(labelWidth);
 
-        TextField fieldBuyer = new TextField();
+        fieldBuyer = new TextField();
         fieldBuyer.setPrefWidth(textFieldWidth);
 
         Label labelStore = new Label("Store");
         labelStore.setPrefWidth(labelWidth);
 
-        TextField fieldStore = new TextField();
+        fieldStore = new TextField();
         fieldStore.setPrefWidth(textFieldWidth);
 
         Label labelDate = new Label("Date");
         labelDate.setPrefWidth(labelWidth);
 
-        TextField fieldDate = new TextField();
+        fieldDate = new TextField();
         fieldDate.setPrefWidth(textFieldWidth);
 
         HBox purchaseHeaderLabels = new HBox();
@@ -145,18 +145,37 @@ public class InputScreen {
     private void calculateRowAmount() { //Arvutab rea summa, korrutades hinna ja koguse
         for (int i = 0; i <numberOfRows; i++) {
             fieldPrice[i].setOnAction(event -> {
-                TextField am = (TextField) event.getTarget(); //loogika laevadefx-st
-                Integer row = GridPane.getRowIndex(am);
+                TextField pr = (TextField) event.getTarget(); //loogika laevadefx-st
+                Integer row = GridPane.getRowIndex(pr);
                 double quantity = Double.parseDouble(fieldQuantity[row].getText());
                 double price = Double.parseDouble(fieldPrice[row].getText());
                 amount = quantity * price;
                 fieldAmount[row].setText(Double.toString(amount));
             });
         }
-
     }
 
     private void savePurchase() { //Salvestab ostu andmed ostude baasi
+        save.setOnAction(event -> {
+           DatabasePurchase dbPurchase = new DatabasePurchase();
+            for (int i = 0; i < numberOfRows; i++) {
+                String buyer = fieldBuyer.getText();
+                int date = Integer.parseInt(fieldDate.getText()); //tegelikult selle peab vist kuidagi ära formattima
+                String store = fieldStore.getText();
+                int purchaseRowID = Integer.parseInt(fieldRow_id[i].getText());
+                String item = fieldItem[i].getText();
+                String costgroup = fieldCostgroup[i].getText();
+                double quantity = Double.parseDouble(fieldQuantity[i].getText());
+                double price = Double.parseDouble(fieldPrice[i].getText());
+
+                dbPurchase.savePurchase(buyer, date, store, purchaseRowID, item, costgroup, quantity, price);
+
+            }
+            dbPurchase.closeConnection();
+            inputScreen.close();
+            new ProgramScreen();
+
+        });
 
     }
 }

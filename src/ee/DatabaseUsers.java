@@ -5,7 +5,7 @@ import java.sql.*;
 /**
  * Created by Maila on 25/11/2015.
  */
-public class DatabaseUsers {
+public class DatabaseUsers { //Kasutatud Kristeri sql alust
     Connection conn;
 
     public DatabaseUsers() {
@@ -40,11 +40,11 @@ public class DatabaseUsers {
         }
     }
 
-    public void registerUser(String userName, String password, String firstName, String lastName) { //sisestab kirje andmebaasi tabelisse
-        AlertScreens userReg = new AlertScreens();
+    public void registerUser(String userName, String password, String firstName, String lastName) { //sisestab kasutaja kirje andmebaasi tabelisse
+        AlertScreens as = new AlertScreens();
         String sql = "INSERT INTO USERS (USERNAME, PASSWORD, FIRSTNAME, LASTNAME) VALUES('"+userName+"','"+password+"','"+firstName+"','"+lastName+"')";
             saveDB(sql);
-            userReg.userRegistered();
+            as.userRegistered();
         }
 
     public boolean checkUserExistance(String username) { //kontrollib, kas kasutaja on olemas (registreerimisel)
@@ -89,7 +89,6 @@ public class DatabaseUsers {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
     }
 
 
