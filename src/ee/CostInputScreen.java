@@ -1,10 +1,10 @@
 package ee;
 
+import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -26,8 +26,8 @@ public class CostInputScreen {
     int rowCounter=0;
     TextField fieldBuyer, fieldStore;
     DatePicker fieldDate;
-    TextField[][] basketFields;
-    GridPane basket;
+    TextField[] basketFields;
+    GridPane basket = new GridPane();
     Button save;
 
     public CostInputScreen() {
@@ -36,6 +36,8 @@ public class CostInputScreen {
         purchaseHeaderFields();
         purchaseContentsLabels();
         purchaseContentsFields();
+        purchaseTotal.add(basket,1,3);
+
     }
 
 
@@ -52,7 +54,7 @@ public class CostInputScreen {
         sc = new Scene(purchaseTotal, sceneWidth, sceneHeight);
         costInputScreen.setScene(sc);
         costInputScreen.show();
-        basket = new GridPane();
+
     }
 
     private void purchaseHeaderLabels() {
@@ -74,7 +76,7 @@ public class CostInputScreen {
     private void purchaseHeaderFields() {
         save = new Button("Save purchase");
         save.setPrefWidth(2*width);
-        save.setOnAction(event1 -> {
+        save.setOnAction(event -> {
             savePurchase();
         });
 
@@ -97,12 +99,12 @@ public class CostInputScreen {
     }
 
     private void purchaseContentsLabels() {
-        HBox h = new HBox();
+
         Label[] basketLabels = new Label[6];
         for (int i = 0; i < 6; i++) {
             basketLabels[i] = new Label();
             basketLabels[i].setPrefWidth(width);
-            h.getChildren().add(basketLabels[i]);
+            basket.add(basketLabels[i],i,1);
         }
         basketLabels[0].setText("Row nr.");
         basketLabels[1].setText("Item");
@@ -110,32 +112,27 @@ public class CostInputScreen {
         basketLabels[3].setText("Quantity");
         basketLabels[4].setText("Price");
         basketLabels[5].setText("Amount");
-        purchaseTotal.add(h,1,3);
     }
 
     private void purchaseContentsFields() {
-        basket = new GridPane();
-        rowCounter = 0;
-        basketFields = new TextField[rowCounter+1][6];
-        for (int i = 0; i < 6; i++) {
-            basketFields[rowCounter][i] = new TextField();
-            basket.add(basketFields[rowCounter][i],i,rowCounter+1);
-        }
-        purchaseTotal.add(basket,1,rowCounter+4);
-        basketFields[rowCounter][1].setOnMouseClicked(event -> {
-            insertNewRow();
-        });
-    }
+        basketFields = new TextField[6];
 
-    private void insertNewRow() {
-        rowCounter = rowCounter+1;
         for (int i = 0; i < 6; i++) {
-            basketFields[0][i] = new TextField();
-            basket.add(basketFields[0][i], i, rowCounter+1);
-            basketFields[0][1].setOnMouseClicked(event -> {
-                insertNewRow();
-            });
+            basketFields[i] = new TextField();
+            basketFields[0].setText(Integer.toString(rowCounter + 1));
+            basket.add(basketFields[i], i, rowCounter + 2);
+
         }
+        basket.getChildren().get(basket.getChildren().size()-5).setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+
+            public void handle(MouseEvent event) {
+                if ((basket.getChildren().size() / 6 - 1) == rowCounter + 1) {
+                    rowCounter++;
+                    purchaseContentsFields();
+                }
+            }
+        });
     }
 
     private void savePurchase() {
@@ -145,15 +142,12 @@ public class CostInputScreen {
             String buyer = fieldBuyer.getText();
             System.out.println("Ostja on: " +buyer);
             String store = fieldStore.getText();
-            String item = basketFields[i][1].getText();
-            String costgroup = basketFields[i][2].getText();
-            String quantity = basketFields[i][3].getText();
-            System.out.println("Kogus on: " +quantity);
+            String item = ((TextField) basket.getChildren().get(7)).getCharacters().toString();
+            System.out.println("Ese on: " +item);
             purchaseRow[i].add(buyer);
             purchaseRow[i].add(store);
             purchaseRow[i].add(item);
-            purchaseRow[i].add(costgroup);
-            purchaseRow[i].add(quantity);
+
             System.out.println("Osturida = " + purchaseRow[i]);
 
         }
