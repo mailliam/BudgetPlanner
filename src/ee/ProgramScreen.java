@@ -55,7 +55,7 @@ public class ProgramScreen {
     private void toCostInputScreen() {
         input.setOnAction(event -> {
             programScreen.close();
-            new InputScreen();
+            new CostInputScreen();
         });
 
     }

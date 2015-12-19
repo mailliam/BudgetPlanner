@@ -20,7 +20,7 @@ import java.time.format.DateTimeFormatter;
 /**
  * Created by Maila on 25/11/2015.
  */
-public class InputScreen {
+public class InputScreenVana {
     //Siia tuleb kulude sisestamine
 
     Stage inputScreen = new Stage();
@@ -40,7 +40,7 @@ public class InputScreen {
 
     Button cancel,save;
 
-    public InputScreen() {
+    public InputScreenVana() {
         setupScene();
         calculateRowAmount();
         savePurchase();
