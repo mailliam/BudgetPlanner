@@ -1,6 +1,7 @@
 package ee;
 
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
@@ -122,23 +123,20 @@ public class CostInputScreen {
             basketFields[0].setEditable(false); //kas seda ja eelmist rida yhe reana ei saa kuidagi kirjutada?
             basket.add(basketFields[i], i, rowCounter + 2);
         }
+
         basket.getChildren().get(basket.getChildren().size()-5).setOnMouseClicked(new EventHandler<MouseEvent>() { //Annan igale loodud "Item" childile võime sellele klikkimisel tekitada uus rida. V6iks toimida nii hiire kui tabiga
             //Basketi suurus esialgu 6 labelit + 6 textfieldi = 0-11 = 12 elementi. Antud v6ime peab tekkima "Item" tf-le, st element nr. 7, mille saan tehte 12 (basketi suurus koos labeitega) - 5 tulemusena.
             @Override
-
             public void handle(MouseEvent event) {
-                if ((basket.getChildren().size() / 6 - 1) == rowCounter + 1) {
-                    rowCounter++;
-                    purchaseBasketFields();
-                }
+                rowCounter++;
+                purchaseBasketFields();
             }
         });
 
-        basket.getChildren().get(basket.getChildren().size()-2).setOnKeyReleased(new EventHandler<KeyEvent>() { //V6ime arvutada rea summa peab tulema, kui "Price" lahtrilt, see on element nr. 10, vajutatakse edasi tab-i
+        basket.getChildren().get(basket.getChildren().size()-1).setOnKeyReleased(new EventHandler<KeyEvent>() { //V6ime arvutada rea summa peab tulema, kui j6utakse "Sum" lahtrile, see on element nr. 11, ja vabastatakse yksk6ik, milline key
             @Override
             public void handle(KeyEvent event) {
                 ((TextField) basket.getChildren().get(basket.getChildren().size()-7)).setText(calculateRowAmount());
-
             }
         });
     }
@@ -153,24 +151,34 @@ public class CostInputScreen {
     }
 
     private void savePurchase() {
+        int fullRows = 0;
+        for (int i = 11; i < basket.getChildren().size(); i=i+6) {
+            BigDecimal sum = new BigDecimal(((TextField) basket.getChildren().get(i)).getCharacters().toString());
+            do {
+                fullRows++;
+            } while (sum == null);
+        }
+        System.out.println(fullRows);
 
+        for (int i = 7; i <((fullRows+1)*6); i=i+6) { //Hulk try-catche tuleb siia juurde kirjutada
+            ArrayList[] purchaseRow = new ArrayList[rowCounter];
 
-        for (int i = 7; i < basket.getChildren().size(); i=i+6) { //Hulk try-catche tuleb siia juurde kirjutada
             String buyer = fieldBuyer.getText();
-            System.out.println("Ostja on: " +buyer);
-            LocalDate date = fieldDate.getValue();
-
-            System.out.println(date.toEpochDay());
-
+            String date = fieldDate.getValue().toString();
             String store = fieldStore.getText();
             String item = ((TextField) basket.getChildren().get(i)).getCharacters().toString();
             String costGroup = ((TextField) basket.getChildren().get(i+1)).getCharacters().toString();
             BigDecimal quantity = new BigDecimal(((TextField) basket.getChildren().get(i + 2)).getCharacters().toString());
             BigDecimal price = new BigDecimal(((TextField) basket.getChildren().get(i + 3)).getCharacters().toString());
+            System.out.println("Ostja on: " +buyer);
+            System.out.println("Kuupaev on: " +date);
+            System.out.println("Pood on: " +store);
             System.out.println("Ese on: " +item);
-
-
+            System.out.println("Kulugrupp on: "+costGroup);
+            System.out.println("Kogus on: " +quantity);
+            System.out.println("Hind on: " +price);
         }
+
         System.out.println("Salvestan");
         System.out.println(rowCounter);
 

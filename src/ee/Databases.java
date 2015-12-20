@@ -32,7 +32,7 @@ public class Databases { //Kasutatud Kristeri sql alust
     }
 
     private void createPurchaseTable() { //Tekitab ostude tabeli kui seda veel ei ole
-        String sql = "CREATE TABLE IF NOT EXISTS PURCHASE (BUYER TEXT, DATE INTEGER, STORE TEXT, PURCHASEROWID INTEGER, ITEM TEXT, COSTGROUP TEXT, QUANTITY REAL, PRICE REAL);";
+        String sql = "CREATE TABLE IF NOT EXISTS PURCHASE (BUYER TEXT, DATE TEXT, STORE TEXT, PURCHASEROWID INTEGER, ITEM TEXT, COSTGROUP TEXT, QUANTITY REAL, PRICE REAL);";
         saveDB(sql);
     }
 
