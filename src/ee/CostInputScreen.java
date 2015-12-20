@@ -1,7 +1,6 @@
 package ee;
 
 import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
@@ -11,8 +10,8 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Maila on 19/12/2015.
@@ -31,6 +30,7 @@ public class CostInputScreen {
     TextField[] basketFields;
     GridPane basket = new GridPane();
     Button save;
+    int fullRows;
 
     public CostInputScreen() {
         setupScene();
@@ -78,7 +78,10 @@ public class CostInputScreen {
         save = new Button("Save purchase");
         save.setPrefWidth(2*width);
         save.setOnAction(event -> {
-            savePurchase();
+            checkFilledRowsCount();
+            savePurchaseToDB();
+            costInputScreen.close();
+            new ProgramScreen();
         });
 
         HBox h = new HBox();
@@ -152,39 +155,42 @@ public class CostInputScreen {
         return sum;
     }
 
-    private void savePurchase() {
-        int fullRows = 0;
+
+    private void checkFilledRowsCount() {
+        fullRows = 0;
         int koht = 7;
         String itemCheck;
         itemCheck = ((TextField) basket.getChildren().get(koht)).getCharacters().toString();
 
         while (itemCheck.length()!=0) { //kontrollib, mitu rida on kasutaja üldse ära t2itnud
             koht = koht+6;
-                itemCheck = ((TextField) basket.getChildren().get(koht)).getCharacters().toString();
-                fullRows++;
+            itemCheck = ((TextField) basket.getChildren().get(koht)).getCharacters().toString();
+            fullRows++;
+        }
+    }
+
+    private void savePurchaseToDB() {
+        HashMap purchaseRow = new HashMap();
+
+            for (int i = 6; i <((fullRows+1)*6); i=i+6) { //Hulk try-catche tuleb siia juurde kirjutada //Kordab seda tsyklit niikaua, kuni on k2idud l2bi k6ik t2idetud read. +1 kujutab endast esimest labelite rida
+
+                String buyer = fieldBuyer.getText();
+                String date = fieldDate.getValue().toString();
+                String store = fieldStore.getText();
+                String item = ((TextField) basket.getChildren().get(i+1)).getCharacters().toString();
+                String costGroup = ((TextField) basket.getChildren().get(i+2)).getCharacters().toString();
+                BigDecimal quantity = new BigDecimal(((TextField) basket.getChildren().get(i + 3)).getCharacters().toString());
+                BigDecimal price = new BigDecimal(((TextField) basket.getChildren().get(i + 4)).getCharacters().toString());
+                purchaseRow.put("buyer", buyer);
+                purchaseRow.put("date", date);
+                purchaseRow.put("store", store);
+                purchaseRow.put("item", item);
+                purchaseRow.put("costGroup", costGroup);
+                purchaseRow.put("quantity", quantity);
+                purchaseRow.put("price", price);
+                System.out.println(purchaseRow);
             }
 
-        for (int i = 7; i <((fullRows+1)*6); i=i+6) { //Hulk try-catche tuleb siia juurde kirjutada //Kordab seda tsyklit niikaua, kuni on k2idud l2bi k6ik t2idetud read. +1 kujutab endast esimest labelite rida
-            ArrayList[] purchaseRow = new ArrayList[rowCounter];
-
-            String buyer = fieldBuyer.getText();
-            String date = fieldDate.getValue().toString();
-            String store = fieldStore.getText();
-            String item = ((TextField) basket.getChildren().get(i)).getCharacters().toString();
-            String costGroup = ((TextField) basket.getChildren().get(i+1)).getCharacters().toString();
-            BigDecimal quantity = new BigDecimal(((TextField) basket.getChildren().get(i + 2)).getCharacters().toString());
-            BigDecimal price = new BigDecimal(((TextField) basket.getChildren().get(i + 3)).getCharacters().toString());
-            System.out.println("Ostja on: " +buyer);
-            System.out.println("Kuupaev on: " +date);
-            System.out.println("Pood on: " +store);
-            System.out.println("Ese on: " +item);
-            System.out.println("Kulugrupp on: "+costGroup);
-            System.out.println("Kogus on: " +quantity);
-            System.out.println("Hind on: " +price);
-        }
-
-        System.out.println("Salvestan");
-        System.out.println(rowCounter);
 
     }
 }
