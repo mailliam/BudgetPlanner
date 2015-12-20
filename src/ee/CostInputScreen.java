@@ -1,14 +1,15 @@
 package ee;
 
 import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -34,9 +35,7 @@ public class CostInputScreen {
         setupScene();
         purchaseHeaderLabels();
         purchaseHeaderFields();
-        purchaseContentsLabels();
-        purchaseContentsFields();
-        purchaseTotal.add(basket,1,3);
+        purchaseBasket();
 
     }
 
@@ -54,6 +53,7 @@ public class CostInputScreen {
         sc = new Scene(purchaseTotal, sceneWidth, sceneHeight);
         costInputScreen.setScene(sc);
         costInputScreen.show();
+        purchaseTotal.add(basket,1,3);
 
     }
 
@@ -88,17 +88,13 @@ public class CostInputScreen {
         fieldStore.setPrefWidth(width);
 
         fieldDate = new DatePicker(); //https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/DatePicker.html
-        fieldDate.setOnAction(event -> {
-            LocalDate date = fieldDate.getValue();
-            System.err.println("Selected date: " +date); //Seda pole tegelikult vaja
-        });
 
         fieldDate.setPrefWidth(width + 50); //kuupäev ei mahu muidu ära
         h.getChildren().addAll(fieldBuyer, fieldStore, fieldDate,save);
         purchaseTotal.add(h,1,2);
     }
 
-    private void purchaseContentsLabels() {
+    private void purchaseBasket() {
 
         Label[] basketLabels = new Label[6];
         for (int i = 0; i < 6; i++) {
@@ -111,44 +107,68 @@ public class CostInputScreen {
         basketLabels[2].setText("Costgroup");
         basketLabels[3].setText("Quantity");
         basketLabels[4].setText("Price");
-        basketLabels[5].setText("Amount");
+        basketLabels[5].setText("Sum");
+
+        purchaseBasketFields();
     }
 
-    private void purchaseContentsFields() {
+
+    private void purchaseBasketFields() {
         basketFields = new TextField[6];
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 6; i++) { //Kuus tulpa
             basketFields[i] = new TextField();
-            basketFields[0].setText(Integer.toString(rowCounter + 1));
+            basketFields[0].setText(Integer.toString(rowCounter + 1)); //Esimene tulp on mittemuudetav ning seal kajastub alati konkreetse poeskäigu ostukorvi rea number
+            basketFields[0].setEditable(false); //kas seda ja eelmist rida yhe reana ei saa kuidagi kirjutada?
             basket.add(basketFields[i], i, rowCounter + 2);
-
         }
-        basket.getChildren().get(basket.getChildren().size()-5).setOnMouseClicked(new EventHandler<MouseEvent>() {
+        basket.getChildren().get(basket.getChildren().size()-5).setOnMouseClicked(new EventHandler<MouseEvent>() { //Annan igale loodud "Item" childile võime sellele klikkimisel tekitada uus rida. V6iks toimida nii hiire kui tabiga
+            //Basketi suurus esialgu 6 labelit + 6 textfieldi = 0-11 = 12 elementi. Antud v6ime peab tekkima "Item" tf-le, st element nr. 7, mille saan tehte 12 (basketi suurus koos labeitega) - 5 tulemusena.
             @Override
 
             public void handle(MouseEvent event) {
                 if ((basket.getChildren().size() / 6 - 1) == rowCounter + 1) {
                     rowCounter++;
-                    purchaseContentsFields();
+                    purchaseBasketFields();
                 }
+            }
+        });
+
+        basket.getChildren().get(basket.getChildren().size()-2).setOnKeyReleased(new EventHandler<KeyEvent>() { //V6ime arvutada rea summa peab tulema, kui "Price" lahtrilt, see on element nr. 10, vajutatakse edasi tab-i
+            @Override
+            public void handle(KeyEvent event) {
+                ((TextField) basket.getChildren().get(basket.getChildren().size()-7)).setText(calculateRowAmount());
+
             }
         });
     }
 
-    private void savePurchase() {
-        ArrayList[] purchaseRow = new ArrayList[8];
+    private String calculateRowAmount() { //Selleks hetkeks, kui kasutaja teoorias jõuab siiani, siis on basket size juba kuue v6rra suurem. vaja on elementi nr. 11, mis on 18-7
+        //Vaja on piirata, et kasutaja ei saaks teistel v2ljadel kl6psides seda tekitada
 
-        for (int i = 0; i < rowCounter; i++) {
+        BigDecimal quantity = new BigDecimal(((TextField) basket.getChildren().get(basket.getChildren().size()-9)).getCharacters().toString());
+        BigDecimal price = new BigDecimal(((TextField) basket.getChildren().get(basket.getChildren().size()-8)).getCharacters().toString());
+        String sum = (quantity.multiply(price)).toString();
+        return sum;
+    }
+
+    private void savePurchase() {
+
+
+        for (int i = 7; i < basket.getChildren().size(); i=i+6) { //Hulk try-catche tuleb siia juurde kirjutada
             String buyer = fieldBuyer.getText();
             System.out.println("Ostja on: " +buyer);
-            String store = fieldStore.getText();
-            String item = ((TextField) basket.getChildren().get(7)).getCharacters().toString();
-            System.out.println("Ese on: " +item);
-            purchaseRow[i].add(buyer);
-            purchaseRow[i].add(store);
-            purchaseRow[i].add(item);
+            LocalDate date = fieldDate.getValue();
 
-            System.out.println("Osturida = " + purchaseRow[i]);
+            System.out.println(date.toEpochDay());
+
+            String store = fieldStore.getText();
+            String item = ((TextField) basket.getChildren().get(i)).getCharacters().toString();
+            String costGroup = ((TextField) basket.getChildren().get(i+1)).getCharacters().toString();
+            BigDecimal quantity = new BigDecimal(((TextField) basket.getChildren().get(i + 2)).getCharacters().toString());
+            BigDecimal price = new BigDecimal(((TextField) basket.getChildren().get(i + 3)).getCharacters().toString());
+            System.out.println("Ese on: " +item);
+
 
         }
         System.out.println("Salvestan");
