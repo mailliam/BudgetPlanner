@@ -143,6 +143,8 @@ public class CostInputScreen {
 
     private String calculateRowAmount() { //Selleks hetkeks, kui kasutaja teoorias jõuab siiani, siis on basket size juba kuue v6rra suurem. vaja on elementi nr. 11, mis on 18-7
         //Vaja on piirata, et kasutaja ei saaks teistel v2ljadel kl6psides seda tekitada
+        //Kontrollida, mitmendal real toimus muutus?
+
 
         BigDecimal quantity = new BigDecimal(((TextField) basket.getChildren().get(basket.getChildren().size()-9)).getCharacters().toString());
         BigDecimal price = new BigDecimal(((TextField) basket.getChildren().get(basket.getChildren().size()-8)).getCharacters().toString());
@@ -152,15 +154,17 @@ public class CostInputScreen {
 
     private void savePurchase() {
         int fullRows = 0;
-        for (int i = 11; i < basket.getChildren().size(); i=i+6) {
-            BigDecimal sum = new BigDecimal(((TextField) basket.getChildren().get(i)).getCharacters().toString());
-            do {
-                fullRows++;
-            } while (sum == null);
-        }
-        System.out.println(fullRows);
+        int koht = 7;
+        String itemCheck;
+        itemCheck = ((TextField) basket.getChildren().get(koht)).getCharacters().toString();
 
-        for (int i = 7; i <((fullRows+1)*6); i=i+6) { //Hulk try-catche tuleb siia juurde kirjutada
+        while (itemCheck.length()!=0) { //kontrollib, mitu rida on kasutaja üldse ära t2itnud
+            koht = koht+6;
+                itemCheck = ((TextField) basket.getChildren().get(koht)).getCharacters().toString();
+                fullRows++;
+            }
+
+        for (int i = 7; i <((fullRows+1)*6); i=i+6) { //Hulk try-catche tuleb siia juurde kirjutada //Kordab seda tsyklit niikaua, kuni on k2idud l2bi k6ik t2idetud read. +1 kujutab endast esimest labelite rida
             ArrayList[] purchaseRow = new ArrayList[rowCounter];
 
             String buyer = fieldBuyer.getText();
