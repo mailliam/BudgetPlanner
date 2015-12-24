@@ -20,7 +20,7 @@ public class LoginScreen {
     TextField userName;
     PasswordField password;
     Button buttonLogin, buttonAddUser;
-    Button test, katseNupp;
+    Button test, test2, katseNupp;
     int sceneHeight = 600;
     int sceneWidth = 600;
     int buttonWidth = sceneWidth/3;
@@ -59,7 +59,7 @@ public class LoginScreen {
         buttonAddUser.setPrefWidth(buttonWidth);
         katseNupp = new Button("Katsetus");
 
-        test = new Button("Test: db output");
+        test = new Button("Test: db user output");
         test.setOnAction(event -> {
             Databases dbUsers = new Databases();
             dbUsers.checkUser();
@@ -67,7 +67,15 @@ public class LoginScreen {
 
         });
 
-        layoutMain.getChildren().addAll(programTitle,unLabel,userName,pwLabel,password, buttonLogin, ifUserNotExist,buttonAddUser,test,katseNupp);
+        test2 = new Button("Test: db purchase output");
+        test2.setOnAction(event -> {
+            Databases dbPurchase = new Databases();
+            dbPurchase.checkPurchase();
+            dbPurchase.closeConnection();
+
+        });
+
+        layoutMain.getChildren().addAll(programTitle,unLabel,userName,pwLabel,password, buttonLogin, ifUserNotExist,buttonAddUser,test,test2,katseNupp);
 
         screenMain.setScene(sceneMain);
         screenMain.show();

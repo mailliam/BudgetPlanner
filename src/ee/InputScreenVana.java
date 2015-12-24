@@ -162,7 +162,7 @@ public class InputScreenVana {
 
     private void savePurchase() { //Salvestab ostu andmed ostude baasi. Kas võib kasutada sama meetodi nime, mis on database juures?
         save.setOnAction(event -> {
-           Databases dbPurchase = new Databases();
+
             for (int i = 0; i < numberOfRows; i++) {
                 String buyer = fieldBuyer.getText();
                 int date = Integer.parseInt(fieldDate.getText()); //tegelikult selle peab vist kuidagi �ra formattima
@@ -173,10 +173,10 @@ public class InputScreenVana {
                 double quantity = Double.parseDouble(fieldQuantity[i].getText());
                 double price = Double.parseDouble(fieldPrice[i].getText());
 
-                dbPurchase.savePurchase(buyer, date, store, purchaseRowID, item, costgroup, quantity, price);
+
 
             }
-            dbPurchase.closeConnection();
+
             inputScreen.close();
             new ProgramScreen();
 

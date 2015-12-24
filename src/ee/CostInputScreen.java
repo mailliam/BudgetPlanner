@@ -32,6 +32,7 @@ public class CostInputScreen {
     Button save;
     int fullRows;
 
+
     public CostInputScreen() {
         setupScene();
         purchaseHeaderLabels();
@@ -124,6 +125,7 @@ public class CostInputScreen {
             basketFields[i] = new TextField();
             basketFields[0].setText(Integer.toString(rowCounter + 1)); //Esimene tulp on mittemuudetav ning seal kajastub alati konkreetse poeskäigu ostukorvi rea number
             basketFields[0].setEditable(false); //kas seda ja eelmist rida yhe reana ei saa kuidagi kirjutada?
+
             basket.add(basketFields[i], i, rowCounter + 2);
         }
 
@@ -136,23 +138,22 @@ public class CostInputScreen {
             }
         });
 
-        basket.getChildren().get(basket.getChildren().size()-1).setOnKeyReleased(new EventHandler<KeyEvent>() { //V6ime arvutada rea summa peab tulema, kui j6utakse "Sum" lahtrile, see on element nr. 11, ja vabastatakse yksk6ik, milline key
-            @Override
-            public void handle(KeyEvent event) {
-                ((TextField) basket.getChildren().get(basket.getChildren().size()-7)).setText(calculateRowAmount());
-            }
+        basket.getChildren().get(basket.getChildren().size()-7).setOnMouseClicked(event -> {
+            calculateRowAmount();
         });
+
     }
 
-    private String calculateRowAmount() { //Selleks hetkeks, kui kasutaja teoorias jõuab siiani, siis on basket size juba kuue v6rra suurem. vaja on elementi nr. 11, mis on 18-7
+    private void calculateRowAmount() { //Selleks hetkeks, kui kasutaja teoorias jõuab siiani, siis on basket size juba kuue v6rra suurem. vaja on elementi nr. 11, mis on 18-7
         //Vaja on piirata, et kasutaja ei saaks teistel v2ljadel kl6psides seda tekitada
         //Kontrollida, mitmendal real toimus muutus?
 
 
-        BigDecimal quantity = new BigDecimal(((TextField) basket.getChildren().get(basket.getChildren().size()-9)).getCharacters().toString());
-        BigDecimal price = new BigDecimal(((TextField) basket.getChildren().get(basket.getChildren().size()-8)).getCharacters().toString());
-        String sum = (quantity.multiply(price)).toString();
-        return sum;
+                BigDecimal quantity = new BigDecimal(((TextField) basket.getChildren().get(basket.getChildren().size()-9)).getCharacters().toString());
+                BigDecimal price = new BigDecimal(((TextField) basket.getChildren().get(basket.getChildren().size()-8)).getCharacters().toString());
+                String sum = (quantity.multiply(price)).toString();
+                ((TextField) basket.getChildren().get(basket.getChildren().size()-7)).setText(sum);
+                ((TextField) basket.getChildren().get(basket.getChildren().size()-7)).setEditable(false);
     }
 
 
@@ -170,7 +171,7 @@ public class CostInputScreen {
     }
 
     private void savePurchaseToDB() {
-        HashMap purchaseRow = new HashMap();
+
 
             for (int i = 6; i <((fullRows+1)*6); i=i+6) { //Hulk try-catche tuleb siia juurde kirjutada //Kordab seda tsyklit niikaua, kuni on k2idud l2bi k6ik t2idetud read. +1 kujutab endast esimest labelite rida
 
@@ -181,17 +182,11 @@ public class CostInputScreen {
                 String costGroup = ((TextField) basket.getChildren().get(i+2)).getCharacters().toString();
                 BigDecimal quantity = new BigDecimal(((TextField) basket.getChildren().get(i + 3)).getCharacters().toString());
                 BigDecimal price = new BigDecimal(((TextField) basket.getChildren().get(i + 4)).getCharacters().toString());
-                purchaseRow.put("buyer", buyer);
-                purchaseRow.put("date", date);
-                purchaseRow.put("store", store);
-                purchaseRow.put("item", item);
-                purchaseRow.put("costGroup", costGroup);
-                purchaseRow.put("quantity", quantity);
-                purchaseRow.put("price", price);
-                System.out.println(purchaseRow);
+                Databases dbPurchase = new Databases();
+                dbPurchase.savePurchase(buyer,date,store,i/6,item,costGroup,quantity,price);
+                dbPurchase.closeConnection();
+
             }
-
-
     }
 }
 

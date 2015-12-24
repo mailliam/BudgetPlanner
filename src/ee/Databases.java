@@ -1,5 +1,6 @@
 package ee;
 
+import java.math.BigDecimal;
 import java.sql.*;
 
 /**
@@ -50,12 +51,12 @@ public class Databases { //Kasutatud Kristeri sql alust
     public void registerUser(String userName, String password, String firstName, String lastName) { //sisestab kasutaja kirje andmebaasi tabelisse
         AlertScreens as = new AlertScreens();
         String sql = "INSERT INTO USERS (USERNAME, PASSWORD, FIRSTNAME, LASTNAME) VALUES('"+userName+"','"+password+"','"+firstName+"','"+lastName+"')";
-            saveDB(sql);
-            as.userRegistered();
-        }
+        saveDB(sql);
+        as.userRegistered();
+    }
 
-    public void savePurchase(String buyer, int date, String store, int purchaseRowID, String item, String costgroup, double quantity, double price) {
-        String sql = "INSERT INTO PURCHASE (BUYER, DATE, STORE, PURCHASEROWID, ITEM, COSTGROUP, QUANTITY, PRICE) VALUES('"+buyer+"','"+date+"','"+store+"','"+purchaseRowID+",'"+item+"','"+costgroup+"','"+quantity+"','"+price+"')";
+    public void savePurchase(String buyer, String date, String store, int purchaseRowID, String item, String costGroup, BigDecimal quantity, BigDecimal price) {
+        String sql = "INSERT INTO PURCHASE (BUYER, DATE, STORE, PURCHASEROWID, ITEM, COSTGROUP, QUANTITY, PRICE) VALUES('"+buyer+"','"+date+"','"+store+"','"+purchaseRowID+"','"+item+"','"+costGroup+"','"+quantity+"','"+price+"')";
         saveDB(sql);
 
     }
@@ -105,7 +106,7 @@ public class Databases { //Kasutatud Kristeri sql alust
     }
 
     public void checkUser() { //see kood p�rineb http://www.tutorialspoint.com/sqlite/sqlite_java.htm
-                              //Katsetan, kas registreeritud tegelased eksisteerivad, see jupp on ainult testi jaoks
+        //Katsetan, kas registreeritud tegelased eksisteerivad, see jupp on ainult testi jaoks
         try {
             Statement stat = conn.createStatement();
             ResultSet rs = stat.executeQuery("SELECT * FROM USERS;");
@@ -138,4 +139,29 @@ public class Databases { //Kasutatud Kristeri sql alust
     }
 
 
+    public void checkPurchase() {
+        try {
+            Statement stat = conn.createStatement();
+            ResultSet rs = stat.executeQuery("SELECT * FROM PURCHASE;");
+            while (rs.next()) {
+                int id2 = rs.getRow();
+                int reanr = rs.getInt("purchaserowid");
+                String item = rs.getString("item");
+                String ostja = rs.getString("buyer");
+                String date = rs.getString("date");
+                System.out.println("ID get row= " +id2);
+                System.out.println("ID get int= " +reanr);
+                System.out.println("Ese= " +item);
+                System.out.println("Ostja= " +ostja);
+                System.out.println("Kuupev= "+date);
+                System.out.println();
+            }
+            rs.close();
+            stat.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
+
