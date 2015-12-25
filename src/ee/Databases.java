@@ -79,17 +79,19 @@ public class Databases { //Kasutatud Kristeri sql alust
         }
         return false;
     }
-    public boolean checkPassword(String username, String password) { //Kontrollib, kas parool sisselogimisel on õige
-        try {
-            Statement stat = conn.createStatement();
-            String sql = "SELECT PASSWORD FROM USERS WHERE USERNAME = '"+username+"';";
-            ResultSet rs = stat.executeQuery(sql);
-            String dbPassword = rs.getString("PASSWORD");
-            rs.close();
-            stat.close();
-            return dbPassword.equals(password);
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public boolean checkPassword(String username, String password) { //Kui selline kasutaja on üldse olemas, siis kontrollib, kas parool sisselogimisel on õige
+        if(checkUserExistance(username)) {
+            try {
+                Statement stat = conn.createStatement();
+                String sql = "SELECT PASSWORD FROM USERS WHERE USERNAME = '"+username+"';";
+                ResultSet rs = stat.executeQuery(sql);
+                String dbPassword = rs.getString("PASSWORD");
+                rs.close();
+                stat.close();
+                return dbPassword.equals(password);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return false;
     }

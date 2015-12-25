@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 
@@ -24,14 +25,11 @@ public class LoginScreen {
     int sceneHeight = 600;
     int sceneWidth = 600;
     int buttonWidth = sceneWidth/3;
+    Text alertMessage;
 
-//katsetan esialgu selle Kristeri sql n�ite loogikaga, sest minu algne versioon meetodite viimisest Main alla tundub kohmakas ja kahtlane. Pealegi ei saa psvm (ja ka start?) kasutada mittestatic meetodeid.
-
+    //katsetan esialgu selle Kristeri sql n�ite loogikaga, sest minu algne versioon meetodite viimisest Main alla tundub kohmakas ja kahtlane.
     public LoginScreen() {
         setupScene();
-        toRegisterScreen();
-        toProgram();
-        katsetusScreen();
     }
 
     //Esimene aken, kustkaudu saab sisselogida ja kasutajat registreerima hakata
@@ -52,19 +50,35 @@ public class LoginScreen {
         userName = new TextField();
         Label pwLabel = new Label ("Password");
         password = new PasswordField();
+
+        alertMessage = new Text();
+
+
         buttonLogin = new Button ("Log in");
         buttonLogin.setPrefWidth(buttonWidth);
+        buttonLogin.setOnAction(event1 -> {
+            toProgram();
+        });
+
         Text ifUserNotExist = new Text("If you don't have an account, sign up");
-        buttonAddUser = new Button ("Sign up");
+
+        buttonAddUser = new Button ("Sign up"); //nupp uue kasutaja registreerimiseks, avab registreerimisana
         buttonAddUser.setPrefWidth(buttonWidth);
+        buttonAddUser.setOnAction(event -> {
+            screenMain.close();
+            new RegisterScreen();
+        });
+
         katseNupp = new Button("Katsetus");
+        katseNupp.setOnAction(event -> {
+            new Katsetus();
+        });
 
         test = new Button("Test: db user output");
         test.setOnAction(event -> {
             Databases dbUsers = new Databases();
             dbUsers.checkUser();
             dbUsers.closeConnection();
-
         });
 
         test2 = new Button("Test: db purchase output");
@@ -72,46 +86,38 @@ public class LoginScreen {
             Databases dbPurchase = new Databases();
             dbPurchase.checkPurchase();
             dbPurchase.closeConnection();
-
         });
 
-        layoutMain.getChildren().addAll(programTitle,unLabel,userName,pwLabel,password, buttonLogin, ifUserNotExist,buttonAddUser,test,test2,katseNupp);
+        layoutMain.getChildren().addAll(programTitle,unLabel,userName,pwLabel,password, buttonLogin,alertMessage, ifUserNotExist,buttonAddUser,test,test2,katseNupp);
 
         screenMain.setScene(sceneMain);
         screenMain.show();
     }
-    //viska registreerimisaken lahti. Tegelikult ei ole neil meetoditel siin eriilst m�tet. need v�iks ju kohe buttni alla panna.
-    private void toRegisterScreen() {
-        buttonAddUser.setOnAction(event -> {
-            screenMain.close();
-            new RegisterScreen();
-        });
-    }
+
+
 
     //Kui parool on �ige, siis viska programmi aken lahti. Lisaks paroolile on vaja kontrolli, kui sisestatakse vale kasutajanimi, hetkel viskab errorisse
     private void toProgram() {
-        buttonLogin.setOnAction(event -> {
-            String s1 = userName.getText();
-            String s2 = password.getText();
-            Databases dbUsers = new Databases();
-            boolean passwordCorrect = dbUsers.checkPassword(s1,s2);
+        String s1 = userName.getText();
+        String s2 = password.getText();
+        Databases dbUsers = new Databases();
+        boolean userExists = dbUsers.checkUserExistance(s1);
+        boolean passwordCorrect = dbUsers.checkPassword(s1,s2);
+        if(!userExists) {
+            alertMessage.setText("User does not exist");
+            alertMessage.setFont(Font.font("Calibri",20)); //Kuidas fonti ja värvi seadistada: https://docs.oracle.com/javafx/2/text/jfxpub-text.htm
+            alertMessage.setFill(Color.RED);
+        } else {
             if(passwordCorrect) {
                 screenMain.close();
                 new ProgramScreen();
             } else {
-                AlertScreens as = new AlertScreens();
-                as.passwordIncorrect();
+                alertMessage.setText("Incorrect password");
+                alertMessage.setFont(Font.font("Calibri",20)); //Kuidas fonti ja värvi seadistada: https://docs.oracle.com/javafx/2/text/jfxpub-text.htm
+                alertMessage.setFill(Color.RED);
             }
-            dbUsers.closeConnection(); //Kas siin on ikka 6ige koht yhendust sulgeda? Kas peaks j2tma lahti kuniks on v2lja logitud?
-
-        });
-    }
-
-    private void katsetusScreen() {
-
-        katseNupp.setOnAction(event -> {
-            new Katsetus();
-        });
+        }
+        dbUsers.closeConnection(); //Kas siin on ikka 6ige koht yhendust sulgeda? Kas peaks j2tma lahti kuniks on v2lja logitud?
     }
 
 }

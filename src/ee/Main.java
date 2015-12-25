@@ -6,7 +6,7 @@ import javafx.stage.Stage;
 /**
  * Created by Maila on 24/11/2015.
  */
-public class Main extends Application {
+public class Main extends Application { //Miks mul on eraldi screenid, mitte eraldi stseenid?
 
     @Override
     public void start(Stage primaryStage) throws Exception {
