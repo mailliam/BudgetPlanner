@@ -11,6 +11,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.math.BigDecimal;
+
 
 /**
  * Created by Maila on 14/11/2015.
@@ -25,6 +27,7 @@ public class LoginScreen {
     int sceneWidth = 600;
     int buttonWidth = sceneWidth/3;
     Text alertMessage;
+
 
     //katsetan esialgu selle Kristeri sql n�ite loogikaga, sest minu algne versioon meetodite viimisest Main alla tundub kohmakas ja kahtlane.
     public LoginScreen() {
@@ -70,21 +73,23 @@ public class LoginScreen {
 
         katseNupp = new Button("Katsetus");
         katseNupp.setOnAction(event -> {
-            new Katsetus();
+            Databases db = new Databases();
+            BigDecimal amount = db.calculateBuyerAmount("Avo");
+            System.out.println(amount.toString());
         });
 
         test = new Button("Test: db user output");
         test.setOnAction(event -> {
-            Databases dbUsers = new Databases();
-            dbUsers.checkUser();
-            dbUsers.closeConnection();
+            Databases db = new Databases();
+            db.checkUser();
+            db.closeConnection();
         });
 
         test2 = new Button("Test: db purchase output");
         test2.setOnAction(event -> {
-            Databases dbPurchase = new Databases();
-            dbPurchase.checkPurchase();
-            dbPurchase.closeConnection();
+            Databases db = new Databases();
+            db.checkPurchase();
+            db.closeConnection();
         });
 
         layoutMain.getChildren().addAll(programTitle,unLabel, fieldUsername,pwLabel, fieldPassword, buttonLogin,alertMessage, ifUserNotExist,buttonAddUser,test,test2,katseNupp);

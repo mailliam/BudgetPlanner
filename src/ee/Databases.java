@@ -2,6 +2,7 @@ package ee;
 
 import java.math.BigDecimal;
 import java.sql.*;
+import java.util.ArrayList;
 
 /**
  * Created by Maila on 25/11/2015.
@@ -28,6 +29,9 @@ public class Databases { //Kasutatud Kristeri sql alust
         System.out.println("DB opened");
     }
 
+
+    //K6ik tabelid uuesti luua Collate nocase'na
+
     private void createUsersTable() { //Tekitab kasutajate tabeli kui seda veel ei ole
         String sql = "CREATE TABLE IF NOT EXISTS USERS (ID INT PRIMARY KEY AUTOINCREMENT, USERNAME TEXT, PASSWORD TEXT, FIRSTNAME TEXT, LASTNAME TEXT);";
         saveDB(sql);
@@ -39,7 +43,7 @@ public class Databases { //Kasutatud Kristeri sql alust
     }
 
     private void createBuyersTable() { //Tekitab ostude tabeli kui seda veel ei ole
-        String sql = "CREATE TABLE IF NOT EXISTS BUYER (BUYER TEXT);";
+        String sql = "CREATE TABLE IF NOT EXISTS BUYERS (BUYER TEXT);";
         saveDB(sql);
     }
 
@@ -68,7 +72,7 @@ public class Databases { //Kasutatud Kristeri sql alust
 
     public void registerBuyer(String buyer) {
         if(!checkBuyerExistance(buyer)) {
-            String sql = "INSERT INTO BUYER (BUYER) VALUES('"+buyer+"')";
+            String sql = "INSERT INTO BUYERS (BUYER) VALUES('"+buyer+"')";
             saveDB(sql);
         }
     }
@@ -123,7 +127,7 @@ public class Databases { //Kasutatud Kristeri sql alust
         try {
             System.out.println(buyer);
             Statement stat = conn.createStatement();
-            String sql = "SELECT EXISTS(SELECT 1 FROM USERS WHERE USERNAME = '"+buyer+"'); ";
+            String sql = "SELECT EXISTS(SELECT 1 FROM BUYERS WHERE BUYER = '"+buyer+"'); ";
             ResultSet rs = stat.executeQuery(sql);
             Boolean dbBuyer = rs.getBoolean(1);
             System.out.println(dbBuyer);
@@ -138,9 +142,53 @@ public class Databases { //Kasutatud Kristeri sql alust
         return false;
     }
 
-    public void buyersList () {
-        
+    public ArrayList createBuyersList () {
+        ArrayList buyersList = new ArrayList();
+        int numberOfBuyers = 0;
+        String buyer;
+        try {
+            Statement stat = conn.createStatement();
+            ResultSet rs = stat.executeQuery("SELECT * FROM BUYERS;");
+            while (rs.next()) { //boolean
+                 numberOfBuyers = numberOfBuyers+1;
+            }
+            for (int i = 0; i < numberOfBuyers; i++) {
+                while(rs.next()) {
+                    buyer = rs.getString("BUYER");
+                    buyersList.add(i,buyer);
+                }
+            }
+
+            rs.close();
+            stat.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return buyersList;
     }
+
+    public BigDecimal calculateBuyerAmount(String buyer) {
+        BigDecimal amount = new BigDecimal(0);
+
+        try {
+            Statement stat = conn.createStatement();
+            String sql = "SELECT * FROM PURCHASE WHERE BUYER = '"+buyer+"' COLLATE NOCASE;"; //Tegelikult tuleks luua uus tabel ja sinna panna collate nocase
+            ResultSet rs = stat.executeQuery(sql);
+            while (rs.next()) {
+                BigDecimal quantity = new BigDecimal(rs.getBigDecimal("QUANTITY").toString());
+                BigDecimal price = new BigDecimal(rs.getBigDecimal("PRICE").toString());
+                BigDecimal rowAmount = quantity.multiply(price);
+                amount = amount.add(rowAmount);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return amount;
+    }
+
+
 
     public void checkUser() { //see kood p�rineb http://www.tutorialspoint.com/sqlite/sqlite_java.htm
         //Katsetan, kas registreeritud tegelased eksisteerivad, see jupp on ainult testi jaoks
@@ -150,8 +198,8 @@ public class Databases { //Kasutatud Kristeri sql alust
             while (rs.next()) {
                 int id2 = rs.getRow();
                 int id = rs.getInt("id");
-                String nimi = rs.getString("fieldUsername");
-                String parool = rs.getString("fieldPassword");
+                String nimi = rs.getString("Username");
+                String parool = rs.getString("Password");
                 System.out.println("ID get row= " +id2);
                 System.out.println("ID get int= " +id);
                 System.out.println("Name= " +nimi);
@@ -186,11 +234,15 @@ public class Databases { //Kasutatud Kristeri sql alust
                 String item = rs.getString("item");
                 String ostja = rs.getString("buyer");
                 String date = rs.getString("date");
+                BigDecimal quantity = rs.getBigDecimal("quantity");
+                BigDecimal price = rs.getBigDecimal("price");
                 System.out.println("ID get row= " +id2);
                 System.out.println("ID get int= " +reanr);
                 System.out.println("Ese= " +item);
                 System.out.println("Ostja= " +ostja);
                 System.out.println("Kuupev= "+date);
+                System.out.println("Kogus = "+quantity);
+                System.out.println("Hind =" +price);
                 System.out.println();
             }
             rs.close();

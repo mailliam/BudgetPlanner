@@ -9,7 +9,11 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
+import java.math.BigDecimal;
+
 
 /**
  * Created by Maila on 25/12/2015.
@@ -19,6 +23,8 @@ public class QueryScreen {
     BorderPane queries;
     int sceneHeight = 600;
     int sceneWidth = 1000;
+    ChoiceBox cbBuyer;
+    Databases db;
 
 
     public QueryScreen() {
@@ -48,14 +54,32 @@ public class QueryScreen {
         DatePicker pickPeriodEndDate = new DatePicker();
 
         Label b = new Label("Buyer");
-        ChoiceBox cbBuyer = new ChoiceBox(FXCollections.observableArrayList("Ostja 1", "Ostja 2"));
+
+        cbBuyer = new ChoiceBox(FXCollections.observableArrayList("Avo", "Maila")); //Tuleb automaatseks teha
         Label c = new Label("Category");
         ChoiceBox cbCategory = new ChoiceBox();
 
         Button executeQuery = new Button("Execute query");
+        executeQuery.setOnAction(event -> {
+            showQueryResult();
+        });
 
         options.getChildren().addAll(sd, pickPeriodStartDate, ed, pickPeriodEndDate, b, cbBuyer,c, cbCategory, executeQuery);
         queries.setLeft(options);
+    }
+
+    private void showQueryResult() {
+        GridPane queryResult = new GridPane();
+        String buyer = cbBuyer.getValue().toString();
+        System.out.println(buyer);
+        db = new Databases();
+        BigDecimal amount = db.calculateBuyerAmount(buyer);
+        Text b = new Text(buyer);
+        Text a = new Text(amount.toString());
+        queryResult.add(b,1,1);
+        queryResult.add(a,2,1);
+        queries.setCenter(queryResult);
+        db.closeConnection();
     }
 
     private String buyerList() { //Otsi andmebaasist üles, kui palju on ostjaid
