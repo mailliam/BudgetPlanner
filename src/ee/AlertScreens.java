@@ -55,14 +55,14 @@ public class AlertScreens {  //Erinevad teavitusaknad
     public void passwordIncorrect() { //Teavitus vale parooli sisestamisest
         StackPane sp = new StackPane();
         Scene sc = new Scene (sp, sceneWidth,sceneHeight);
-        Text message = new Text ("Incorrect password. If you have forgotten your password then try to remember it");
+        Text message = new Text ("Incorrect fieldPassword. If you have forgotten your fieldPassword then try to remember it");
         sp.setAlignment(message, Pos.TOP_CENTER);
         Button buttonOK = new Button("OK");
         buttonOK.setOnAction(event -> {
             alertScreen.close();
         });
 
-        alertScreen.setTitle ("Wrong password");
+        alertScreen.setTitle ("Wrong fieldPassword");
         alertScreen.setOnCloseRequest(event -> alertScreen.close());
         sp.getChildren().addAll(message,buttonOK);
         alertScreen.setScene(sc);

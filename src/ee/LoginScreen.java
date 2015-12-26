@@ -9,7 +9,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 
@@ -18,8 +17,8 @@ import javafx.stage.Stage;
  */
 public class LoginScreen {
     Stage screenMain = new Stage();
-    TextField userName;
-    PasswordField password;
+    TextField fieldUsername;
+    PasswordField fieldPassword;
     Button buttonLogin, buttonAddUser;
     Button test, test2, katseNupp;
     int sceneHeight = 600;
@@ -47,9 +46,9 @@ public class LoginScreen {
         programTitle.setFill(Color.MEDIUMVIOLETRED);
 
         Label unLabel = new Label("Username");
-        userName = new TextField();
+        fieldUsername = new TextField();
         Label pwLabel = new Label ("Password");
-        password = new PasswordField();
+        fieldPassword = new PasswordField();
 
         alertMessage = new Text();
 
@@ -88,7 +87,7 @@ public class LoginScreen {
             dbPurchase.closeConnection();
         });
 
-        layoutMain.getChildren().addAll(programTitle,unLabel,userName,pwLabel,password, buttonLogin,alertMessage, ifUserNotExist,buttonAddUser,test,test2,katseNupp);
+        layoutMain.getChildren().addAll(programTitle,unLabel, fieldUsername,pwLabel, fieldPassword, buttonLogin,alertMessage, ifUserNotExist,buttonAddUser,test,test2,katseNupp);
 
         screenMain.setScene(sceneMain);
         screenMain.show();
@@ -98,8 +97,8 @@ public class LoginScreen {
 
     //Kui parool on �ige, siis viska programmi aken lahti. Lisaks paroolile on vaja kontrolli, kui sisestatakse vale kasutajanimi, hetkel viskab errorisse
     private void toProgram() {
-        String s1 = userName.getText();
-        String s2 = password.getText();
+        String s1 = fieldUsername.getText();
+        String s2 = fieldPassword.getText();
         Databases dbUsers = new Databases();
         boolean userExists = dbUsers.checkUserExistance(s1);
         boolean passwordCorrect = dbUsers.checkPassword(s1,s2);
@@ -112,7 +111,7 @@ public class LoginScreen {
                 screenMain.close();
                 new ProgramScreen();
             } else {
-                alertMessage.setText("Incorrect password");
+                alertMessage.setText("Incorrect Password");
                 alertMessage.setFont(Font.font("Calibri",20)); //Kuidas fonti ja värvi seadistada: https://docs.oracle.com/javafx/2/text/jfxpub-text.htm
                 alertMessage.setFill(Color.RED);
             }

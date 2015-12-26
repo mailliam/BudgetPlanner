@@ -21,8 +21,8 @@ public class ProgramScreen {
     public ProgramScreen() {
         setupScene();
         toCostInputScreen();
+        toQueryScreen();
         deleteAccount();
-
         logoutUser();
     }
 
@@ -41,6 +41,7 @@ public class ProgramScreen {
         v.getChildren().addAll(input,query);
         HBox h = new HBox();
         logout = new Button("Log out");
+
         deleteUser = new Button("Delete user account");
 
         h.getChildren().addAll(logout,deleteUser);
@@ -51,13 +52,18 @@ public class ProgramScreen {
     }
 
 
-
     private void toCostInputScreen() {
         input.setOnAction(event -> {
             programScreen.close();
             new CostInputScreen();
         });
+    }
 
+    private void toQueryScreen() {
+        query.setOnAction(event -> {
+            programScreen.close();
+            new QueryScreen();
+        });
     }
 
     private void logoutUser() {

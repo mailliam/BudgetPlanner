@@ -13,6 +13,7 @@ public class Databases { //Kasutatud Kristeri sql alust
         createConnection();
         createUsersTable();
         createPurchaseTable(); //tundub nagu mõttetu luua kasutaja juures ostutabelit ja vastupidi
+        createBuyersTable();
     }
 
     private void createConnection() { //Loob ühenduse andmebaasiga
@@ -37,6 +38,11 @@ public class Databases { //Kasutatud Kristeri sql alust
         saveDB(sql);
     }
 
+    private void createBuyersTable() { //Tekitab ostude tabeli kui seda veel ei ole
+        String sql = "CREATE TABLE IF NOT EXISTS BUYER (BUYER TEXT);";
+        saveDB(sql);
+    }
+
 
     private void saveDB(String sql) { //sellise tegemise loogika p�rineb Krister V. sql n�itest. salvestab andmebaasi
         try {
@@ -58,7 +64,13 @@ public class Databases { //Kasutatud Kristeri sql alust
     public void savePurchase(String buyer, String date, String store, int purchaseRowID, String item, String costGroup, BigDecimal quantity, BigDecimal price) {
         String sql = "INSERT INTO PURCHASE (BUYER, DATE, STORE, PURCHASEROWID, ITEM, COSTGROUP, QUANTITY, PRICE) VALUES('"+buyer+"','"+date+"','"+store+"','"+purchaseRowID+"','"+item+"','"+costGroup+"','"+quantity+"','"+price+"')";
         saveDB(sql);
+    }
 
+    public void registerBuyer(String buyer) {
+        if(!checkBuyerExistance(buyer)) {
+            String sql = "INSERT INTO BUYER (BUYER) VALUES('"+buyer+"')";
+            saveDB(sql);
+        }
     }
 
     public boolean checkUserExistance(String username) { //kontrollib, kas kasutaja on olemas (registreerimisel)
@@ -107,6 +119,29 @@ public class Databases { //Kasutatud Kristeri sql alust
         }
     }
 
+    public boolean checkBuyerExistance(String buyer) { //kontrollib, kas kasutaja on olemas (registreerimisel)
+        try {
+            System.out.println(buyer);
+            Statement stat = conn.createStatement();
+            String sql = "SELECT EXISTS(SELECT 1 FROM USERS WHERE USERNAME = '"+buyer+"'); ";
+            ResultSet rs = stat.executeQuery(sql);
+            Boolean dbBuyer = rs.getBoolean(1);
+            System.out.println(dbBuyer);
+
+            rs.close();
+            stat.close();
+            return dbBuyer;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void buyersList () {
+        
+    }
+
     public void checkUser() { //see kood p�rineb http://www.tutorialspoint.com/sqlite/sqlite_java.htm
         //Katsetan, kas registreeritud tegelased eksisteerivad, see jupp on ainult testi jaoks
         try {
@@ -115,8 +150,8 @@ public class Databases { //Kasutatud Kristeri sql alust
             while (rs.next()) {
                 int id2 = rs.getRow();
                 int id = rs.getInt("id");
-                String nimi = rs.getString("userName");
-                String parool = rs.getString("password");
+                String nimi = rs.getString("fieldUsername");
+                String parool = rs.getString("fieldPassword");
                 System.out.println("ID get row= " +id2);
                 System.out.println("ID get int= " +id);
                 System.out.println("Name= " +nimi);

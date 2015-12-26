@@ -149,11 +149,11 @@ public class CostInputScreen {
         //Kontrollida, mitmendal real toimus muutus?
 
 
-                BigDecimal quantity = new BigDecimal(((TextField) basket.getChildren().get(basket.getChildren().size()-9)).getCharacters().toString());
-                BigDecimal price = new BigDecimal(((TextField) basket.getChildren().get(basket.getChildren().size()-8)).getCharacters().toString());
-                String sum = (quantity.multiply(price)).toString();
-                ((TextField) basket.getChildren().get(basket.getChildren().size()-7)).setText(sum);
-                ((TextField) basket.getChildren().get(basket.getChildren().size()-7)).setEditable(false);
+        BigDecimal quantity = new BigDecimal(((TextField) basket.getChildren().get(basket.getChildren().size()-9)).getCharacters().toString());
+        BigDecimal price = new BigDecimal(((TextField) basket.getChildren().get(basket.getChildren().size()-8)).getCharacters().toString());
+        String sum = (quantity.multiply(price)).toString();
+        ((TextField) basket.getChildren().get(basket.getChildren().size()-7)).setText(sum);
+        ((TextField) basket.getChildren().get(basket.getChildren().size()-7)).setEditable(false);
     }
 
 
@@ -171,22 +171,20 @@ public class CostInputScreen {
     }
 
     private void savePurchaseToDB() {
+        for (int i = 6; i <((fullRows+1)*6); i=i+6) { //Hulk try-catche tuleb siia juurde kirjutada //Kordab seda tsyklit niikaua, kuni on k2idud l2bi k6ik t2idetud read. +1 kujutab endast esimest labelite rida
 
-
-            for (int i = 6; i <((fullRows+1)*6); i=i+6) { //Hulk try-catche tuleb siia juurde kirjutada //Kordab seda tsyklit niikaua, kuni on k2idud l2bi k6ik t2idetud read. +1 kujutab endast esimest labelite rida
-
-                String buyer = fieldBuyer.getText();
-                String date = fieldDate.getValue().toString();
-                String store = fieldStore.getText();
-                String item = ((TextField) basket.getChildren().get(i+1)).getCharacters().toString();
-                String costGroup = ((TextField) basket.getChildren().get(i+2)).getCharacters().toString();
-                BigDecimal quantity = new BigDecimal(((TextField) basket.getChildren().get(i + 3)).getCharacters().toString());
-                BigDecimal price = new BigDecimal(((TextField) basket.getChildren().get(i + 4)).getCharacters().toString());
-                Databases dbPurchase = new Databases();
-                dbPurchase.savePurchase(buyer,date,store,i/6,item,costGroup,quantity,price);
-                dbPurchase.closeConnection();
-
-            }
+            String buyer = fieldBuyer.getText();
+            String date = fieldDate.getValue().toString();
+            String store = fieldStore.getText();
+            String item = ((TextField) basket.getChildren().get(i+1)).getCharacters().toString();
+            String costGroup = ((TextField) basket.getChildren().get(i+2)).getCharacters().toString();
+            BigDecimal quantity = new BigDecimal(((TextField) basket.getChildren().get(i + 3)).getCharacters().toString());
+            BigDecimal price = new BigDecimal(((TextField) basket.getChildren().get(i + 4)).getCharacters().toString());
+            Databases dbPurchase = new Databases();
+            dbPurchase.savePurchase(buyer,date,store,i/6,item,costGroup,quantity,price);
+            dbPurchase.registerBuyer(buyer); //registreerib ostjate listi (vajalik p2ringu dropdown jaoks)
+            dbPurchase.closeConnection();
+        }
     }
 }
 
