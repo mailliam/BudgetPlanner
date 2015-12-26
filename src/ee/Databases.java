@@ -31,6 +31,7 @@ public class Databases { //Kasutatud Kristeri sql alust
 
 
     //K6ik tabelid uuesti luua Collate nocase'na
+    //http://stackoverflow.com/questions/973541/how-to-set-sqlite3-to-be-case-insensitive-when-string-comparing
 
     private void createUsersTable() { //Tekitab kasutajate tabeli kui seda veel ei ole
         String sql = "CREATE TABLE IF NOT EXISTS USERS (ID INT PRIMARY KEY AUTOINCREMENT, USERNAME TEXT, PASSWORD TEXT, FIRSTNAME TEXT, LASTNAME TEXT);";
@@ -174,7 +175,7 @@ public class Databases { //Kasutatud Kristeri sql alust
 
         try {
             Statement stat = conn.createStatement();
-            String sql = "SELECT * FROM PURCHASE WHERE BUYER = '"+buyer+"' COLLATE NOCASE;"; //Tegelikult tuleks luua uus tabel ja sinna panna collate nocase
+            String sql = "SELECT QUANTITY, PRICE FROM PURCHASE WHERE BUYER = '"+buyer+"' COLLATE NOCASE;"; //Tegelikult tuleks luua uus tabel ja sinna panna collate nocase
             ResultSet rs = stat.executeQuery(sql);
             while (rs.next()) {
                 BigDecimal quantity = new BigDecimal(rs.getBigDecimal("QUANTITY").toString());
@@ -188,6 +189,56 @@ public class Databases { //Kasutatud Kristeri sql alust
         return amount;
     }
 
+    public BigDecimal calculateCostgroupAmount(String costgroup, String buyer) {
+        BigDecimal amount = new BigDecimal(0);
+
+        try {
+            Statement stat = conn.createStatement();
+            String sql = "SELECT QUANTITY, PRICE FROM PURCHASE WHERE COSTGROUP = '"+costgroup+"' AND BUYER = '"+buyer+"' COLLATE NOCASE;"; //Tegelikult tuleks luua uus tabel ja sinna panna collate nocase
+            ResultSet rs = stat.executeQuery(sql);
+            while (rs.next()) {
+                BigDecimal quantity = new BigDecimal(rs.getBigDecimal("QUANTITY").toString());
+                BigDecimal price = new BigDecimal(rs.getBigDecimal("PRICE").toString());
+                BigDecimal rowAmount = quantity.multiply(price);
+                amount = amount.add(rowAmount);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return amount;
+    }
+
+    public ArrayList<BigDecimal> calculateCostgroupAmountByBuyers(String costgroup) {
+        ArrayList list = new ArrayList();
+        BigDecimal amountAvo = new BigDecimal(0);
+        BigDecimal amountMaila = new BigDecimal(0);
+
+        try {
+            Statement stat = conn.createStatement();
+            String sqlAvo = "SELECT QUANTITY, PRICE FROM PURCHASE WHERE COSTGROUP = '"+costgroup+"' AND BUYER = 'Avo' COLLATE NOCASE;";
+            String sqlMaila = "SELECT QUANTITY, PRICE FROM PURCHASE WHERE COSTGROUP = '"+costgroup+"' AND BUYER = 'Maila' COLLATE NOCASE;";; //Tegelikult tuleks luua uus tabel ja sinna panna collate nocase
+            ResultSet rsAvo = stat.executeQuery(sqlAvo);
+            while (rsAvo.next()) {
+                BigDecimal quantity = new BigDecimal(rsAvo.getBigDecimal("QUANTITY").toString());
+                BigDecimal price = new BigDecimal(rsAvo.getBigDecimal("PRICE").toString());
+                BigDecimal rowAmount = quantity.multiply(price);
+                amountAvo = amountAvo.add(rowAmount);
+                list.add(0,amountAvo);
+            }
+            ResultSet rsMaila = stat.executeQuery(sqlMaila);
+            while (rsMaila.next()) {
+                BigDecimal quantity = new BigDecimal(rsMaila.getBigDecimal("QUANTITY").toString());
+                BigDecimal price = new BigDecimal(rsMaila.getBigDecimal("PRICE").toString());
+                BigDecimal rowAmount = quantity.multiply(price);
+                amountMaila = amountMaila.add(rowAmount);
+                list.add(1,amountMaila);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 
 
     public void checkUser() { //see kood p�rineb http://www.tutorialspoint.com/sqlite/sqlite_java.htm
@@ -223,7 +274,6 @@ public class Databases { //Kasutatud Kristeri sql alust
         System.out.println("DB closed");
     }
 
-
     public void checkPurchase() {
         try {
             Statement stat = conn.createStatement();
@@ -236,9 +286,11 @@ public class Databases { //Kasutatud Kristeri sql alust
                 String date = rs.getString("date");
                 BigDecimal quantity = rs.getBigDecimal("quantity");
                 BigDecimal price = rs.getBigDecimal("price");
+                String costgroup = rs.getString("costgroup");
                 System.out.println("ID get row= " +id2);
                 System.out.println("ID get int= " +reanr);
                 System.out.println("Ese= " +item);
+                System.out.println("Grupp = " +costgroup);
                 System.out.println("Ostja= " +ostja);
                 System.out.println("Kuupev= "+date);
                 System.out.println("Kogus = "+quantity);
@@ -252,5 +304,6 @@ public class Databases { //Kasutatud Kristeri sql alust
             e.printStackTrace();
         }
     }
+
 }
 
