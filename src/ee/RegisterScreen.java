@@ -6,9 +6,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.TilePane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.awt.*;
+
 
 /**
  * Created by Maila on 24/11/2015.
@@ -21,6 +23,7 @@ public class RegisterScreen {
     int sceneHeight = 600;
     int sceneWidth = 500;
     Button buttonRegUser;
+    Text alertMessage;
 
     int buttonWidth = sceneWidth/3;
 
@@ -44,12 +47,14 @@ public class RegisterScreen {
         Label ln = new Label("Last name");
         fieldLastname = new TextField();
 
+        alertMessage = new Text();
+
         buttonRegUser = new Button("Register user");
         buttonRegUser.setOnAction(event -> {
             registerUser();
         });
 
-        layout.getChildren().addAll(un, fieldUsername,pw, fieldPassword,fn, fieldFirstname, ln, fieldLastname, buttonRegUser);
+        layout.getChildren().addAll(un, fieldUsername,pw, fieldPassword,fn, fieldFirstname, ln, fieldLastname, alertMessage, buttonRegUser);
         registerScreen.setScene(scene);
         registerScreen.show();
         registerScreen.setOnCloseRequest(event -> {
@@ -67,7 +72,9 @@ public class RegisterScreen {
         Databases dbUsers = new Databases();
         boolean userExists = dbUsers.checkUserExistance(s1);
         System.out.println(userExists);
-        if (s1.isEmpty()){
+        if (s1.isEmpty()||s2.isEmpty()||s3.isEmpty()||s4.isEmpty()){
+            alertMessage.setText("No fields can be left empty!");
+            alertMessage.setFill(Color.RED);
             fieldUsername.setStyle("-fx-border-color: red ; -fx-border-width: 2px ;"); //TextFieldi muutmine: http://stackoverflow.com/questions/24231610/javafx-red-border-for-text-field
         } else {
             if (!userExists){

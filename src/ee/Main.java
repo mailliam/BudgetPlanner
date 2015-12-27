@@ -11,6 +11,5 @@ public class Main extends Application { //Miks mul on eraldi screenid, mitte era
     @Override
     public void start(Stage primaryStage) throws Exception {
         new LoginScreen();
-
     }
 }

@@ -117,7 +117,7 @@ public class QueryScreen {
             queries.setCenter(queryResult);
             db.closeConnection();
 
-            ObservableList<PieChart.Data> pieChartData =
+            ObservableList<PieChart.Data> pieChartData = //http://docs.oracle.com/javase/8/javafx/user-interface-tutorial/pie-chart.htm#CIHFDADD
                     FXCollections.observableArrayList(
                             new PieChart.Data("Avo", Double.parseDouble(amountList.get(0).toString())),
                             new PieChart.Data("Maila", Double.parseDouble(amountList.get(1).toString())));
