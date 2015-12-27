@@ -2,14 +2,13 @@ package ee;
 
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.math.BigDecimal;
 
 /**
  * Created by Maila on 27/12/2015.
@@ -21,12 +20,14 @@ public class JargmineCostInputScreen {
     int rowCounter = 1; //vajalik esimeseks loomiseks ära väärtustada
     GridPane basketLabels, basketFields;
     ScrollPane basket;
+    TextField[][] tfBasket, tfBasketNew;
+    int fullRows;
 
 
     public JargmineCostInputScreen () {
         setupScene(); //Loob stseeni ostu jaoks
         purchaseHeader(); //Loob ostu p2ise
-        purchaseBasketLabels(); //Loob ostukorvi pealkirjad
+        purchaseBasketLabels(); //Loob ostukorvi pealkirjad ja teeb ettevalmistuse ostukorvi esimese rea lisamiseks
         purchaseBasketFields(); //Loob ostukorvi esimese rea
     }
 
@@ -69,6 +70,15 @@ public class JargmineCostInputScreen {
         header.add(tfStore,1,1);
         header.add(dpDate,2,1);
 
+        Button btn1 = new Button("test1");
+        header.add(btn1,3,1);
+
+        Button btn2 = new Button("test2");
+        btn2.setOnAction(event -> {
+            prindiYksRida();
+        });
+        header.add(btn2,3,2);
+
         purchase.getChildren().add(header);
     }
 
@@ -101,10 +111,19 @@ public class JargmineCostInputScreen {
         purchase.getChildren().add(basket);
     }
 
+
+
     private void purchaseBasketFields() {
-        TextField[][] tfBasket = new TextField[rowCounter][6];
+        tfBasket = new TextField[rowCounter][6];
 
         for (int i = rowCounter-1; i < rowCounter; i++) {
+            if(rowCounter > 1) {
+                for (int k = 0; k < rowCounter - 1; k++) {
+                    for (int l = 0; l < 6; l++) {
+                        tfBasket[k][l] = tfBasketNew[k][l];
+                    }
+                }
+            }
             for (int j = 0; j < 6; j++) {
                 tfBasket[i][j] = new TextField();
                 tfBasket[i][j].setPrefWidth(sceneWidth/7);
@@ -113,11 +132,35 @@ public class JargmineCostInputScreen {
                 basketFields.add(tfBasket[i][j], j, i);
                 basket.setContent(basketFields); //lisab ostukorvile, mis on ScrollPane, textFieldid
             }
+            tfBasketNew = tfBasket;
+        }
 
-            tfBasket[rowCounter-1][1].setOnMouseClicked(event -> {
-                rowCounter = rowCounter + 1;
-                purchaseBasketFields();
+        tfBasket[rowCounter-1][1].setOnMouseClicked(event -> {
+            rowCounter = rowCounter + 1;
+            purchaseBasketFields();
+        });
+
+        calculateRowAmount();
+    }
+
+    private void calculateRowAmount() { //Arvutab rea summa, korrutades hinna ja koguse
+        for (int i = 0; i < rowCounter; i++) {
+            tfBasket[i][4].setOnInputMethodTextChanged(event -> {
+                TextField pr = (TextField) event.getTarget(); //loogika laevadefx-st
+                Integer row = GridPane.getRowIndex(pr);
+                BigDecimal quantity = new BigDecimal(tfBasket[row][3].getText());
+                BigDecimal price = new BigDecimal(tfBasket[row][4].getText());
+                BigDecimal amount = quantity.multiply(price);
+                tfBasket[row][5].setText(amount.toString());
             });
         }
     }
+
+    private void prindiYksRida() {
+        int lapsi = basketFields.getChildren().size();
+        System.out.println(lapsi);
+        String ridu = tfBasket[2][2].getText().toString();
+        System.out.println(ridu);
+    }
+
 }
