@@ -24,6 +24,7 @@ public class JargmineCostInputScreen {
     ScrollPane basket;
     TextField[][] tfBasket, tfBasketNew;
     Text alertMessage = new Text();
+    TextField tfPurchaseAmount;
     int fullRows;
 
 
@@ -57,7 +58,10 @@ public class JargmineCostInputScreen {
 
         ColumnConstraints column = new ColumnConstraints();
         column.setPrefWidth(sceneWidth/6.5);
-        header.getColumnConstraints().addAll(column, column, column);
+
+        ColumnConstraints column3 = new ColumnConstraints();
+        column3.setPrefWidth(sceneWidth/5.5);
+        header.getColumnConstraints().addAll(column, column, column3);
 
         Label l1 = new Label ("Buyer");
         Label l2 = new Label ("Store");
@@ -75,14 +79,14 @@ public class JargmineCostInputScreen {
 
         header.add(alertMessage,0,2); //Koht, kuhu saab hakata kasutajale veateateid kuvama
 
-        Button btn1 = new Button("test1");
-        header.add(btn1,3,1);
+        Label totalAmount = new Label("Total amount");
+        header.add(totalAmount,3,0);
 
-        Button btn2 = new Button("test2");
-        btn2.setOnAction(event -> {
-            prindiYksRida();
-        });
-        header.add(btn2,3,2);
+        tfPurchaseAmount = new TextField();
+        tfPurchaseAmount.setEditable(false);
+        tfPurchaseAmount.setStyle("-fx-background-color: #DADBDE");
+
+        header.add(tfPurchaseAmount,3,1);
 
         purchase.getChildren().add(header);
     }
@@ -107,7 +111,7 @@ public class JargmineCostInputScreen {
         label[5].setText("Amount");
         purchase.getChildren().add(basketLabels);
 
-        basketFields = new GridPane(); //Lisaks Labelitele lisab ka esimese osturea, vastasel korral hakkasid tulema duplicate childreni veateated, sest sama asja lisati mitu korda. Nyyd yhekordselt.
+        basketFields = new GridPane(); //Lisaks Labelitele lisab ka esimese osturea parameetrid, vastasel korral hakkasid tulema duplicate childreni veateated, sest sama asja lisati mitu korda.
         basketFields.setHgap(5);
         basketFields.setVgap(5);
         basketFields.setPadding(new Insets(10, 10, 10, 10));
@@ -115,8 +119,6 @@ public class JargmineCostInputScreen {
         basket.setStyle("-fx-background: #00F00F");
         purchase.getChildren().add(basket);
     }
-
-
 
     private void purchaseBasketFields() {
         tfBasket = new TextField[rowCounter+1][6]; //loob uue objekti igal korral, vanad sisestatud v22rtused kaovad sellega m2lust
@@ -137,7 +139,7 @@ public class JargmineCostInputScreen {
                 basketFields.add(tfBasket[i][j], j, i);
                 basket.setContent(basketFields); //lisab ostukorvile, mis on ScrollPane, textFieldid
             }
-            tfBasketNew = tfBasket; //kopeerib kasutaja poolt varasemalt sisestatud v22rtused
+            tfBasketNew = tfBasket; //kopeerib kasutaja poolt varasemalt sisestatud v22rtuste massiivi
         }
 
         tfBasket[rowCounter][1].setOnMouseClicked(event -> {
@@ -147,24 +149,44 @@ public class JargmineCostInputScreen {
         });
 
         tfBasket[rowCounter][3].textProperty().addListener((observable, oldValue, newValue) -> {
-            calculateRowAmount(rowCounter);
+            calculateRowAmount();
         });
 
         tfBasket[rowCounter][4].textProperty().addListener((observable, oldValue, newValue) -> {
-            calculateRowAmount(rowCounter);
+            calculateRowAmount();
         });
 
     }
 
-    private void calculateRowAmount(int rowNr) { //Arvutab rea summa, korrutades hinna ja koguse
-        for (int i = 0; i < rowNr + 1; i++) {
+    private void calculateRowAmount() { //Arvutab rea summa, korrutades hinna ja koguse
+        BigDecimal purchaseAmount = new BigDecimal(0);
+        for (int i = 0; i < rowCounter + 1; i++) {
 
-            if (!tfBasket[i][3].getText().isEmpty() && !tfBasket[i][4].getText().isEmpty()) {
+            if (!tfBasket[i][3].getText().isEmpty() && !tfBasket[i][4].getText().isEmpty()) { //Kontrollib, kas kasutaja on mõlemad arvutuseks vajalikud v22rtused on sisestatud
+
+                for (int u = 0; u < tfBasket[i][3].getText().length(); u++) {  //Asendab vajadusel koguse puhul kasutaja sisestatud ',' '.'.ga
+                    String text = tfBasket[i][3].getText();
+                    char ch = text.charAt(u);
+                    if (ch == ',') {
+                        tfBasket[i][3].setText(text.replace(text.charAt(u),'.'));
+                    }
+                }
+
+                for (int u = 0; u < tfBasket[i][4].getText().length(); u++) {  //Asendab vajadusel hinna puhul kasutaja sisestatud ',' '.'.ga
+                    String text = tfBasket[i][4].getText();
+                    char ch = text.charAt(u);
+                    if (ch == ',') {
+                        tfBasket[i][4].setText(text.replace(text.charAt(u),'.'));
+                    }
+                }
+
                 try {
                     BigDecimal quantity = new BigDecimal(tfBasket[i][3].getText());
                     BigDecimal price = new BigDecimal(tfBasket[i][4].getText());
                     BigDecimal amount = quantity.multiply(price);
+                    purchaseAmount = purchaseAmount.add(amount);
                     tfBasket[i][5].setText(amount.toString());
+                    tfBasket[i][5].setEditable(false);
                     tfBasket[i][3].setStyle(null);
                     tfBasket[i][4].setStyle(null);
                     alertMessage.setText(null); //Kui kasutaja tuleb selle peale, et enne parandamist sisestada uus rida, siis kaob vahepeal alert 2ra.
@@ -174,18 +196,10 @@ public class JargmineCostInputScreen {
                     tfBasket[i][3].setStyle("-fx-border-color: red ; -fx-border-width: 2px ;");
                     tfBasket[i][4].setStyle("-fx-border-color: red ; -fx-border-width: 2px ;");
                 }
-
             }
-
         }
-    }
+        tfPurchaseAmount.setText(purchaseAmount.toString());
 
-
-    private void prindiYksRida() {
-        int lapsi = basketFields.getChildren().size();
-        System.out.println(lapsi);
-        String ridu = tfBasket[2][2].getText().toString();
-        System.out.println(ridu);
     }
 
 }
