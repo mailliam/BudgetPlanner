@@ -6,6 +6,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.math.BigDecimal;
@@ -17,10 +19,11 @@ public class JargmineCostInputScreen {
     int sceneHeight = 1000;
     int sceneWidth = 700;
     VBox purchase;
-    int rowCounter = 1; //vajalik esimeseks loomiseks ‰ra v‰‰rtustada
+    int rowCounter = 0; //vajalik esimeseks loomiseks ‰ra v‰‰rtustada
     GridPane basketLabels, basketFields;
     ScrollPane basket;
     TextField[][] tfBasket, tfBasketNew;
+    Text alertMessage = new Text();
     int fullRows;
 
 
@@ -70,6 +73,8 @@ public class JargmineCostInputScreen {
         header.add(tfStore,1,1);
         header.add(dpDate,2,1);
 
+        header.add(alertMessage,0,2); //Koht, kuhu saab hakata kasutajale veateateid kuvama
+
         Button btn1 = new Button("test1");
         header.add(btn1,3,1);
 
@@ -114,11 +119,11 @@ public class JargmineCostInputScreen {
 
 
     private void purchaseBasketFields() {
-        tfBasket = new TextField[rowCounter][6];
+        tfBasket = new TextField[rowCounter+1][6]; //loob uue objekti igal korral, vanad sisestatud v22rtused kaovad sellega m2lust
 
-        for (int i = rowCounter-1; i < rowCounter; i++) {
-            if(rowCounter > 1) {
-                for (int k = 0; k < rowCounter - 1; k++) {
+        for (int i = rowCounter; i < rowCounter+1; i++) {
+            if(rowCounter > 0) {   // asendab loodud objekti tyhjad v22rtused kasutaja poolt eelnevalt sisestatuga kuni viimase reani (v2ljaarvatud).
+                for (int k = 0; k < rowCounter; k++) {
                     for (int l = 0; l < 6; l++) {
                         tfBasket[k][l] = tfBasketNew[k][l];
                     }
@@ -127,34 +132,54 @@ public class JargmineCostInputScreen {
             for (int j = 0; j < 6; j++) {
                 tfBasket[i][j] = new TextField();
                 tfBasket[i][j].setPrefWidth(sceneWidth/7);
-                tfBasket[i][0].setText(Integer.toString(rowCounter));
+                tfBasket[i][0].setText(Integer.toString(rowCounter+1));
                 tfBasket[i][0].setEditable(false);
                 basketFields.add(tfBasket[i][j], j, i);
                 basket.setContent(basketFields); //lisab ostukorvile, mis on ScrollPane, textFieldid
             }
-            tfBasketNew = tfBasket;
+            tfBasketNew = tfBasket; //kopeerib kasutaja poolt varasemalt sisestatud v22rtused
         }
 
-        tfBasket[rowCounter-1][1].setOnMouseClicked(event -> {
-            rowCounter = rowCounter + 1;
+        tfBasket[rowCounter][1].setOnMouseClicked(event -> {
+            tfBasket[rowCounter][1].setOnMouseClicked(null);   //Yks vastustest: http://stackoverflow.com/questions/14927233/programmatically-remove-a-listener-added-using-fxml
+            rowCounter++;
             purchaseBasketFields();
         });
 
-        calculateRowAmount();
+        tfBasket[rowCounter][3].textProperty().addListener((observable, oldValue, newValue) -> {
+            calculateRowAmount(rowCounter);
+        });
+
+        tfBasket[rowCounter][4].textProperty().addListener((observable, oldValue, newValue) -> {
+            calculateRowAmount(rowCounter);
+        });
+
     }
 
-    private void calculateRowAmount() { //Arvutab rea summa, korrutades hinna ja koguse
-        for (int i = 0; i < rowCounter; i++) {
-            tfBasket[i][4].setOnInputMethodTextChanged(event -> {
-                TextField pr = (TextField) event.getTarget(); //loogika laevadefx-st
-                Integer row = GridPane.getRowIndex(pr);
-                BigDecimal quantity = new BigDecimal(tfBasket[row][3].getText());
-                BigDecimal price = new BigDecimal(tfBasket[row][4].getText());
-                BigDecimal amount = quantity.multiply(price);
-                tfBasket[row][5].setText(amount.toString());
-            });
+    private void calculateRowAmount(int rowNr) { //Arvutab rea summa, korrutades hinna ja koguse
+        for (int i = 0; i < rowNr + 1; i++) {
+
+            if (!tfBasket[i][3].getText().isEmpty() && !tfBasket[i][4].getText().isEmpty()) {
+                try {
+                    BigDecimal quantity = new BigDecimal(tfBasket[i][3].getText());
+                    BigDecimal price = new BigDecimal(tfBasket[i][4].getText());
+                    BigDecimal amount = quantity.multiply(price);
+                    tfBasket[i][5].setText(amount.toString());
+                    tfBasket[i][3].setStyle(null);
+                    tfBasket[i][4].setStyle(null);
+                    alertMessage.setText(null); //Kui kasutaja tuleb selle peale, et enne parandamist sisestada uus rida, siis kaob vahepeal alert 2ra.
+                } catch (java.lang.NumberFormatException e) {
+                    alertMessage.setText("Quantity or price format is incorrect: must be number");
+                    alertMessage.setFill(Color.RED);
+                    tfBasket[i][3].setStyle("-fx-border-color: red ; -fx-border-width: 2px ;");
+                    tfBasket[i][4].setStyle("-fx-border-color: red ; -fx-border-width: 2px ;");
+                }
+
+            }
+
         }
     }
+
 
     private void prindiYksRida() {
         int lapsi = basketFields.getChildren().size();

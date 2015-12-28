@@ -21,12 +21,12 @@ public class Databases { //Kasutatud Kristeri sql alust
         try {
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection("jdbc:sqlite:budgetplanner.db");
+            System.out.println("DB opened");
         } catch (ClassNotFoundException e) { //Kas peaks muid erroreid ka p��dma?
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("DB opened");
     }
 
 
