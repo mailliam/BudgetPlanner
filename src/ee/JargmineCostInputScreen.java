@@ -11,6 +11,12 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.time.chrono.ChronoLocalDate;
+import java.util.Date;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.Calendar;
 
 /**
  * Created by Maila on 27/12/2015.
@@ -24,7 +30,10 @@ public class JargmineCostInputScreen {
     ScrollPane basket;
     TextField[][] tfBasket, tfBasketNew;
     Text alertMessage = new Text();
-    TextField tfPurchaseAmount;
+    TextField tfBuyer, tfStore, tfPurchaseAmount;
+    DatePicker dpDate;
+
+
     int fullRows;
 
 
@@ -70,14 +79,15 @@ public class JargmineCostInputScreen {
         header.add(l2,1,0);
         header.add(l3,2,0);
 
-        TextField tfBuyer = new TextField();
-        TextField tfStore = new TextField();
-        DatePicker dpDate = new DatePicker();
+        tfBuyer = new TextField();
+        tfStore = new TextField();
+        dpDate = new DatePicker();
         header.add(tfBuyer,0,1);
         header.add(tfStore,1,1);
         header.add(dpDate,2,1);
 
-        header.add(alertMessage,0,2); //Koht, kuhu saab hakata kasutajale veateateid kuvama
+
+        header.add(alertMessage, 0, 2); //Koht, kuhu saab hakata kasutajale veateateid kuvama
 
         Label totalAmount = new Label("Total amount");
         header.add(totalAmount,3,0);
@@ -87,6 +97,17 @@ public class JargmineCostInputScreen {
         tfPurchaseAmount.setStyle("-fx-background-color: #DADBDE");
 
         header.add(tfPurchaseAmount,3,1);
+
+        Button btnSaveAndExit = new Button ("Save and finish");
+        btnSaveAndExit.setOnAction(event -> {
+            checkInsertionCorrectness();
+            System.out.println("Kontrolli tulemus on: " +checkInsertionCorrectness());
+
+
+
+        });
+
+        header.add(btnSaveAndExit,3,2);
 
         purchase.getChildren().add(header);
     }
@@ -142,8 +163,8 @@ public class JargmineCostInputScreen {
             tfBasketNew = tfBasket; //kopeerib kasutaja poolt varasemalt sisestatud v22rtuste massiivi
         }
 
-        tfBasket[rowCounter][1].setOnMouseClicked(event -> {
-            tfBasket[rowCounter][1].setOnMouseClicked(null);   //Yks vastustest: http://stackoverflow.com/questions/14927233/programmatically-remove-a-listener-added-using-fxml
+        tfBasket[rowCounter][4].setOnAction(event -> {
+            tfBasket[rowCounter][4].setOnAction(null);   //Yks vastustest: http://stackoverflow.com/questions/14927233/programmatically-remove-a-listener-added-using-fxml
             rowCounter++;
             purchaseBasketFields();
         });
@@ -200,6 +221,36 @@ public class JargmineCostInputScreen {
         }
         tfPurchaseAmount.setText(purchaseAmount.toString());
 
+    }
+
+    private boolean checkInsertionCorrectness () {
+
+
+        if(tfBuyer.getText().isEmpty() || tfStore.getText().isEmpty() || dpDate.getValue() == null) { //Kui kuup2ev pole valitud, siis == null: http://code.makery.ch/blog/javafx-8-date-picker/
+            alertMessage.setText("Buyer, store and date must be selected");
+            alertMessage.setFill(Color.RED);
+            return false;
+        } else {
+            LocalDate today = LocalDate.now(); //http://www.java2s.com/Tutorials/Java/java.time/LocalDate/index.htm
+            if(dpDate.getValue().isAfter(today)) {
+                alertMessage.setText(null);
+                alertMessage.setText("Purchase date can not be in the future");
+                alertMessage.setFill(Color.RED);
+                return false;
+            } else {
+                for (int i = 0; i < rowCounter+1; i++) { //SElle lohe asemel v6iks midagi normaalset olla
+                   if( (tfBasket[i][1].getText().isEmpty() && tfBasket[i][2].getText().isEmpty() && tfBasket[i][3].getText().isEmpty() && tfBasket[i][4].getText().isEmpty() && tfBasket[i][5].getText().isEmpty()) || (!tfBasket[i][1].getText().isEmpty() && !tfBasket[i][2].getText().isEmpty() && !tfBasket[i][3].getText().isEmpty() && !tfBasket[i][4].getText().isEmpty() && !tfBasket[i][5].getText().isEmpty())) {
+
+                    } else {
+
+                       alertMessage.setText("You have some unfilled rows");
+                       return false;
+
+                   }
+                }
+            }
+        }
+        return true;
     }
 
 }
