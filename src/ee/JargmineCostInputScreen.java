@@ -32,6 +32,7 @@ public class JargmineCostInputScreen {
     Text alertMessage = new Text();
     TextField tfBuyer, tfStore, tfPurchaseAmount;
     DatePicker dpDate;
+    Databases db = new Databases();
 
 
     int fullRows;
@@ -86,7 +87,6 @@ public class JargmineCostInputScreen {
         header.add(tfStore,1,1);
         header.add(dpDate,2,1);
 
-
         header.add(alertMessage, 0, 2); //Koht, kuhu saab hakata kasutajale veateateid kuvama
 
         Label totalAmount = new Label("Total amount");
@@ -102,12 +102,13 @@ public class JargmineCostInputScreen {
         btnSaveAndExit.setOnAction(event -> {
             checkInsertionCorrectness();
             System.out.println("Kontrolli tulemus on: " +checkInsertionCorrectness());
-
-
-
         });
 
         header.add(btnSaveAndExit,3,2);
+
+        Text purchaseNr = new Text("Purchase nr.: " + db.getNextPurchaseNr());
+        header.add(purchaseNr,4,1);
+
 
         purchase.getChildren().add(header);
     }
@@ -238,14 +239,12 @@ public class JargmineCostInputScreen {
                 alertMessage.setFill(Color.RED);
                 return false;
             } else {
-                for (int i = 0; i < rowCounter+1; i++) { //SElle lohe asemel v6iks midagi normaalset olla
+                for (int i = 0; i < rowCounter+1; i++) { //Selle lohe asemel v6iks midagi normaalset olla
                    if( (tfBasket[i][1].getText().isEmpty() && tfBasket[i][2].getText().isEmpty() && tfBasket[i][3].getText().isEmpty() && tfBasket[i][4].getText().isEmpty() && tfBasket[i][5].getText().isEmpty()) || (!tfBasket[i][1].getText().isEmpty() && !tfBasket[i][2].getText().isEmpty() && !tfBasket[i][3].getText().isEmpty() && !tfBasket[i][4].getText().isEmpty() && !tfBasket[i][5].getText().isEmpty())) {
 
                     } else {
-
                        alertMessage.setText("You have some unfilled rows");
                        return false;
-
                    }
                 }
             }

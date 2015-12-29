@@ -94,8 +94,10 @@ public class LoginScreen {
         katseNupp = new Button("Katsetus");
         katseNupp.setOnAction(event -> {
             Databases db = new Databases();
-            BigDecimal amount = db.calculateBuyerAmount("Avo");
-            System.out.println(amount.toString());
+            String vastus = db.getNextPurchaseNr();
+            System.out.println(vastus);
+            db.closeConnection();
+
         });
 
         test = new Button("Test: db user output");
@@ -121,6 +123,7 @@ public class LoginScreen {
         layoutMain.add(alertMessage,1,4);
         layoutMain.add(ifUserNotExist,0,10);
         layoutMain.add(buttonAddUser,1,10);
+        layoutMain.add(katseNupp,1,11); //2ra kustutada hiljem
 
         screenMain.setScene(sceneMain);
         screenMain.show();

@@ -11,10 +11,12 @@ public class Databases { //Kasutatud Kristeri sql alust
     Connection conn;
 
     public Databases() {
-        createConnection();
-        createUsersTable();
-        createPurchaseTable(); //tundub nagu mõttetu luua kasutaja juures ostutabelit ja vastupidi
-        createBuyersTable();
+        createConnection(); //tundub mõttetu luua kasutaja juures ostutabelit ja vastupidi
+        createUsersTable(); //Kasutajate tabel koos paroolide, nime jms-ga
+        createBuyersTable(); //Ostjate tabel: ostja != alati kasutaja
+        createItemsTable(); //Kaupade tabel
+        createPurchaseTable(); //Ostude tabel, ehk kes-kus-millal j2rgmisega yhendatav ostu numbri, ehk purchasenr kaudu
+        createPurchaseBasketTable(); //Osturidade tabel, ehk mida-kui palju-mis hinnaga
     }
 
     private void createConnection() { //Loob ühenduse andmebaasiga
@@ -22,34 +24,42 @@ public class Databases { //Kasutatud Kristeri sql alust
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection("jdbc:sqlite:budgetplanner.db");
             System.out.println("DB opened");
-        } catch (ClassNotFoundException e) { //Kas peaks muid erroreid ka p��dma?
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-
-    //K6ik tabelid uuesti luua Collate nocase'na
-    //http://stackoverflow.com/questions/973541/how-to-set-sqlite3-to-be-case-insensitive-when-string-comparing
+    //Collate nocase defineerimine, et ei tekiks uusi ridu, kui kasutaja kogemata valesti sisestab: http://stackoverflow.com/questions/973541/how-to-set-sqlite3-to-be-case-insensitive-when-string-comparing
 
     private void createUsersTable() { //Tekitab kasutajate tabeli kui seda veel ei ole
-        String sql = "CREATE TABLE IF NOT EXISTS USERS (ID INT PRIMARY KEY AUTOINCREMENT, USERNAME TEXT, PASSWORD TEXT, FIRSTNAME TEXT, LASTNAME TEXT);";
+        String sql = "CREATE TABLE IF NOT EXISTS USERS (USERNAME TEXT COLLATE NOCASE, PASSWORD TEXT, FIRSTNAME TEXT COLLATE NOCASE, LASTNAME TEXT COLLATE NOCASE);";
+        saveDB(sql);
+    }
+
+    private void createBuyersTable() { //Tekitab ostjate tabeli kui seda veel ei ole
+        String sql = "CREATE TABLE IF NOT EXISTS BUYERS (BUYER TEXT COLLATE NOCASE);";
+        saveDB(sql);
+    }
+
+    private void createItemsTable() { //Tekitab esemete tabeli kui seda veel ei ole
+        String sql = "CREATE TABLE IF NOT EXISTS ITEMS (ITEM TEXT COLLATE NOCASE, CATEGORY TEXT COLLATE NOCASE);";
         saveDB(sql);
     }
 
     private void createPurchaseTable() { //Tekitab ostude tabeli kui seda veel ei ole
-        String sql = "CREATE TABLE IF NOT EXISTS PURCHASE (BUYER TEXT, DATE TEXT, STORE TEXT, PURCHASEROWID INTEGER, ITEM TEXT, COSTGROUP TEXT, QUANTITY REAL, PRICE REAL);";
+        String sql = "CREATE TABLE IF NOT EXISTS PURCHASES (PURCHASENR INTEGER, BUYER TEXT COLLATE NOCASE, DATE TEXT, STORE TEXT COLLATE NOCASE, AMOUNT REAL);";
         saveDB(sql);
     }
 
-    private void createBuyersTable() { //Tekitab ostude tabeli kui seda veel ei ole
-        String sql = "CREATE TABLE IF NOT EXISTS BUYERS (BUYER TEXT);";
+    private void createPurchaseBasketTable() { //Tekitab osturidade tabeli kui seda veel ei ole
+        String sql = "CREATE TABLE IF NOT EXISTS BASKETS (PURCHASENR INTEGER, PURCHASEROWID INTEGER, ITEM TEXT COLLATE NOCASE, CATEGORY TEXT COLLATE NOCASE, QUANTITY REAL, ROWAMOUNT REAL);";
         saveDB(sql);
     }
 
 
-    private void saveDB(String sql) { //sellise tegemise loogika p�rineb Krister V. sql n�itest. salvestab andmebaasi
+    private void saveDB(String sql) { //sellise tegemise loogika p2rineb Krister V. sql n2itest. salvestab andmebaasi
         try {
             Statement stat = conn.createStatement();
             stat.executeUpdate(sql);
@@ -59,7 +69,7 @@ public class Databases { //Kasutatud Kristeri sql alust
         }
     }
 
-    public void registerUser(String userName, String password, String firstName, String lastName) { //sisestab kasutaja kirje andmebaasi tabelisse
+    public void registerUser(String userName, String password, String firstName, String lastName) { //sisestab kasutaja kirje kasutaja tabelisse
         AlertScreens as = new AlertScreens();
         String sql = "INSERT INTO USERS (USERNAME, PASSWORD, FIRSTNAME, LASTNAME) VALUES('"+userName+"','"+password+"','"+firstName+"','"+lastName+"')";
         saveDB(sql);
@@ -71,6 +81,21 @@ public class Databases { //Kasutatud Kristeri sql alust
         saveDB(sql);
     }
 
+    public String getNextPurchaseNr() { //Leiab, mitmes on j2rgmine ost j2rjekorras
+        try {
+            Statement stat = conn.createStatement();
+            String sql = "SELECT MAX (purchasenr) FROM PURCHASES;";
+            ResultSet rs = stat.executeQuery(sql);
+            int nr = rs.getRow()+1;
+            rs.close();
+            conn.close();
+            return Integer.toString(nr);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public void registerBuyer(String buyer) {
         if(!checkBuyerExistance(buyer)) {
             String sql = "INSERT INTO BUYERS (BUYER) VALUES('"+buyer+"')";
@@ -78,7 +103,7 @@ public class Databases { //Kasutatud Kristeri sql alust
         }
     }
 
-    public boolean checkUserExistance(String username) { //kontrollib, kas kasutaja on olemas (registreerimisel)
+    public boolean checkUserExistance(String username) { //Kontrollib, kas kasutaja on olemas
         try {
             System.out.println(username);
             Statement stat = conn.createStatement();
@@ -96,7 +121,8 @@ public class Databases { //Kasutatud Kristeri sql alust
         }
         return false;
     }
-    public boolean checkPassword(String username, String password) { //Kui selline kasutaja on üldse olemas, siis kontrollib, kas parool sisselogimisel on õige
+
+    public boolean checkPassword(String username, String password) { //Kui kasutaja on olemas, siis kontrollib, kas parool sisselogimisel/kasutaja kustutamisel on õige
         if(checkUserExistance(username)) {
             try {
                 Statement stat = conn.createStatement();
@@ -124,7 +150,7 @@ public class Databases { //Kasutatud Kristeri sql alust
         }
     }
 
-    public boolean checkBuyerExistance(String buyer) { //kontrollib, kas kasutaja on olemas (registreerimisel)
+    public boolean checkBuyerExistance(String buyer) { //Kontrollib, kas kasutaja on olemas
         try {
             System.out.println(buyer);
             Statement stat = conn.createStatement();
@@ -141,33 +167,6 @@ public class Databases { //Kasutatud Kristeri sql alust
             e.printStackTrace();
         }
         return false;
-    }
-
-    public ArrayList createBuyersList () {
-        ArrayList buyersList = new ArrayList();
-        int numberOfBuyers = 0;
-        String buyer;
-        try {
-            Statement stat = conn.createStatement();
-            ResultSet rs = stat.executeQuery("SELECT * FROM BUYERS;");
-            while (rs.next()) { //boolean
-                 numberOfBuyers = numberOfBuyers+1;
-            }
-            for (int i = 0; i < numberOfBuyers; i++) {
-                while(rs.next()) {
-                    buyer = rs.getString("BUYER");
-                    buyersList.add(i,buyer);
-                }
-            }
-
-            rs.close();
-            stat.close();
-            conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return buyersList;
     }
 
     public BigDecimal calculateBuyerAmount(String buyer) {
@@ -268,10 +267,10 @@ public class Databases { //Kasutatud Kristeri sql alust
     public void closeConnection() { //sulgeb baasi ühenduse
         try {
             conn.close();
+            System.out.println("DB closed");
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("DB closed");
     }
 
     public void checkPurchase() {
