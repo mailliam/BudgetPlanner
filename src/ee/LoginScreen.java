@@ -93,9 +93,7 @@ public class LoginScreen {
 
         katseNupp = new Button("Katsetus");
         katseNupp.setOnAction(event -> {
-            Databases db = new Databases();
-            BigDecimal amount = db.calculateBuyerAmount("Avo");
-            System.out.println(amount.toString());
+
         });
 
         test = new Button("Test: db user output");
@@ -121,6 +119,7 @@ public class LoginScreen {
         layoutMain.add(alertMessage,1,4);
         layoutMain.add(ifUserNotExist,0,10);
         layoutMain.add(buttonAddUser,1,10);
+        layoutMain.add(katseNupp,1,11); //2ra kustutada hiljem
 
         screenMain.setScene(sceneMain);
         screenMain.show();
@@ -128,7 +127,7 @@ public class LoginScreen {
 
 
 
-    //Kui parool on �ige, siis viska programmi aken lahti. Lisaks paroolile on vaja kontrolli, kui sisestatakse vale kasutajanimi, hetkel viskab errorisse
+    //Kui parool on 6ige, siis viska programmi aken lahti.
     private void toProgram() {
         String s1 = fieldUsername.getText();
         String s2 = fieldPassword.getText();
