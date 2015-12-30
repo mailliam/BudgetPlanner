@@ -30,12 +30,10 @@ public class JargmineCostInputScreen {
     ScrollPane basket;
     TextField[][] tfBasket, tfBasketNew;
     Text alertMessage = new Text();
+
     TextField tfBuyer, tfStore, tfPurchaseAmount;
     DatePicker dpDate;
-    Databases db = new Databases();
-
-
-    int fullRows;
+    //On see halb siin kirjeldada?
 
 
     public JargmineCostInputScreen () {
@@ -61,6 +59,7 @@ public class JargmineCostInputScreen {
     }
 
     private void purchaseHeader() {
+
         GridPane header = new GridPane();
         header.setHgap(5);
         header.setVgap(5);
@@ -100,14 +99,10 @@ public class JargmineCostInputScreen {
 
         Button btnSaveAndExit = new Button ("Save and finish");
         btnSaveAndExit.setOnAction(event -> {
-            checkInsertionCorrectness();
-            System.out.println("Kontrolli tulemus on: " +checkInsertionCorrectness());
+            savePurchaseToDB();
         });
 
         header.add(btnSaveAndExit,3,2);
-
-        Text purchaseNr = new Text("Purchase nr.: " + db.getNextPurchaseNr());
-        header.add(purchaseNr,4,1);
 
 
         purchase.getChildren().add(header);
@@ -226,7 +221,6 @@ public class JargmineCostInputScreen {
 
     private boolean checkInsertionCorrectness () {
 
-
         if(tfBuyer.getText().isEmpty() || tfStore.getText().isEmpty() || dpDate.getValue() == null) { //Kui kuup2ev pole valitud, siis == null: http://code.makery.ch/blog/javafx-8-date-picker/
             alertMessage.setText("Buyer, store and date must be selected");
             alertMessage.setFill(Color.RED);
@@ -240,16 +234,44 @@ public class JargmineCostInputScreen {
                 return false;
             } else {
                 for (int i = 0; i < rowCounter+1; i++) { //Selle lohe asemel v6iks midagi normaalset olla
-                   if( (tfBasket[i][1].getText().isEmpty() && tfBasket[i][2].getText().isEmpty() && tfBasket[i][3].getText().isEmpty() && tfBasket[i][4].getText().isEmpty() && tfBasket[i][5].getText().isEmpty()) || (!tfBasket[i][1].getText().isEmpty() && !tfBasket[i][2].getText().isEmpty() && !tfBasket[i][3].getText().isEmpty() && !tfBasket[i][4].getText().isEmpty() && !tfBasket[i][5].getText().isEmpty())) {
+                    if( (tfBasket[i][1].getText().isEmpty() && tfBasket[i][2].getText().isEmpty() && tfBasket[i][3].getText().isEmpty() && tfBasket[i][4].getText().isEmpty() && tfBasket[i][5].getText().isEmpty()) || (!tfBasket[i][1].getText().isEmpty() && !tfBasket[i][2].getText().isEmpty() && !tfBasket[i][3].getText().isEmpty() && !tfBasket[i][4].getText().isEmpty() && !tfBasket[i][5].getText().isEmpty())) {
 
                     } else {
-                       alertMessage.setText("You have some unfilled rows");
-                       return false;
-                   }
+                        alertMessage.setText("You have some unfilled rows");
+                        return false;
+                    }
                 }
             }
         }
         return true;
+    }
+
+    private void savePurchaseToDB() {
+
+        if (checkInsertionCorrectness()) { //Kui kontroll on andnud 6ige tulemuse
+
+            for (int i = 0; i < rowCounter + 1; i++) { //Kordab seda tsyklit niikaua, kuni on k2idud l2bi k6ik t2idetud read.
+                if  (!tfBasket[i][1].getText().isEmpty() && !tfBasket[i][2].getText().isEmpty() && !tfBasket[i][3].getText().isEmpty() && !tfBasket[i][4].getText().isEmpty() && !tfBasket[i][5].getText().isEmpty()) {
+                    Databases db = new Databases(); //Tundub kahtlane tsyklis connectionit avada
+
+                    String buyer = tfBuyer.getText();
+                    String date = dpDate.getValue().toString();
+                    String store = tfStore.getText();
+
+
+                    int basketRowNr = Integer.parseInt(tfBasket[i][0].getText());
+                    String item = tfBasket[i][1].getText();
+                    String category = tfBasket[i][2].getText();
+                    BigDecimal quantity = new BigDecimal(tfBasket[i][3].getText());
+                    BigDecimal basketRowAmount = new BigDecimal(tfBasket[i][5].getText());
+
+                    db.registerBuyer(buyer); //registreerib ostjate listi (vajalik p2ringu dropdown jaoks)
+                    db.savePurchaseBasket(basketRowNr, buyer, date, store, item, category, quantity, basketRowAmount);
+                    db.registerItem(item, category);
+                    db.closeConnection();
+                }
+            }
+        }
     }
 
 }

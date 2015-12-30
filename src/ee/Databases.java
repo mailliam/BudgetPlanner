@@ -15,7 +15,6 @@ public class Databases { //Kasutatud Kristeri sql alust
         createUsersTable(); //Kasutajate tabel koos paroolide, nime jms-ga
         createBuyersTable(); //Ostjate tabel: ostja != alati kasutaja
         createItemsTable(); //Kaupade tabel
-        createPurchaseTable(); //Ostude tabel, ehk kes-kus-millal j2rgmisega yhendatav ostu numbri, ehk purchasenr kaudu
         createPurchaseBasketTable(); //Osturidade tabel, ehk mida-kui palju-mis hinnaga
     }
 
@@ -48,16 +47,10 @@ public class Databases { //Kasutatud Kristeri sql alust
         saveDB(sql);
     }
 
-    private void createPurchaseTable() { //Tekitab ostude tabeli kui seda veel ei ole
-        String sql = "CREATE TABLE IF NOT EXISTS PURCHASES (PURCHASENR INTEGER, BUYER TEXT COLLATE NOCASE, DATE TEXT, STORE TEXT COLLATE NOCASE, AMOUNT REAL);";
-        saveDB(sql);
-    }
-
     private void createPurchaseBasketTable() { //Tekitab osturidade tabeli kui seda veel ei ole
-        String sql = "CREATE TABLE IF NOT EXISTS BASKETS (PURCHASENR INTEGER, PURCHASEROWID INTEGER, ITEM TEXT COLLATE NOCASE, CATEGORY TEXT COLLATE NOCASE, QUANTITY REAL, ROWAMOUNT REAL);";
+        String sql = "CREATE TABLE IF NOT EXISTS BASKETS (PURCHASEROWID INTEGER, BUYER TEXT COLLATE NOCASE, DATE TEXT, STORE TEXT COLLATE NOCASE, ITEM TEXT COLLATE NOCASE, CATEGORY TEXT COLLATE NOCASE, QUANTITY REAL, ROWAMOUNT REAL);";
         saveDB(sql);
     }
-
 
     private void saveDB(String sql) { //sellise tegemise loogika p2rineb Krister V. sql n2itest. salvestab andmebaasi
         try {
@@ -76,29 +69,22 @@ public class Databases { //Kasutatud Kristeri sql alust
         as.userRegistered();
     }
 
-    public void savePurchase(String buyer, String date, String store, int purchaseRowID, String item, String costGroup, BigDecimal quantity, BigDecimal price) {
-        String sql = "INSERT INTO PURCHASE (BUYER, DATE, STORE, PURCHASEROWID, ITEM, COSTGROUP, QUANTITY, PRICE) VALUES('"+buyer+"','"+date+"','"+store+"','"+purchaseRowID+"','"+item+"','"+costGroup+"','"+quantity+"','"+price+"')";
-        saveDB(sql);
-    }
 
-    public String getNextPurchaseNr() { //Leiab, mitmes on j2rgmine ost j2rjekorras
-        try {
-            Statement stat = conn.createStatement();
-            String sql = "SELECT MAX (purchasenr) FROM PURCHASES;";
-            ResultSet rs = stat.executeQuery(sql);
-            int nr = rs.getRow()+1;
-            rs.close();
-            conn.close();
-            return Integer.toString(nr);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public void savePurchaseBasket(int basketRowNr, String buyer, String date, String store, String item, String category, BigDecimal quantity, BigDecimal amount) {
+        String sql = "INSERT INTO BASKETS (PURCHASEROWID, BUYER, DATE, STORE, ITEM, CATEGORY, QUANTITY, ROWAMOUNT) VALUES('"+basketRowNr+"','"+buyer+"','"+date+"','"+store+"','"+item+"','"+category+"','"+quantity+"','"+amount+"')";
+        saveDB(sql);
     }
 
     public void registerBuyer(String buyer) {
         if(!checkBuyerExistance(buyer)) {
             String sql = "INSERT INTO BUYERS (BUYER) VALUES('"+buyer+"')";
+            saveDB(sql);
+        }
+    }
+
+    public void registerItem(String item, String category) {
+        if(!checkItemExistance(item)) {
+            String sql = "INSERT INTO ITEMS (ITEM, CATEGORY) VALUES('"+item+"','"+category+"')";
             saveDB(sql);
         }
     }
@@ -169,6 +155,25 @@ public class Databases { //Kasutatud Kristeri sql alust
         return false;
     }
 
+    public boolean checkItemExistance(String item) { //Kontrollib, kas kasutaja on olemas
+        try {
+            System.out.println(item);
+            Statement stat = conn.createStatement();
+            String sql = "SELECT EXISTS(SELECT 1 FROM ITEMS WHERE ITEM = '"+item+"'); ";
+            ResultSet rs = stat.executeQuery(sql);
+            Boolean dbItemExists = rs.getBoolean(1);
+            System.out.println(dbItemExists);
+
+            rs.close();
+            stat.close();
+            return dbItemExists;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public BigDecimal calculateBuyerAmount(String buyer) {
         BigDecimal amount = new BigDecimal(0);
 
@@ -188,7 +193,7 @@ public class Databases { //Kasutatud Kristeri sql alust
         return amount;
     }
 
-    public BigDecimal calculateCostgroupAmount(String costgroup, String buyer) {
+    public BigDecimal calculateCostgroupAmount(String costgroup, String buyer) { //Hetkel kasutu
         BigDecimal amount = new BigDecimal(0);
 
         try {
@@ -207,7 +212,7 @@ public class Databases { //Kasutatud Kristeri sql alust
         return amount;
     }
 
-    public ArrayList<BigDecimal> calculateCostgroupAmountByBuyers(String costgroup) {
+    public ArrayList<BigDecimal> calculateCostgroupAmountByBuyers(String costgroup) { //Hetkel kasutu
         ArrayList list = new ArrayList();
         BigDecimal amountAvo = new BigDecimal(0);
         BigDecimal amountMaila = new BigDecimal(0);
@@ -238,7 +243,6 @@ public class Databases { //Kasutatud Kristeri sql alust
         }
         return list;
     }
-
 
     public void checkUser() { //see kood p�rineb http://www.tutorialspoint.com/sqlite/sqlite_java.htm
         //Katsetan, kas registreeritud tegelased eksisteerivad, see jupp on ainult testi jaoks
