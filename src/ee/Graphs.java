@@ -15,30 +15,27 @@ public class Graphs {
 
     Databases db = new Databases();
 
+
+
     public Graphs() { //Graafikute joonistamise jaoks
     }
 
-    public Node amountByBuyers() {
+    //Allj2rgneva loomisel sain abi:
+    //http://www.java2s.com/Tutorials/Java/javafx.scene.chart/PieChart/0040__PieChart.PieChart_.htm
+    //http://docs.oracle.com/javase/8/javafx/user-interface-tutorial/pie-chart.htm#CIHFDADD
+
+
+
+    public PieChart amountByBuyers() {
+        PieChart chart = new PieChart();
         ArrayList buyersList = db.getBuyerList();
-        PieChart chart;
-        ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
-
+        ObservableList<PieChart.Data> data = FXCollections.observableArrayList();
         for (int i = 0; i < buyersList.size(); i++) {
-
             String buyer = buyersList.get(i).toString();
             double amount = (db.getBuyerAmount(buyersList.get(i).toString())).doubleValue();
-
-            System.out.println(buyer);
-            System.out.println(amount);
-
-            pieChartData = //http://docs.oracle.com/javase/8/javafx/user-interface-tutorial/pie-chart.htm#CIHFDADD
-                    FXCollections.observableArrayList(
-                            new PieChart.Data(buyer,amount));
-            
-
+            data.addAll(new PieChart.Data(buyer,amount));
+            chart.setData(data);
         }
-        chart = new PieChart(pieChartData);
-        chart.setTitle("Amount by buyers");
         return chart;
     }
 }
