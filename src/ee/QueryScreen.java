@@ -82,7 +82,7 @@ public class QueryScreen {
         System.out.println(buyer);
         db = new Databases();
         if(!buyer.isEmpty() && category.isEmpty()) {
-            BigDecimal amount = db.calculateBuyerAmount(buyer);
+            BigDecimal amount = db.getBuyerAmount(buyer);
             Text b = new Text(buyer);
             Text a = new Text(amount.toString());
             queryResult.add(b,1,1);

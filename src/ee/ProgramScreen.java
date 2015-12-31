@@ -5,7 +5,6 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 /**
@@ -14,70 +13,81 @@ import javafx.stage.Stage;
 public class ProgramScreen {
     //Siia tuleb see aken, kust saab valida, kas tahad kulusid sisestada v�i p�ringuid teha
     Stage programScreen = new Stage();
-    int sceneHeight = 200;
-    int sceneWidth = 400;
+    BorderPane bp;
+    int sceneHeight = 700;
+    int sceneWidth = 700;
     int buttonWidth_1 = 100;
     Button input, query, logout, deleteUser;
+
     public ProgramScreen() {
         setupScene();
-        toCostInputScreen();
-        toQueryScreen();
-        deleteAccount();
-        logoutUser();
+        programButtons();
+        showGraph();
     }
 
     private void setupScene() {
-        programScreen.setTitle("Saidki edukalt sisse logitud!");
+        programScreen.setTitle("Program");
         programScreen.setOnCloseRequest(event -> programScreen.close());
-        BorderPane bp = new BorderPane();
+        bp = new BorderPane();
         Scene sc = new Scene(bp,sceneWidth,sceneHeight);
-        Text text = new Text ("Siit saabki hakata sisestama");
-        bp.setTop(text);
-        VBox v = new VBox();
-        input = new Button("Data input");
-        input.setPrefWidth(buttonWidth_1);
-        query = new Button("Queries");
-        query.setPrefWidth(buttonWidth_1);
-        v.getChildren().addAll(input,query);
-        HBox h = new HBox();
-        logout = new Button("Log out");
-
-        deleteUser = new Button("Delete user account");
-
-        h.getChildren().addAll(logout,deleteUser);
-        bp.setLeft(v);
-        bp.setBottom(h);
         programScreen.setScene(sc);
         programScreen.show();
     }
 
+    private void programButtons() {
+
+        VBox v = new VBox();
+
+        input = new Button("Data input");
+        input.setPrefWidth(buttonWidth_1);
+        input.setOnAction(event -> toCostInputScreen());
+
+        query = new Button("Queries");
+        query.setPrefWidth(buttonWidth_1);
+        query.setOnAction(event -> toQueryScreen());
+
+        v.getChildren().addAll(input,query);
+        bp.setLeft(v);
+
+        HBox h = new HBox();
+
+        logout = new Button("Log out");
+        logout.setOnAction(event -> logoutUser());
+
+        deleteUser = new Button("Delete user account");
+        deleteUser.setOnAction(event -> deleteAccount());
+
+        h.getChildren().addAll(logout,deleteUser);
+
+        bp.setBottom(h);
+    }
+
+    private void showGraph() {
+        Graphs graphs = new Graphs();
+        graphs.amountByBuyers();
+        bp.setCenter(graphs.amountByBuyers());
+    }
+
 
     private void toCostInputScreen() {
-        input.setOnAction(event -> {
-            programScreen.close();
-            new JargmineCostInputScreen();
-        });
+        programScreen.close();
+        new CostInputScreen();
     }
 
     private void toQueryScreen() {
-        query.setOnAction(event -> {
-            programScreen.close();
-            new QueryScreen();
-        });
+        programScreen.close();
+        new QueryScreen();
     }
 
     private void logoutUser() {
-        logout.setOnAction(event -> {
-            programScreen.close();
-            new LoginScreen();
-        });
+        programScreen.close();
+        new LoginScreen();
     }
 
+
     private void deleteAccount() {
-        deleteUser.setOnAction(event -> {
-            programScreen.close();
-            new DeleteUserScreen();
-        });
+        programScreen.close();
+        new DeleteUserScreen();
     }
 
 }

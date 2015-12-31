@@ -91,8 +91,11 @@ public class LoginScreen {
             new RegisterScreen();
         });
 
-        katseNupp = new Button("Katsetus");
+        katseNupp = new Button("katse");
         katseNupp.setOnAction(event -> {
+            Databases db = new Databases();
+            //db.checkPurchase();
+            System.out.println(db.getBuyerList());
 
         });
 

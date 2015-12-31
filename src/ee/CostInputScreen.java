@@ -1,190 +1,285 @@
 package ee;
 
-import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.text.SimpleDateFormat;
+import java.time.chrono.ChronoLocalDate;
+import java.util.Date;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.Calendar;
 
 /**
- * Created by Maila on 19/12/2015.
+ * Created by Maila on 27/12/2015.
  */
 public class CostInputScreen {
-
     Stage costInputScreen;
-    GridPane purchaseTotal;
-    Scene sc;
-    int sceneHeight = 1000;
-    int sceneWidth = 600;
-    int width = sceneWidth/6;
-    int rowCounter=0;
-    TextField fieldBuyer, fieldStore;
-    DatePicker fieldDate;
-    TextField[] basketFields;
-    GridPane basket = new GridPane();
-    Button save;
-    int fullRows;
+    int sceneHeight = 700;
+    int sceneWidth = 700;
+    VBox purchase;
+    int rowCounter = 0; //vajalik esimeseks loomiseks ära väärtustada
+    GridPane basketLabels, basketFields;
+    ScrollPane basket;
+    TextField[][] tfBasket, tfBasketNew;
+    Text alertMessage = new Text();
+
+    TextField tfBuyer, tfStore, tfPurchaseAmount;
+    DatePicker dpDate;
+    //On see halb siin kirjeldada?
 
 
     public CostInputScreen() {
-        setupScene();
-        purchaseHeaderLabels();
-        purchaseHeaderFields();
-        purchaseBasket();
-
+        setupScene(); //Loob stseeni ostu jaoks
+        purchaseHeader(); //Loob ostu p2ise
+        purchaseBasketLabels(); //Loob ostukorvi pealkirjad ja teeb ettevalmistuse ostukorvi esimese rea lisamiseks
+        purchaseBasketFields(); //Loob ostukorvi esimese rea
     }
 
-
     private void setupScene() {
-        purchaseTotal = new GridPane();
         costInputScreen = new Stage();
-        costInputScreen.setTitle("Cost Input");
+        costInputScreen.setTitle("Cost input");
+        purchase = new VBox();
+        purchase.setStyle("-fx-background-color: #00F00F");
+        Scene sc = new Scene(purchase, sceneWidth, sceneHeight);
+        costInputScreen.setScene(sc);
+        costInputScreen.show();
 
         costInputScreen.setOnCloseRequest(event -> {
             costInputScreen.close();
             new ProgramScreen();
         });
-
-        sc = new Scene(purchaseTotal, sceneWidth, sceneHeight);
-        costInputScreen.setScene(sc);
-        costInputScreen.show();
-        purchaseTotal.add(basket,1,3);
-
     }
 
-    private void purchaseHeaderLabels() {
-        HBox h = new HBox();
-        Label[] headerLabels = new Label[3];
-        for (int i = 0; i < 3; i++) {
-            headerLabels[i] = new Label();
-            headerLabels[i].setPrefWidth(width);
-            h.getChildren().add(headerLabels[i]);
-        }
-        headerLabels[0].setText("Buyer");
-        headerLabels[1].setText("Store");
-        headerLabels[2].setText("Date");
+    private void purchaseHeader() {
 
-        purchaseTotal.add(h,1,1);
+        GridPane header = new GridPane();
+        header.setHgap(5);
+        header.setVgap(5);
+        header.setPadding(new Insets(10,10,10,10));
 
-    }
+        ColumnConstraints column = new ColumnConstraints();
+        column.setPrefWidth(sceneWidth/6.5);
 
-    private void purchaseHeaderFields() {
-        save = new Button("Save purchase");
-        save.setPrefWidth(2*width);
-        save.setOnAction(event -> {
-            checkFilledRowsCount();
-            //savePurchaseToDB();
-            costInputScreen.close();
-            new ProgramScreen();
+        ColumnConstraints column3 = new ColumnConstraints();
+        column3.setPrefWidth(sceneWidth/5.5);
+        header.getColumnConstraints().addAll(column, column, column3);
+
+        Label l1 = new Label ("Buyer");
+        Label l2 = new Label ("Store");
+        Label l3 = new Label ("Date");
+        header.add(l1,0,0);
+        header.add(l2,1,0);
+        header.add(l3,2,0);
+
+        tfBuyer = new TextField();
+        tfStore = new TextField();
+        dpDate = new DatePicker();
+        header.add(tfBuyer,0,1);
+        header.add(tfStore,1,1);
+        header.add(dpDate,2,1);
+
+        header.add(alertMessage, 0, 2); //Koht, kuhu saab hakata kasutajale veateateid kuvama
+
+        Label totalAmount = new Label("Total amount");
+        header.add(totalAmount,3,0);
+
+        tfPurchaseAmount = new TextField();
+        tfPurchaseAmount.setEditable(false);
+        tfPurchaseAmount.setStyle("-fx-background-color: #DADBDE");
+
+        header.add(tfPurchaseAmount,3,1);
+
+        Button btnSaveAndExit = new Button ("Save and finish");
+        btnSaveAndExit.setOnAction(event -> {
+            savePurchaseToDB();
         });
 
-        HBox h = new HBox();
+        header.add(btnSaveAndExit,3,2);
 
-        fieldBuyer = new TextField();
-        fieldBuyer.setPrefWidth(width);
-        fieldStore = new TextField();
-        fieldStore.setPrefWidth(width);
-
-        fieldDate = new DatePicker(); //https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/DatePicker.html
-
-        fieldDate.setPrefWidth(width + 50); //kuupäev ei mahu muidu ära
-        h.getChildren().addAll(fieldBuyer, fieldStore, fieldDate,save);
-        purchaseTotal.add(h,1,2);
+        purchase.getChildren().add(header);
     }
 
-    private void purchaseBasket() {
+    private void purchaseBasketLabels() {
+        basketLabels = new GridPane();
+        basketLabels.setHgap(5);
+        basketLabels.setVgap(5);
+        basketLabels.setPadding(new Insets(10, 10, 10, 10));
+        Label[] label = new Label[6];
 
-        Label[] basketLabels = new Label[6];
         for (int i = 0; i < 6; i++) {
-            basketLabels[i] = new Label();
-            basketLabels[i].setPrefWidth(width);
-            basket.add(basketLabels[i],i,1);
+            label[i] = new Label();
+            basketLabels.add(label[i], i, 0);
+            label[i].setPrefWidth(sceneWidth/6.5);
         }
-        basketLabels[0].setText("Row nr.");
-        basketLabels[1].setText("Item");
-        basketLabels[2].setText("Costgroup");
-        basketLabels[3].setText("Quantity");
-        basketLabels[4].setText("Price");
-        basketLabels[5].setText("Sum");
+        label[0].setText("Row nr");
+        label[1].setText("Item");
+        label[2].setText("Category");
+        label[3].setText("Quantity");
+        label[4].setText("Price");
+        label[5].setText("Amount");
+        purchase.getChildren().add(basketLabels);
 
-        purchaseBasketFields();
+        basketFields = new GridPane(); //Lisaks Labelitele lisab ka esimese osturea parameetrid, vastasel korral hakkasid tulema duplicate childreni veateated, sest sama asja lisati mitu korda.
+        basketFields.setHgap(5);
+        basketFields.setVgap(5);
+        basketFields.setPadding(new Insets(10, 10, 10, 10));
+        basket = new ScrollPane();
+        basket.setStyle("-fx-background: #00F00F");
+        purchase.getChildren().add(basket);
     }
-
 
     private void purchaseBasketFields() {
-        basketFields = new TextField[6];
+        tfBasket = new TextField[rowCounter+1][6]; //loob uue objekti igal korral, vanad sisestatud v22rtused kaovad sellega m2lust
 
-        for (int i = 0; i < 6; i++) { //Kuus tulpa
-            basketFields[i] = new TextField();
-            basketFields[0].setText(Integer.toString(rowCounter + 1)); //Esimene tulp on mittemuudetav ning seal kajastub alati konkreetse poeskäigu ostukorvi rea number
-            basketFields[0].setEditable(false); //kas seda ja eelmist rida yhe reana ei saa kuidagi kirjutada?
-
-            basket.add(basketFields[i], i, rowCounter + 2);
+        for (int i = rowCounter; i < rowCounter+1; i++) {
+            if(rowCounter > 0) {   // asendab loodud objekti tyhjad v22rtused kasutaja poolt eelnevalt sisestatuga kuni viimase reani (v2ljaarvatud).
+                for (int k = 0; k < rowCounter; k++) {
+                    for (int l = 0; l < 6; l++) {
+                        tfBasket[k][l] = tfBasketNew[k][l];
+                    }
+                }
+            }
+            for (int j = 0; j < 6; j++) {
+                tfBasket[i][j] = new TextField();
+                tfBasket[i][j].setPrefWidth(sceneWidth/7);
+                tfBasket[i][0].setText(Integer.toString(rowCounter+1));
+                tfBasket[i][0].setEditable(false);
+                basketFields.add(tfBasket[i][j], j, i);
+                basket.setContent(basketFields); //lisab ostukorvile, mis on ScrollPane, textFieldid
+            }
+            tfBasketNew = tfBasket; //kopeerib kasutaja poolt varasemalt sisestatud v22rtuste massiivi
         }
 
-        basket.getChildren().get(basket.getChildren().size()-5).setOnMouseClicked(new EventHandler<MouseEvent>() { //Annan igale loodud "Item" childile võime sellele klikkimisel tekitada uus rida. V6iks toimida nii hiire kui tabiga
-            //Basketi suurus esialgu 6 labelit + 6 textfieldi = 0-11 = 12 elementi. Antud v6ime peab tekkima "Item" tf-le, st element nr. 7, mille saan tehte 12 (basketi suurus koos labeitega) - 5 tulemusena.
-            @Override
-            public void handle(MouseEvent event) {
-                rowCounter++;
-                purchaseBasketFields();
-            }
+        tfBasket[rowCounter][4].setOnAction(event -> {
+            tfBasket[rowCounter][4].setOnAction(null);   //Yks vastustest: http://stackoverflow.com/questions/14927233/programmatically-remove-a-listener-added-using-fxml
+            rowCounter++;
+            purchaseBasketFields();
         });
 
-        basket.getChildren().get(basket.getChildren().size()-7).setOnMouseClicked(event -> {
+        tfBasket[rowCounter][3].textProperty().addListener((observable, oldValue, newValue) -> {
+            calculateRowAmount();
+        });
+
+        tfBasket[rowCounter][4].textProperty().addListener((observable, oldValue, newValue) -> {
             calculateRowAmount();
         });
 
     }
 
-    private void calculateRowAmount() { //Selleks hetkeks, kui kasutaja teoorias jõuab siiani, siis on basket size juba kuue v6rra suurem. vaja on elementi nr. 11, mis on 18-7
-        //Vaja on piirata, et kasutaja ei saaks teistel v2ljadel kl6psides seda tekitada
-        //Kontrollida, mitmendal real toimus muutus?
+    private void calculateRowAmount() { //Arvutab rea summa, korrutades hinna ja koguse
+        BigDecimal purchaseAmount = new BigDecimal(0);
+        for (int i = 0; i < rowCounter + 1; i++) {
 
+            if (!tfBasket[i][3].getText().isEmpty() && !tfBasket[i][4].getText().isEmpty()) { //Kontrollib, kas kasutaja on mõlemad arvutuseks vajalikud v22rtused on sisestatud
 
-        BigDecimal quantity = new BigDecimal(((TextField) basket.getChildren().get(basket.getChildren().size()-9)).getCharacters().toString());
-        BigDecimal price = new BigDecimal(((TextField) basket.getChildren().get(basket.getChildren().size()-8)).getCharacters().toString());
-        String sum = (quantity.multiply(price)).toString();
-        ((TextField) basket.getChildren().get(basket.getChildren().size()-7)).setText(sum);
-        ((TextField) basket.getChildren().get(basket.getChildren().size()-7)).setEditable(false);
+                for (int u = 0; u < tfBasket[i][3].getText().length(); u++) {  //Asendab vajadusel koguse puhul kasutaja sisestatud ',' '.'.ga
+                    String text = tfBasket[i][3].getText();
+                    char ch = text.charAt(u);
+                    if (ch == ',') {
+                        tfBasket[i][3].setText(text.replace(text.charAt(u),'.'));
+                    }
+                }
+
+                for (int u = 0; u < tfBasket[i][4].getText().length(); u++) {  //Asendab vajadusel hinna puhul kasutaja sisestatud ',' '.'.ga
+                    String text = tfBasket[i][4].getText();
+                    char ch = text.charAt(u);
+                    if (ch == ',') {
+                        tfBasket[i][4].setText(text.replace(text.charAt(u),'.'));
+                    }
+                }
+
+                try {
+                    BigDecimal quantity = new BigDecimal(tfBasket[i][3].getText());
+                    BigDecimal price = new BigDecimal(tfBasket[i][4].getText());
+                    BigDecimal amount = quantity.multiply(price);
+                    purchaseAmount = purchaseAmount.add(amount);
+                    tfBasket[i][5].setText(amount.toString());
+                    tfBasket[i][5].setEditable(false);
+                    tfBasket[i][3].setStyle(null);
+                    tfBasket[i][4].setStyle(null);
+                    alertMessage.setText(null); //Kui kasutaja tuleb selle peale, et enne parandamist sisestada uus rida, siis kaob vahepeal alert 2ra.
+                } catch (java.lang.NumberFormatException e) {
+                    alertMessage.setText("Quantity or price format is incorrect: must be number");
+                    alertMessage.setFill(Color.RED);
+                    tfBasket[i][3].setStyle("-fx-border-color: red ; -fx-border-width: 2px ;");
+                    tfBasket[i][4].setStyle("-fx-border-color: red ; -fx-border-width: 2px ;");
+                }
+            }
+        }
+        tfPurchaseAmount.setText(purchaseAmount.toString());
+
     }
 
+    private boolean checkInsertionCorrectness () {
 
-    private void checkFilledRowsCount() {
-        fullRows = 0;
-        int koht = 7;
-        String itemCheck;
-        itemCheck = ((TextField) basket.getChildren().get(koht)).getCharacters().toString();
+        if(tfBuyer.getText().isEmpty() || tfStore.getText().isEmpty() || dpDate.getValue() == null) { //Kui kuup2ev pole valitud, siis == null: http://code.makery.ch/blog/javafx-8-date-picker/
+            alertMessage.setText("Buyer, store and date must be selected");
+            alertMessage.setFill(Color.RED);
+            return false;
+        } else {
+            LocalDate today = LocalDate.now(); //http://www.java2s.com/Tutorials/Java/java.time/LocalDate/index.htm
+            if(dpDate.getValue().isAfter(today)) {
+                alertMessage.setText(null);
+                alertMessage.setText("Purchase date can not be in the future");
+                alertMessage.setFill(Color.RED);
+                return false;
+            } else {
+                for (int i = 0; i < rowCounter+1; i++) { //Selle lohe asemel v6iks midagi normaalset olla
+                    if( (tfBasket[i][1].getText().isEmpty() && tfBasket[i][2].getText().isEmpty() && tfBasket[i][3]
+                            .getText().isEmpty() && tfBasket[i][4].getText().isEmpty() && tfBasket[i][5].getText()
+                            .isEmpty()) || (!tfBasket[i][1].getText().isEmpty() && !tfBasket[i][2].getText().isEmpty()
+                            && !tfBasket[i][3].getText().isEmpty() && !tfBasket[i][4].getText().isEmpty() &&
+                            !tfBasket[i][5].getText().isEmpty())) {
 
-        while (itemCheck.length()!=0) { //kontrollib, mitu rida on kasutaja üldse ära t2itnud
-            koht = koht+6;
-            itemCheck = ((TextField) basket.getChildren().get(koht)).getCharacters().toString();
-            fullRows++;
+                    } else {
+                        alertMessage.setText("You have some unfilled rows");
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private void savePurchaseToDB() {
+
+        if (checkInsertionCorrectness()) { //Kui kontroll on andnud 6ige tulemuse
+
+            for (int i = 0; i < rowCounter + 1; i++) { //Kordab seda tsyklit niikaua, kuni on k2idud l2bi k6ik t2idetud read.
+                if  (!tfBasket[i][1].getText().isEmpty() && !tfBasket[i][2].getText().isEmpty() && !tfBasket[i][3]
+                        .getText().isEmpty() && !tfBasket[i][4].getText().isEmpty() && !tfBasket[i][5].getText()
+                        .isEmpty()) {
+                    Databases db = new Databases(); //Tundub kahtlane tsyklis connectionit avada
+
+                    String buyer = tfBuyer.getText();
+                    String date = dpDate.getValue().toString();
+                    String store = tfStore.getText();
+
+
+                    int basketRowNr = Integer.parseInt(tfBasket[i][0].getText());
+                    String item = tfBasket[i][1].getText();
+                    String category = tfBasket[i][2].getText();
+                    BigDecimal quantity = new BigDecimal(tfBasket[i][3].getText());
+                    BigDecimal basketRowAmount = new BigDecimal(tfBasket[i][5].getText());
+
+                    db.registerBuyer(buyer); //registreerib ostjate listi (vajalik p2ringu dropdown jaoks)
+                    db.savePurchaseBasket(basketRowNr, buyer, date, store, item, category, quantity, basketRowAmount);
+                    db.registerItem(item, category);
+                    db.closeConnection();
+                }
+            }
+            costInputScreen.close();
+            new ProgramScreen();
         }
     }
 
-    //private void savePurchaseToDB() {
-    //    for (int i = 6; i <((fullRows+1)*6); i=i+6) { //Hulk try-catche tuleb siia juurde kirjutada //Kordab seda tsyklit niikaua, kuni on k2idud l2bi k6ik t2idetud read. +1 kujutab endast esimest labelite rida
-    //
-    //          String buyer = fieldBuyer.getText();
-    //        String date = fieldDate.getValue().toString();
-    //      String store = fieldStore.getText();
-    //    String item = ((TextField) basket.getChildren().get(i+1)).getCharacters().toString();
-    //  String costGroup = ((TextField) basket.getChildren().get(i+2)).getCharacters().toString();
-    //        BigDecimal quantity = new BigDecimal(((TextField) basket.getChildren().get(i + 3)).getCharacters().toString());
-    //        BigDecimal price = new BigDecimal(((TextField) basket.getChildren().get(i + 4)).getCharacters().toString());
-    //        Databases dbPurchase = new Databases();
-    //        dbPurchase.savePurchase(buyer,date,store,i/6,item,costGroup,quantity,price);
-    //        dbPurchase.registerBuyer(buyer); //registreerib ostjate listi (vajalik p2ringu dropdown jaoks)
-    //        dbPurchase.closeConnection();
-    //    }
-    //  }
 }
-

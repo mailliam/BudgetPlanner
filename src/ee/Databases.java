@@ -48,7 +48,9 @@ public class Databases { //Kasutatud Kristeri sql alust
     }
 
     private void createPurchaseBasketTable() { //Tekitab osturidade tabeli kui seda veel ei ole
-        String sql = "CREATE TABLE IF NOT EXISTS BASKETS (PURCHASEROWID INTEGER, BUYER TEXT COLLATE NOCASE, DATE TEXT, STORE TEXT COLLATE NOCASE, ITEM TEXT COLLATE NOCASE, CATEGORY TEXT COLLATE NOCASE, QUANTITY REAL, ROWAMOUNT REAL);";
+        String sql = "CREATE TABLE IF NOT EXISTS BASKETS (PURCHASEROWID INTEGER, BUYER TEXT COLLATE NOCASE, DATE TEXT, " +
+                "STORE TEXT COLLATE NOCASE, ITEM TEXT COLLATE NOCASE, CATEGORY TEXT COLLATE NOCASE, QUANTITY REAL, " +
+                "ROWAMOUNT REAL);";
         saveDB(sql);
     }
 
@@ -68,7 +70,6 @@ public class Databases { //Kasutatud Kristeri sql alust
         saveDB(sql);
         as.userRegistered();
     }
-
 
     public void savePurchaseBasket(int basketRowNr, String buyer, String date, String store, String item, String category, BigDecimal quantity, BigDecimal amount) {
         String sql = "INSERT INTO BASKETS (PURCHASEROWID, BUYER, DATE, STORE, ITEM, CATEGORY, QUANTITY, ROWAMOUNT) VALUES('"+basketRowNr+"','"+buyer+"','"+date+"','"+store+"','"+item+"','"+category+"','"+quantity+"','"+amount+"')";
@@ -174,23 +175,43 @@ public class Databases { //Kasutatud Kristeri sql alust
         return false;
     }
 
-    public BigDecimal calculateBuyerAmount(String buyer) {
-        BigDecimal amount = new BigDecimal(0);
+    public BigDecimal getBuyerAmount (String buyer) {
+        BigDecimal buyerAmount = new BigDecimal(0);
 
         try {
             Statement stat = conn.createStatement();
-            String sql = "SELECT QUANTITY, PRICE FROM PURCHASE WHERE BUYER = '"+buyer+"' COLLATE NOCASE;"; //Tegelikult tuleks luua uus tabel ja sinna panna collate nocase
+            String sql = "SELECT ROWAMOUNT FROM BASKETS WHERE BUYER = '"+buyer+"';";
             ResultSet rs = stat.executeQuery(sql);
             while (rs.next()) {
-                BigDecimal quantity = new BigDecimal(rs.getBigDecimal("QUANTITY").toString());
-                BigDecimal price = new BigDecimal(rs.getBigDecimal("PRICE").toString());
-                BigDecimal rowAmount = quantity.multiply(price);
-                amount = amount.add(rowAmount);
+                BigDecimal rowAmount = new BigDecimal(rs.getBigDecimal("ROWAMOUNT").toString());
+                buyerAmount = buyerAmount.add(rowAmount);
             }
+            rs.close();
+            stat.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return amount;
+        return buyerAmount;
+    }
+
+    public ArrayList getBuyerList() {
+        ArrayList buyerList = new ArrayList();
+
+        try {
+            Statement stat = conn.createStatement();
+            String sql = "SELECT BUYER FROM BUYERS";
+            ResultSet rs = stat.executeQuery(sql);
+            while(rs.next()) {
+                String buyer = rs.getString("BUYER");
+                buyerList.add(buyer);
+            }
+            rs.close();
+            stat.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return buyerList;
     }
 
     public BigDecimal calculateCostgroupAmount(String costgroup, String buyer) { //Hetkel kasutu
@@ -210,7 +231,7 @@ public class Databases { //Kasutatud Kristeri sql alust
             e.printStackTrace();
         }
         return amount;
-    }
+    } //Jama
 
     public ArrayList<BigDecimal> calculateCostgroupAmountByBuyers(String costgroup) { //Hetkel kasutu
         ArrayList list = new ArrayList();
@@ -242,7 +263,7 @@ public class Databases { //Kasutatud Kristeri sql alust
             e.printStackTrace();
         }
         return list;
-    }
+    } //Jama
 
     public void checkUser() { //see kood p�rineb http://www.tutorialspoint.com/sqlite/sqlite_java.htm
         //Katsetan, kas registreeritud tegelased eksisteerivad, see jupp on ainult testi jaoks
@@ -280,7 +301,7 @@ public class Databases { //Kasutatud Kristeri sql alust
     public void checkPurchase() {
         try {
             Statement stat = conn.createStatement();
-            ResultSet rs = stat.executeQuery("SELECT * FROM PURCHASE;");
+            ResultSet rs = stat.executeQuery("SELECT * FROM BASKETS;");
             while (rs.next()) {
                 int id2 = rs.getRow();
                 int reanr = rs.getInt("purchaserowid");
@@ -288,8 +309,8 @@ public class Databases { //Kasutatud Kristeri sql alust
                 String ostja = rs.getString("buyer");
                 String date = rs.getString("date");
                 BigDecimal quantity = rs.getBigDecimal("quantity");
-                BigDecimal price = rs.getBigDecimal("price");
-                String costgroup = rs.getString("costgroup");
+
+                String costgroup = rs.getString("CATEGORY");
                 System.out.println("ID get row= " +id2);
                 System.out.println("ID get int= " +reanr);
                 System.out.println("Ese= " +item);
@@ -297,7 +318,7 @@ public class Databases { //Kasutatud Kristeri sql alust
                 System.out.println("Ostja= " +ostja);
                 System.out.println("Kuupev= "+date);
                 System.out.println("Kogus = "+quantity);
-                System.out.println("Hind =" +price);
+
                 System.out.println();
             }
             rs.close();
