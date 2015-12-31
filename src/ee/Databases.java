@@ -2,6 +2,7 @@ package ee;
 
 import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 /**
@@ -106,7 +107,7 @@ public class Databases { //Kasutatud Kristeri sql alust
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
+        return true; //true, et vea korral midagi ei registreeritaks
     }
 
     public boolean checkPassword(String username, String password) { //Kui kasutaja on olemas, siis kontrollib, kas parool sisselogimisel/kasutaja kustutamisel on õige
@@ -153,7 +154,7 @@ public class Databases { //Kasutatud Kristeri sql alust
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
+        return true;  //true, et vea korral midagi ei registreeritaks
     }
 
     public boolean checkItemExistance(String item) { //Kontrollib, kas kasutaja on olemas
@@ -172,7 +173,7 @@ public class Databases { //Kasutatud Kristeri sql alust
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
+        return true;  //true, et vea korral midagi ei registreeritaks
     }
 
     public BigDecimal getBuyerAmount (String buyer) {
@@ -194,7 +195,7 @@ public class Databases { //Kasutatud Kristeri sql alust
         return buyerAmount;
     }
 
-    public ArrayList getBuyerList() {
+    public ArrayList getBuyerList() { //Ostjate tabel on tegelikult m6ttetu ja v6iks samamoodi distinktiivselt selekteerida.
         ArrayList buyerList = new ArrayList();
 
         try {
@@ -212,6 +213,43 @@ public class Databases { //Kasutatud Kristeri sql alust
         }
 
         return buyerList;
+    }
+
+    public ArrayList getCategoryList() {
+        ArrayList categoryList = new ArrayList();
+
+        try {
+            Statement stat = conn.createStatement();
+            String sql = "SELECT DISTINCT CATEGORY FROM ITEMS"; //unikaalsete v22rtuste leidmine: http://stackoverflow.com/questions/4790162/sqlite-select-distinct-values-of-a-column-without-ordering
+            ResultSet rs = stat.executeQuery(sql);
+            while(rs.next()) {
+                String category = rs.getString("CATEGORY");
+                categoryList.add(category);
+            }
+            rs.close();
+            stat.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return categoryList;
+    }
+
+    public BigDecimal getPeriodAmount(LocalDate start, LocalDate end){
+        BigDecimal periodAmount = new BigDecimal(0);
+
+        try {
+            Statement stat = conn.createStatement();
+            String sql = "SELECT ROWAMOUNT FROM BASKETS WHERE DATE BETWEEN '"+start+"' and '"+end+"';";
+            ResultSet rs = stat.executeQuery(sql);
+            while(rs.next()) {
+                BigDecimal rowAmount = new BigDecimal(rs.getBigDecimal("ROWAMOUNT").toString());
+                periodAmount = periodAmount.add(rowAmount);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return periodAmount;
     }
 
     public BigDecimal calculateCostgroupAmount(String costgroup, String buyer) { //Hetkel kasutu

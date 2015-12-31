@@ -13,29 +13,32 @@ import java.util.ArrayList;
  */
 public class Graphs {
 
-    Databases db = new Databases();
 
 
+    public Graphs() { //P2ringute graafikute joonistamise jaoks
 
-    public Graphs() { //Graafikute joonistamise jaoks
     }
 
     //Allj2rgneva loomisel sain abi:
     //http://www.java2s.com/Tutorials/Java/javafx.scene.chart/PieChart/0040__PieChart.PieChart_.htm
     //http://docs.oracle.com/javase/8/javafx/user-interface-tutorial/pie-chart.htm#CIHFDADD
 
-
-
     public PieChart amountByBuyers() {
+
+        Databases db = new Databases();
         PieChart chart = new PieChart();
         ArrayList buyersList = db.getBuyerList();
+
         ObservableList<PieChart.Data> data = FXCollections.observableArrayList();
         for (int i = 0; i < buyersList.size(); i++) {
+
             String buyer = buyersList.get(i).toString();
             double amount = (db.getBuyerAmount(buyersList.get(i).toString())).doubleValue();
+
             data.addAll(new PieChart.Data(buyer,amount));
             chart.setData(data);
         }
+        db.closeConnection(); //Kui ma kasutan siin close connectionit ja db loomise teen klassi, siis ka see tekitab j2rgmise graafikuga probleeme?
         return chart;
     }
 }

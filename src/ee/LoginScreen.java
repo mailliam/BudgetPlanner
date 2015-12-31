@@ -94,8 +94,12 @@ public class LoginScreen {
         katseNupp = new Button("katse");
         katseNupp.setOnAction(event -> {
             Databases db = new Databases();
+            Tables tbl = new Tables();
             //db.checkPurchase();
-            System.out.println(db.getBuyerList());
+            //System.out.println(db.getBuyerList());
+            //tbl.amountLastMonthsByCategories();
+            System.out.println(db.getCategoryList().get(0));
+
 
         });
 

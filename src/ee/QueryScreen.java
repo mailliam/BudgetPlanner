@@ -15,6 +15,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 
@@ -27,6 +28,7 @@ public class QueryScreen {
     int sceneHeight = 600;
     int sceneWidth = 1000;
     ChoiceBox cbBuyer, cbCategory;
+    DatePicker dpPeriodStartDate, dpPeriodEndDate;
     Databases db;
 
 
@@ -52,9 +54,9 @@ public class QueryScreen {
     private void queryOptions() {
         VBox options = new VBox();
         Label sd = new Label("Period start date");
-        DatePicker pickPeriodStartDate = new DatePicker();
+        dpPeriodStartDate = new DatePicker();
         Label ed = new Label("Period end date");
-        DatePicker pickPeriodEndDate = new DatePicker();
+        dpPeriodEndDate = new DatePicker();
 
         Label b = new Label("Buyer");
         cbBuyer = new ChoiceBox(FXCollections.observableArrayList("Avo", "Maila", "")); //Tuleb automaatseks teha
@@ -67,7 +69,7 @@ public class QueryScreen {
             showQueryResult();
         });
 
-        options.getChildren().addAll(sd, pickPeriodStartDate, ed, pickPeriodEndDate, b, cbBuyer,c, cbCategory, executeQuery);
+        options.getChildren().addAll(sd, dpPeriodStartDate, ed, dpPeriodEndDate, b, cbBuyer,c, cbCategory, executeQuery);
         queries.setLeft(options);
     }
 
@@ -76,60 +78,17 @@ public class QueryScreen {
         queryResult.setHgap(5);
         queryResult.setPrefWidth(50);
 
-        String buyer = cbBuyer.getValue().toString();
-        String category = cbCategory.getValue().toString();
+        LocalDate startDate = dpPeriodStartDate.getValue();
+        LocalDate endDate = dpPeriodEndDate.getValue();
 
-        System.out.println(buyer);
         db = new Databases();
-        if(!buyer.isEmpty() && category.isEmpty()) {
-            BigDecimal amount = db.getBuyerAmount(buyer);
-            Text b = new Text(buyer);
-            Text a = new Text(amount.toString());
-            queryResult.add(b,1,1);
-            queryResult.add(a,2,1);
-            queries.setCenter(queryResult);
-            db.closeConnection();
-        }
-        if(!buyer.isEmpty() && !category.isEmpty()) {
-            BigDecimal amount = db.calculateCostgroupAmount(category, buyer);
-            Text c = new Text(category);
-            Text b = new Text(buyer);
-            Text a = new Text(amount.toString());
-            queryResult.add(c,1,1);
-            queryResult.add(b,2,1);
-            queryResult.add(a,3,1);
-            queries.setCenter(queryResult);
-            db.closeConnection();
-        }
-        if(buyer.isEmpty() && !category.isEmpty()) {
-            ArrayList amountList = db.calculateCostgroupAmountByBuyers(category);
-            Text c = new Text(category);
-            Text b1 = new Text("Avo");
-            Text a1 = new Text(amountList.get(0).toString());
-            Text b2 = new Text("Maila");
-            Text a2 = new Text(amountList.get(1).toString());
-
-            queryResult.add(c,1,1);
-            queryResult.add(b1,2,1);
-            queryResult.add(a1,3,1);
-            queryResult.add(b2,2,2);
-            queryResult.add(a2,3,2);
-            queries.setCenter(queryResult);
-            db.closeConnection();
-
-            ObservableList<PieChart.Data> pieChartData = //http://docs.oracle.com/javase/8/javafx/user-interface-tutorial/pie-chart.htm#CIHFDADD
-                    FXCollections.observableArrayList(
-                            new PieChart.Data("Avo", Double.parseDouble(amountList.get(0).toString())),
-                            new PieChart.Data("Maila", Double.parseDouble(amountList.get(1).toString())));
-            final PieChart chart = new PieChart(pieChartData);
-            chart.setTitle(category+" by buyers");
-            queryResult.add(chart, 3, 3);
+        Tables tbl = new Tables();
+        BigDecimal amount = db.getPeriodAmount(startDate, endDate);
+        queries.setCenter(tbl.amountLastMonthsByCategories());
+        System.out.println(amount);
+        db.closeConnection();
 
 
-        }
     }
 
-    private String buyerList() { //Otsi andmebaasist üles, kui palju on ostjaid
-        return null;
-    }
 }
