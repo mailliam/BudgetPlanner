@@ -159,6 +159,8 @@ public class CostInputScreen {
                 basketFields.add(tfBasket[i][j], j, i);
                 basket.setContent(basketFields); //lisab ostukorvile, mis on ScrollPane, textFieldid
             }
+            tfBasket[rowCounter][2].setEditable(false);
+            tfBasket[rowCounter][5].setEditable(false);
             tfBasketNew = tfBasket; //kopeerib kasutaja poolt varasemalt sisestatud v22rtuste massiivi
         }
 
@@ -167,6 +169,10 @@ public class CostInputScreen {
             rowCounter++;
             purchaseBasketFields();
         });
+
+        tfBasket[rowCounter][1].textProperty().addListener(((observable1, oldValue1, newValue1) ->{
+            getCategory();
+        }));
 
         tfBasket[rowCounter][3].textProperty().addListener((observable, oldValue, newValue) -> {
             calculateRowAmount();
@@ -177,6 +183,24 @@ public class CostInputScreen {
         });
 
     }
+
+    private void getCategory() {
+        Databases db = new Databases();
+
+        for (int i = 0; i < rowCounter + 1; i++) {
+            String item = tfBasket[rowCounter][1].getText();
+
+            String category = db.getCategoryForItem(item);
+            if (db.checkItemExistance(item)) {
+                tfBasket[rowCounter][2].setText(category);
+            } else {
+                tfBasket[i][2].setEditable(true);
+            }
+        }
+        db.closeConnection();
+    }
+
+
 
     private void calculateRowAmount() { //Arvutab rea summa, korrutades hinna ja koguse
         BigDecimal purchaseAmount = new BigDecimal(0);
@@ -206,7 +230,6 @@ public class CostInputScreen {
                     BigDecimal amount = quantity.multiply(price);
                     purchaseAmount = purchaseAmount.add(amount);
                     tfBasket[i][5].setText(amount.toString());
-                    tfBasket[i][5].setEditable(false);
                     tfBasket[i][3].setStyle(null);
                     tfBasket[i][4].setStyle(null);
                     alertMessage.setText(null); //Kui kasutaja tuleb selle peale, et enne parandamist sisestada uus rida, siis kaob vahepeal alert 2ra.

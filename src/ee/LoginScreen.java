@@ -99,7 +99,7 @@ public class LoginScreen {
             //db.checkPurchase();
             //System.out.println(db.getBuyerList());
             //tbl.amountLastMonthsByCategories();
-            System.out.println(db.getCategoryList().get(0));
+            tbl.kuup2evaKatsetus();
 
 
         });

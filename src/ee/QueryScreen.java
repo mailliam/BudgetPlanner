@@ -90,7 +90,7 @@ public class QueryScreen {
         BigDecimal amount = db.getPeriodAmount(startDate, endDate);
         queries.setCenter(tbl.amountLastMonthsByCategories());
         System.out.println(amount);
-        db.closeConnection();
+        //db.closeConnection();
 
 
     }

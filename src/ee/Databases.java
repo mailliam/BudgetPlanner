@@ -95,7 +95,7 @@ public class Databases { //Kasutatud Kristeri sql alust
         try {
             System.out.println(username);
             Statement stat = conn.createStatement();
-            String sql = "SELECT EXISTS(SELECT 1 FROM USERS WHERE USERNAME = '"+username+"'); ";
+            String sql = "SELECT EXISTS(SELECT 1 FROM USERS WHERE USERNAME = '"+username+"'); "; //http://stackoverflow.com/questions/9755860/valid-query-to-check-if-row-exists-in-sqlite3
             ResultSet rs = stat.executeQuery(sql);
             Boolean dbUsername = rs.getBoolean(1);
             System.out.println(dbUsername);
@@ -157,7 +157,7 @@ public class Databases { //Kasutatud Kristeri sql alust
         return true;  //true, et vea korral midagi ei registreeritaks
     }
 
-    public boolean checkItemExistance(String item) { //Kontrollib, kas kasutaja on olemas
+    public boolean checkItemExistance(String item) { //Kontrollib, kas ese on olemas
         try {
             System.out.println(item);
             Statement stat = conn.createStatement();
@@ -215,6 +215,26 @@ public class Databases { //Kasutatud Kristeri sql alust
         return buyerList;
     }
 
+    public String getCategoryForItem(String item) {
+        try {
+            if(checkItemExistance(item)) {
+                String category;
+                Statement stat = conn.createStatement();
+                String sql = "SELECT CATEGORY FROM ITEMS WHERE ITEM = '"+item+"';";
+                ResultSet rs = stat.executeQuery(sql);
+                category = rs.getString("CATEGORY");
+                rs.close();
+                stat.close();
+                return category;
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public ArrayList getCategoryList() {
         ArrayList categoryList = new ArrayList();
 
@@ -235,6 +255,24 @@ public class Databases { //Kasutatud Kristeri sql alust
         return categoryList;
     }
 
+    public BigDecimal getPeriodAmountByCategories(String category, LocalDate start, LocalDate end) {
+        BigDecimal amount = new BigDecimal(0);
+        try {
+            Statement stat = conn.createStatement();
+            String sql = "SELECT ROWAMOUNT FROM BASKETS WHERE CATEGORY = '"+category+"' AND DATE BETWEEN '"+start+"' and '"+end+"'; ";
+            ResultSet rs = stat.executeQuery(sql);
+            while (rs.next()) {
+                BigDecimal rowAmount = new BigDecimal(rs.getBigDecimal("ROWAMOUNT").toString());
+                amount = amount.add(rowAmount);
+            }
+            rs.close();
+            stat.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return amount;
+    }
+
     public BigDecimal getPeriodAmount(LocalDate start, LocalDate end){
         BigDecimal periodAmount = new BigDecimal(0);
 
@@ -246,6 +284,8 @@ public class Databases { //Kasutatud Kristeri sql alust
                 BigDecimal rowAmount = new BigDecimal(rs.getBigDecimal("ROWAMOUNT").toString());
                 periodAmount = periodAmount.add(rowAmount);
             }
+            rs.close();
+            stat.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -296,6 +336,7 @@ public class Databases { //Kasutatud Kristeri sql alust
                 amountMaila = amountMaila.add(rowAmount);
                 list.add(1,amountMaila);
             }
+
 
         } catch (SQLException e) {
             e.printStackTrace();
