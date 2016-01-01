@@ -1,5 +1,6 @@
 package ee;
 
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
@@ -30,6 +31,10 @@ public class ProgramScreen {
         programScreen.setOnCloseRequest(event -> programScreen.close());
         bp = new BorderPane();
         Scene sc = new Scene(bp,sceneWidth,sceneHeight);
+        sc.getStylesheets().add(getClass().getResource("css/test.css").toExternalForm());
+        //http://stackoverflow.com/questions/16236641/javafx-add-dynamically-css-files,
+        //http://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#introscenegraph
+
         programScreen.setScene(sc);
         programScreen.show();
     }
@@ -37,6 +42,8 @@ public class ProgramScreen {
     private void programButtons() {
 
         VBox v = new VBox();
+        v.setSpacing(5);
+        v.setPadding(new Insets(5,5,5,5));
 
         input = new Button("Data input");
         input.setPrefWidth(buttonWidth_1);
@@ -50,6 +57,8 @@ public class ProgramScreen {
         bp.setLeft(v);
 
         HBox h = new HBox();
+        h.setSpacing(5);
+        h.setPadding(new Insets(5,5,5,5));
 
         logout = new Button("Log out");
         logout.setOnAction(event -> logoutUser());

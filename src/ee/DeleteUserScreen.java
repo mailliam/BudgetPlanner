@@ -38,6 +38,10 @@ public class DeleteUserScreen {
         delete = new Button ("Delete user");
         v.getChildren().addAll(labelUN,fieldUsername,labelPW,fieldPassword,delete);
         Scene sc = new Scene(v);
+        sc.getStylesheets().add(getClass().getResource("css/test.css").toExternalForm());
+        //http://stackoverflow.com/questions/16236641/javafx-add-dynamically-css-files,
+        //http://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#introscenegraph
+
         deleteUserScreen.setScene(sc);
         deleteUserScreen.show();
     }

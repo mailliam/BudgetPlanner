@@ -28,7 +28,7 @@ public class LoginScreen {
     Button buttonLogin, buttonAddUser;
     Button test, test2, katseNupp;
     int sceneHeight = 600;
-    int sceneWidth = 600;
+    int sceneWidth = 800;
     int buttonWidth = sceneWidth/3;
     Text alertMessage;
 
@@ -45,7 +45,7 @@ public class LoginScreen {
         layoutMain.setAlignment(Pos.TOP_CENTER);
         layoutMain.setVgap(5);
         layoutMain.setHgap(10);
-        layoutMain.setStyle("-fx-background-color: #42C7F7");
+
 
         ColumnConstraints column1 = new ColumnConstraints(); //http://docs.oracle.com/javafx/2/layout/size_align.htm
         column1.setHalignment(HPos.RIGHT);
@@ -57,15 +57,16 @@ public class LoginScreen {
         layoutMain.getColumnConstraints().add(column2);
 
         Scene sceneMain = new Scene(layoutMain,sceneWidth,sceneHeight);
+        sceneMain.getStylesheets().add(getClass().getResource("css/test.css").toExternalForm());
+        //http://stackoverflow.com/questions/16236641/javafx-add-dynamically-css-files,
+        //http://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#introscenegraph
 
         screenMain.setTitle("Main window");
 
         screenMain.setOnCloseRequest(event -> screenMain.close());
 
-        //Kujundus normaalseks teha. nt lahtrite pikkused, asetused jms
-        Text programTitle = new Text("Eriti Vinge Programm");
-        programTitle.setFont(Font.font("Arial", 20));
-        programTitle.setFill(Color.MEDIUMVIOLETRED);
+        Text programTitle = new Text("Family's cost tracker");
+        programTitle.setId("Header");
 
         Label unLabel = new Label("Username");
         unLabel.setAlignment(Pos.CENTER_RIGHT);

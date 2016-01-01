@@ -36,6 +36,10 @@ public class RegisterScreen {
         layout.setHgap(10);
         layout.setVgap(5);
         Scene scene = new Scene(layout, sceneWidth, sceneHeight);
+        scene.getStylesheets().add(getClass().getResource("css/test.css").toExternalForm());
+        //http://stackoverflow.com/questions/16236641/javafx-add-dynamically-css-files,
+        //http://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#introscenegraph
+
 
         registerScreen.setTitle("User registration");
         Label un = new Label("Username");

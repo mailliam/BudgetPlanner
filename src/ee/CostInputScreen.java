@@ -48,8 +48,12 @@ public class CostInputScreen {
         costInputScreen = new Stage();
         costInputScreen.setTitle("Cost input");
         purchase = new VBox();
-        purchase.setStyle("-fx-background-color: #00F00F");
+
         Scene sc = new Scene(purchase, sceneWidth, sceneHeight);
+        sc.getStylesheets().add(getClass().getResource("css/test.css").toExternalForm());
+        //http://stackoverflow.com/questions/16236641/javafx-add-dynamically-css-files,
+        //http://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#introscenegraph
+
         costInputScreen.setScene(sc);
         costInputScreen.show();
 
@@ -133,7 +137,6 @@ public class CostInputScreen {
         basketFields.setVgap(5);
         basketFields.setPadding(new Insets(10, 10, 10, 10));
         basket = new ScrollPane();
-        basket.setStyle("-fx-background: #00F00F");
         purchase.getChildren().add(basket);
     }
 
@@ -207,7 +210,7 @@ public class CostInputScreen {
                     tfBasket[i][3].setStyle(null);
                     tfBasket[i][4].setStyle(null);
                     alertMessage.setText(null); //Kui kasutaja tuleb selle peale, et enne parandamist sisestada uus rida, siis kaob vahepeal alert 2ra.
-                } catch (java.lang.NumberFormatException e) {
+                } catch (java.lang.NumberFormatException e) { //Kontroll, kas numbri lahtrisse on sisestatud number
                     alertMessage.setText("Quantity or price format is incorrect: must be number");
                     alertMessage.setFill(Color.RED);
                     tfBasket[i][3].setStyle("-fx-border-color: red ; -fx-border-width: 2px ;");
@@ -241,7 +244,7 @@ public class CostInputScreen {
                             !tfBasket[i][5].getText().isEmpty())) {
 
                     } else {
-                        alertMessage.setText("You have some unfilled rows");
+                        alertMessage.setText("You have uncompleted rows");
                         return false;
                     }
                 }

@@ -1,0 +1,34 @@
+/* 
+    Document   : Style1
+*/
+
+.root{
+    -fx-font-size: 15pt;
+    -fx-font-family: Calibri Light;
+    -fx-background-color: #9ABEE3;
+}
+
+.button{
+    -fx-text-fill: #C9DAEC;
+    -fx-background-color: #446C96;
+    -fx-border-radius: 10;
+
+}
+
+.text{
+    -fx-text-fill: #2B5581;
+}
+
+#Header {
+    -fx-font: bold italic 28pt "Calibri Light";
+    
+}
+
+.label{
+    -fx-text-fill: #E5EDF5;
+}
+
+.text-field{
+    -fx-text-fill: #2B5581;
+    -fx-background-color: #C9DAEC;
+}
