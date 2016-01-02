@@ -39,3 +39,29 @@
 .date-picker-popup > .month-year-pane {
     -fx-background-color: #2B5581;
 }
+
+.menu-bar {
+    -fx-background-color: linear-gradient(to bottom, #446C96, #9ABEE3);
+}
+
+.menu-bar > .container > .menu-button:hover {
+    -fx-background-color: #446C96;
+}
+
+.menu-item >.label {
+    -fx-text-fill: -fx-text-base-color;
+}
+
+.menu-item:hover {
+    -fx-background-color: #C9DAEC;
+}
+
+
+
+
+
+
+
+
+
+

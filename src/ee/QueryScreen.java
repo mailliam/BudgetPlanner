@@ -47,7 +47,7 @@ public class QueryScreen {
             new ProgramScreen();
         });
         Scene sc = new Scene(queries, sceneWidth, sceneHeight);
-        sc.getStylesheets().add(getClass().getResource("css/test.css").toExternalForm());
+        sc.getStylesheets().add(getClass().getResource("css/main.css").toExternalForm());
         //http://stackoverflow.com/questions/16236641/javafx-add-dynamically-css-files,
         //http://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#introscenegraph
 

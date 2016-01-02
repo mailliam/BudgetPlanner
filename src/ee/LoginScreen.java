@@ -57,7 +57,7 @@ public class LoginScreen {
         layoutMain.getColumnConstraints().add(column2);
 
         Scene sceneMain = new Scene(layoutMain,sceneWidth,sceneHeight);
-        sceneMain.getStylesheets().add(getClass().getResource("css/test.css").toExternalForm());
+        sceneMain.getStylesheets().add(getClass().getResource("css/main.css").toExternalForm());
         //http://stackoverflow.com/questions/16236641/javafx-add-dynamically-css-files,
         //http://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#introscenegraph
 

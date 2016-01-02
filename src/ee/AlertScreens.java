@@ -25,7 +25,7 @@ public class AlertScreens {  //Erinevad teavitusaknad
 
         StackPane sp = new StackPane();
         Scene sc = new Scene(sp,sceneWidth,sceneHeight);
-        sc.getStylesheets().add(getClass().getResource("css/test.css").toExternalForm());
+        sc.getStylesheets().add(getClass().getResource("css/main.css").toExternalForm());
         //http://stackoverflow.com/questions/16236641/javafx-add-dynamically-css-files,
         //http://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#introscenegraph
 
@@ -47,7 +47,7 @@ public class AlertScreens {  //Erinevad teavitusaknad
     public void userAlreadyExists() { //Teavitus kui selline kasutaja on juba olemas
         StackPane sp = new StackPane();
         Scene sc = new Scene(sp,sceneWidth,sceneHeight);
-        sc.getStylesheets().add(getClass().getResource("css/test.css").toExternalForm());
+        sc.getStylesheets().add(getClass().getResource("css/main.css").toExternalForm());
         //http://stackoverflow.com/questions/16236641/javafx-add-dynamically-css-files,
         //http://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#introscenegraph
 
@@ -68,7 +68,7 @@ public class AlertScreens {  //Erinevad teavitusaknad
     public void passwordIncorrect() { //Teavitus vale parooli sisestamisest
         StackPane sp = new StackPane();
         Scene sc = new Scene (sp, sceneWidth,sceneHeight);
-        sc.getStylesheets().add(getClass().getResource("css/test.css").toExternalForm());
+        sc.getStylesheets().add(getClass().getResource("css/main.css").toExternalForm());
         //http://stackoverflow.com/questions/16236641/javafx-add-dynamically-css-files,
         //http://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#introscenegraph
         Text message = new Text ("Incorrect fieldPassword. If you have forgotten your fieldPassword then try to remember it");

@@ -1,5 +1,6 @@
 package ee;
 
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -33,10 +34,11 @@ public class RegisterScreen {
 
     private void setupScene() { //Registreerimisakna seadistus
         TilePane layout = new TilePane();
+        layout.setPadding(new Insets(15,10,0,0));
         layout.setHgap(10);
         layout.setVgap(5);
         Scene scene = new Scene(layout, sceneWidth, sceneHeight);
-        scene.getStylesheets().add(getClass().getResource("css/test.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("css/main.css").toExternalForm());
         //http://stackoverflow.com/questions/16236641/javafx-add-dynamically-css-files,
         //http://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#introscenegraph
 
