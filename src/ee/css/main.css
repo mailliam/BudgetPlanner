@@ -56,8 +56,9 @@
     -fx-background-color: #C9DAEC;
 }
 
-
-
+.titled-pane > *.content {
+    -fx-border-color: #2B5581;
+}
 
 
 

@@ -3,8 +3,14 @@ package ee;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
+import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
@@ -22,6 +28,7 @@ public class Graphs {
     //Allj2rgneva loomisel sain abi:
     //http://www.java2s.com/Tutorials/Java/javafx.scene.chart/PieChart/0040__PieChart.PieChart_.htm
     //http://docs.oracle.com/javase/8/javafx/user-interface-tutorial/pie-chart.htm#CIHFDADD
+    //http://docs.oracle.com/javase/8/javafx/user-interface-tutorial/line-chart.htm#CIHGBCFI
 
     public PieChart amountByBuyers() {
 
@@ -41,5 +48,7 @@ public class Graphs {
         db.closeConnection(); //Kui ma kasutan siin close connectionit ja db loomise teen klassi, siis ka see tekitab j2rgmise graafikuga probleeme?
         return chart;
     }
+
+
 }
 

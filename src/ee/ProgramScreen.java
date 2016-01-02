@@ -1,14 +1,14 @@
 package ee;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 /**
@@ -18,8 +18,11 @@ public class ProgramScreen {
     //Siia tuleb see aken, kust saab valida, kas tahad kulusid sisestada v�i p�ringuid teha
     Stage programScreen = new Stage();
     BorderPane bp;
-    int sceneHeight = 700;
-    int sceneWidth = 700;
+    int sceneHeight = 1000;
+    int sceneWidth = 1000;
+    RadioMenuItem view3, view6, view12;
+    VBox v;
+    Tables table;
 
     public ProgramScreen() {
         setupScene();
@@ -66,20 +69,42 @@ public class ProgramScreen {
         MenuItem categories = new MenuItem("Categories");
         settingsMenu.getItems().add(categories);
 
+        Menu viewMenu = new Menu ("_View");
+        ToggleGroup viewPeriod = new ToggleGroup();
+        view3 = new RadioMenuItem("View last 3 months");
+        view6 = new RadioMenuItem("View last 6 months");
+        view6.setSelected(true);
+        view12 = new RadioMenuItem("View last 12 months");
+
+        view3.setToggleGroup(viewPeriod);
+        view6.setToggleGroup(viewPeriod);
+        view12.setToggleGroup(viewPeriod);
+        view12.setOnAction(event -> {
+            v.getChildren().remove(1);
+            changePeriod();
+        });
+
+        viewMenu.getItems().addAll(view3, view6, view12);
+
         MenuBar menuBar = new MenuBar();
-        menuBar.getMenus().addAll(fileMenu, settingsMenu);
+        menuBar.getMenus().addAll(fileMenu, settingsMenu, viewMenu);
 
         bp.setTop(menuBar);
     }
 
     private void showMainTableAndGraph() {
-        VBox v = new VBox();
+        v = new VBox();
         v.setPadding(new Insets(20,20,20,20));
         Graphs graph = new Graphs();
         graph.amountByBuyers();
-        Tables table = new Tables();
-        v.getChildren().addAll(table.amountLastMonthsByCategories(), graph.amountByBuyers());
+        table = new Tables();
+        Text heading = new Text("Costs in last 6 months by categories");
+        heading.setFont(Font.font("Calibri", 30));
+        v.getChildren().addAll(heading, table.amountLastMonthsByCategories(periodLength()), graph.amountByBuyers());
+
+        bp.setAlignment(v, Pos.CENTER);
         bp.setCenter(v);
+
     }
 
     private void toCostInputScreen() {
@@ -100,6 +125,25 @@ public class ProgramScreen {
     private void deleteAccount() {
         programScreen.close();
         new DeleteUserScreen();
+    }
+
+    private int periodLength() {
+        int months = 0;
+        if(view12.isSelected()){
+            months = 12;
+        }
+        if(view6.isSelected()){
+            months = 6;
+        }
+        if(view3.isSelected()){
+            months = 6;
+        }
+        return months;
+    }
+
+    private void changePeriod() {
+         v.getChildren().add(table.amountLastMonthsByCategories(periodLength()));
+
     }
 
 }

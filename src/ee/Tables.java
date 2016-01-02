@@ -1,6 +1,8 @@
 package ee;
 
+import javafx.geometry.HPos;
 import javafx.scene.control.Label;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -8,9 +10,11 @@ import javafx.scene.text.FontWeight;
 import java.time.LocalDate;
 import java.time.Month;
 
+import java.time.format.TextStyle;
 import java.time.temporal.ChronoField;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 
 /**
@@ -22,15 +26,24 @@ public class Tables { //P2ringu tabelite jaoks
 
     }
 
-    public GridPane amountLastMonthsByCategories() { //Arvutab kolme eelmise kuu ostud ja paneb need tabelisse (teoorias)
+    public GridPane amountLastMonthsByCategories(int numberOfMonths) { //Arvutab kolme eelmise kuu ostud ja paneb need tabelisse (teoorias)
         Databases db = new Databases();
         ArrayList categoryList = db.getCategoryList();
         GridPane table = new GridPane();
         table.setGridLinesVisible(true);
-        table.setHgap(2);
-        table.setVgap(2);
 
-        int numberOfMonths = 6; //Periood, mitu kuud tagasi vaadatakse
+        ColumnConstraints column1 = new ColumnConstraints(); //http://docs.oracle.com/javafx/2/layout/size_align.htm
+        column1.setHalignment(HPos.CENTER);
+        column1.setPrefWidth(150);
+
+        ColumnConstraints column2 = new ColumnConstraints(); //http://docs.oracle.com/javafx/2/layout/size_align.htm
+        column2.setHalignment(HPos.CENTER);
+        column2.setPrefWidth(100);
+        table.getColumnConstraints().addAll(column1, column2, column2, column2, column2, column2, column2);
+
+
+
+        //numberOfMonths = 6 //Periood, mitu kuud tagasi vaadatakse
 
         LocalDate today = LocalDate.now(); //http://www.java2s.com/Tutorials/Java/java.time/LocalDate/index.htm
         Month this_Month = today.getMonth(); //Kas kuup2evade jaoks v6iks ka eraldi klassi teha?
@@ -43,19 +56,20 @@ public class Tables { //P2ringu tabelite jaoks
 
         categories = new Label[categoryList.size()][1];
         months = new Label[1][numberOfMonths];
+
         amounts = new Label[categoryList.size()][numberOfMonths];
 
 
         for (int i = 0; i < categoryList.size(); i++) {
             categories[i][0] = new Label();
             categories[i][0].setText((categoryList.get(i)).toString());
-            categories[i][0].setFont(Font.font("Arial", FontWeight.BOLD, 12));
+            categories[i][0].setFont(Font.font("Arial", FontWeight.BOLD, 20));
             table.add(categories[i][0], 0, i+1);
         }
 
         for (int j = 0; j < numberOfMonths; j++) {
             months[0][j] = new Label();
-            months[0][j].setText((today.getMonth().minus(numberOfMonths-j-1)).toString());
+            months[0][j].setText((today.getMonth().minus(numberOfMonths-j-1)).getDisplayName(TextStyle.SHORT, Locale.ROOT));
             months[0][j].setFont(Font.font("Arial", FontWeight.BOLD, 20));
             table.add(months[0][j],j+1,0);
         }
@@ -96,14 +110,10 @@ public class Tables { //P2ringu tabelite jaoks
     public void kuup2evaKatsetus() {
         LocalDate today = LocalDate.now();
         int month = today.getMonthValue();
-        LocalDate prevMonth;
-        if (month > 2) {
-            prevMonth = today.withMonth(today.getMonthValue()-1);
-
-        } else {
-            prevMonth = today.withMonth(12-1).withYear(today.getYear()-1);
-        }
+        String prevMonth = today.getMonth().getDisplayName(TextStyle.SHORT, Locale.ROOT);
         System.out.println(prevMonth);
+
+
 
     }
 

@@ -94,10 +94,12 @@ public class LoginScreen {
         katseNupp.setOnAction(event -> {
             Databases db = new Databases();
             Tables tbl = new Tables();
+            Graphs gr = new Graphs();
             //db.checkPurchase();
             //System.out.println(db.getBuyerList());
             //tbl.amountLastMonthsByCategories();
             tbl.kuup2evaKatsetus();
+            //gr.amountLastMonthsByCategories();
 
 
         });
