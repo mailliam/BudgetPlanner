@@ -46,7 +46,6 @@ public class LoginScreen {
         layoutMain.setVgap(5);
         layoutMain.setHgap(10);
 
-
         ColumnConstraints column1 = new ColumnConstraints(); //http://docs.oracle.com/javafx/2/layout/size_align.htm
         column1.setHalignment(HPos.RIGHT);
         column1.setPrefWidth(200);
@@ -62,7 +61,6 @@ public class LoginScreen {
         //http://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#introscenegraph
 
         screenMain.setTitle("Main window");
-
         screenMain.setOnCloseRequest(event -> screenMain.close());
 
         Text programTitle = new Text("Family's cost tracker");

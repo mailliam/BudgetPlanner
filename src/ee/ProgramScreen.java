@@ -24,7 +24,7 @@ public class ProgramScreen {
     public ProgramScreen() {
         setupScene();
         programMenu();
-        showGraph();
+        showMainTableAndGraph();
     }
 
     private void setupScene() {
@@ -36,6 +36,7 @@ public class ProgramScreen {
         //CSS lisamiseks sain abi:
         //http://stackoverflow.com/questions/16236641/javafx-add-dynamically-css-files,
         //http://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#introscenegraph
+
 
         programScreen.setScene(sc);
         programScreen.show();
@@ -71,10 +72,14 @@ public class ProgramScreen {
         bp.setTop(menuBar);
     }
 
-    private void showGraph() {
-        Graphs graphs = new Graphs();
-        graphs.amountByBuyers();
-        bp.setCenter(graphs.amountByBuyers());
+    private void showMainTableAndGraph() {
+        VBox v = new VBox();
+        v.setPadding(new Insets(20,20,20,20));
+        Graphs graph = new Graphs();
+        graph.amountByBuyers();
+        Tables table = new Tables();
+        v.getChildren().addAll(table.amountLastMonthsByCategories(), graph.amountByBuyers());
+        bp.setCenter(v);
     }
 
     private void toCostInputScreen() {

@@ -58,23 +58,30 @@ public class Tables { //P2ringu tabelite jaoks
             months[0][j].setText((today.getMonth().minus(numberOfMonths-j-1)).toString());
             months[0][j].setFont(Font.font("Arial", FontWeight.BOLD, 20));
             table.add(months[0][j],j+1,0);
-
-
         }
 
         for (int i = 0; i < categoryList.size(); i++) {
+            int currentMonth = today.getMonthValue();
             for (int j = 0; j < numberOfMonths; j++) {
                 amounts[i][j] = new Label();
                 LocalDate startDate,endDate;
-                int currentMonth = today.getMonthValue();
 
-                if(currentMonth > numberOfMonths-1) {
-                    startDate = today.withMonth(today.getMonthValue()-(numberOfMonths-j)).withDayOfMonth(1);
-                    endDate = today.withMonth(today.getMonthValue()-(numberOfMonths-j)).withDayOfMonth(today.withMonth(today.getMonthValue()-(numberOfMonths-j)).lengthOfMonth());
+                if (currentMonth > (numberOfMonths-1) ) {
+                    int periodMonth = currentMonth-j;
+                    startDate = today.withMonth(periodMonth).withDayOfMonth(1);
+                    endDate = today.withMonth(periodMonth).withDayOfMonth(today.withMonth(periodMonth).lengthOfMonth());
 
                 } else {
-                    startDate = today.withYear(today.getYear()-1).withMonth(12-(numberOfMonths-j-2)).withDayOfMonth(1);
-                    endDate = today.withYear(today.getYear()-1).withMonth(12-(numberOfMonths-j-2)).withDayOfMonth(today.withYear(today.getYear()-1).withMonth(12-(numberOfMonths-j-2)).lengthOfMonth());
+                    if(j >= numberOfMonths-today.getMonthValue() ){
+                        int periodMonth = currentMonth-(numberOfMonths-j-1);
+                        startDate = today.withMonth(periodMonth).withDayOfMonth(1);
+                        endDate = today.withMonth(periodMonth).withDayOfMonth(today.withMonth(periodMonth).lengthOfMonth());
+
+                    } else {
+                        int periodMonth = 12 - (numberOfMonths-j-currentMonth-1);
+                        startDate = today.withYear(today.getYear()-1).withMonth(periodMonth).withDayOfMonth(1);
+                        endDate = today.withYear(today.getYear() - 1).withMonth(periodMonth).withDayOfMonth(today.withYear(today.getYear() - 1).withMonth(periodMonth).lengthOfMonth());
+                    }
                 }
 
                 String category = categoryList.get(i).toString();
