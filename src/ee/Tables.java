@@ -30,6 +30,8 @@ public class Tables { //P2ringu tabelite jaoks
         table.setHgap(2);
         table.setVgap(2);
 
+        int numberOfMonths = 6; //Periood, mitu kuud tagasi vaadatakse
+
         LocalDate today = LocalDate.now(); //http://www.java2s.com/Tutorials/Java/java.time/LocalDate/index.htm
         Month this_Month = today.getMonth(); //Kas kuup2evade jaoks v6iks ka eraldi klassi teha?
         Month prev_1_Month = today.getMonth().minus(1);
@@ -40,8 +42,8 @@ public class Tables { //P2ringu tabelite jaoks
         Label[][] months, categories, amounts;
 
         categories = new Label[categoryList.size()][1];
-        months = new Label[1][3];
-        amounts = new Label[categoryList.size()][3];
+        months = new Label[1][numberOfMonths];
+        amounts = new Label[categoryList.size()][numberOfMonths];
 
 
         for (int i = 0; i < categoryList.size(); i++) {
@@ -51,31 +53,33 @@ public class Tables { //P2ringu tabelite jaoks
             table.add(categories[i][0], 0, i+1);
         }
 
-        for (int j = 0; j < 3; j++) {
+        for (int j = 0; j < numberOfMonths; j++) {
             months[0][j] = new Label();
-            months[0][j].setText((today.getMonth().minus(j)).toString());
+            months[0][j].setText((today.getMonth().minus(numberOfMonths-j-1)).toString());
             months[0][j].setFont(Font.font("Arial", FontWeight.BOLD, 20));
             table.add(months[0][j],j+1,0);
+
+
         }
 
         for (int i = 0; i < categoryList.size(); i++) {
-            for (int j = 0; j < 3; j++) {
+            for (int j = 0; j < numberOfMonths; j++) {
                 amounts[i][j] = new Label();
                 LocalDate startDate,endDate;
                 int currentMonth = today.getMonthValue();
 
-                if(currentMonth > 2) {
-                    startDate = today.withMonth(today.getMonthValue()-j).withDayOfMonth(1);
-                    endDate = today.withMonth(today.getMonthValue()-j).withDayOfMonth(today.withMonth(today.getMonthValue()-j).lengthOfMonth());
+                if(currentMonth > numberOfMonths-1) {
+                    startDate = today.withMonth(today.getMonthValue()-(numberOfMonths-j)).withDayOfMonth(1);
+                    endDate = today.withMonth(today.getMonthValue()-(numberOfMonths-j)).withDayOfMonth(today.withMonth(today.getMonthValue()-(numberOfMonths-j)).lengthOfMonth());
 
                 } else {
-                    startDate = today.withYear(today.getYear()-1).withMonth(12-j).withDayOfMonth(1);
-                    endDate = today.withYear(today.getYear()-1).withMonth(12-j).withDayOfMonth(today.withYear(today.getYear()-1).withMonth(12-j).lengthOfMonth());
+                    startDate = today.withYear(today.getYear()-1).withMonth(12-(numberOfMonths-j-2)).withDayOfMonth(1);
+                    endDate = today.withYear(today.getYear()-1).withMonth(12-(numberOfMonths-j-2)).withDayOfMonth(today.withYear(today.getYear()-1).withMonth(12-(numberOfMonths-j-2)).lengthOfMonth());
                 }
 
                 String category = categoryList.get(i).toString();
                 amounts[i][j].setText(db.getPeriodAmountByCategories(category, startDate, endDate).toString());
-                table.add(amounts[i][j],j+2,i+2);
+                table.add(amounts[i][j],j+1,i+1);
             }
         }
         db.closeConnection();

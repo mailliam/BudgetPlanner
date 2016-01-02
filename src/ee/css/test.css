@@ -10,18 +10,20 @@
 
 .button{
     -fx-text-fill: #C9DAEC;
-    -fx-background-color: #446C96;
-    -fx-border-radius: 10;
-
+    -fx-background-color: linear-gradient(to bottom, #446C96, derive(#446C96,+30%));    
 }
+
+.button:hover{
+    -fx-background-color: linear-gradient(to top, #446C96, derive(#446C96,+30%)); 
+}
+
 
 .text{
     -fx-text-fill: #2B5581;
 }
 
 #Header {
-    -fx-font: bold italic 28pt "Calibri Light";
-    
+    -fx-font: bold italic 28pt "Calibri Light";    
 }
 
 .label{
@@ -31,4 +33,9 @@
 .text-field{
     -fx-text-fill: #2B5581;
     -fx-background-color: #C9DAEC;
+}
+
+
+.date-picker-popup > .month-year-pane {
+    -fx-background-color: #2B5581;
 }
