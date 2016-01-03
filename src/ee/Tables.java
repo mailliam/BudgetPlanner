@@ -32,16 +32,7 @@ public class Tables { //P2ringu tabelite jaoks
         GridPane table = new GridPane();
         table.setGridLinesVisible(true);
 
-        ColumnConstraints column1 = new ColumnConstraints(); //http://docs.oracle.com/javafx/2/layout/size_align.htm
-        column1.setHalignment(HPos.CENTER);
-        column1.setPrefWidth(150);
-
-        ColumnConstraints column2 = new ColumnConstraints(); //http://docs.oracle.com/javafx/2/layout/size_align.htm
-        column2.setHalignment(HPos.CENTER);
-        column2.setPrefWidth(100);
-        table.getColumnConstraints().addAll(column1, column2, column2, column2, column2, column2, column2);
-
-
+        ColumnConstraints[] column = new ColumnConstraints[numberOfMonths]; //http://docs.oracle.com/javafx/2/layout/size_align.htm
 
         //numberOfMonths = 6 //Periood, mitu kuud tagasi vaadatakse
 
@@ -59,7 +50,6 @@ public class Tables { //P2ringu tabelite jaoks
 
         amounts = new Label[categoryList.size()][numberOfMonths];
 
-
         for (int i = 0; i < categoryList.size(); i++) {
             categories[i][0] = new Label();
             categories[i][0].setText((categoryList.get(i)).toString());
@@ -69,9 +59,17 @@ public class Tables { //P2ringu tabelite jaoks
 
         for (int j = 0; j < numberOfMonths; j++) {
             months[0][j] = new Label();
+            column[j] = new ColumnConstraints();
             months[0][j].setText((today.getMonth().minus(numberOfMonths-j-1)).getDisplayName(TextStyle.SHORT, Locale.ROOT));
             months[0][j].setFont(Font.font("Arial", FontWeight.BOLD, 20));
             table.add(months[0][j],j+1,0);
+            if (j == 0) {
+                column[j].setPrefWidth(150);
+            } else {
+                column[j].setPrefWidth(100);
+            }
+
+            table.getColumnConstraints().addAll(column[j]);
         }
 
         for (int i = 0; i < categoryList.size(); i++) {

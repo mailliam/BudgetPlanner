@@ -21,8 +21,9 @@ public class ProgramScreen {
     int sceneHeight = 1000;
     int sceneWidth = 1000;
     RadioMenuItem view3, view6, view12;
-    VBox v;
-    Tables table;
+    Text heading;
+    int months;
+
 
     public ProgramScreen() {
         setupScene();
@@ -74,15 +75,12 @@ public class ProgramScreen {
         view3 = new RadioMenuItem("View last 3 months");
         view6 = new RadioMenuItem("View last 6 months");
         view6.setSelected(true);
+
         view12 = new RadioMenuItem("View last 12 months");
 
         view3.setToggleGroup(viewPeriod);
         view6.setToggleGroup(viewPeriod);
         view12.setToggleGroup(viewPeriod);
-        view12.setOnAction(event -> {
-            v.getChildren().remove(1);
-            changePeriod();
-        });
 
         viewMenu.getItems().addAll(view3, view6, view12);
 
@@ -93,17 +91,22 @@ public class ProgramScreen {
     }
 
     private void showMainTableAndGraph() {
-        v = new VBox();
+        VBox v = new VBox();
         v.setPadding(new Insets(20,20,20,20));
         Graphs graph = new Graphs();
-        graph.amountByBuyers();
-        table = new Tables();
-        Text heading = new Text("Costs in last 6 months by categories");
+        Tables table = new Tables();
+        months = periodLength();
+        heading = new Text("Costs in last " +months+ " months by categories");
         heading.setFont(Font.font("Calibri", 30));
         v.getChildren().addAll(heading, table.amountLastMonthsByCategories(periodLength()), graph.amountByBuyers());
 
         bp.setAlignment(v, Pos.CENTER);
         bp.setCenter(v);
+
+        view12.setOnAction(event -> {
+            v.getChildren().removeAll(heading, table.amountLastMonthsByCategories(periodLength()), graph.amountByBuyers());
+            showMainTableAndGraph();
+        });
 
     }
 
@@ -128,7 +131,7 @@ public class ProgramScreen {
     }
 
     private int periodLength() {
-        int months = 0;
+        months = 0;
         if(view12.isSelected()){
             months = 12;
         }
@@ -139,11 +142,6 @@ public class ProgramScreen {
             months = 6;
         }
         return months;
-    }
-
-    private void changePeriod() {
-         v.getChildren().add(table.amountLastMonthsByCategories(periodLength()));
-
     }
 
 }
