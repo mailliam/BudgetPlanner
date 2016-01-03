@@ -34,6 +34,7 @@ public class Tables { //P2ringu tabelite jaoks
 
         ColumnConstraints[] column = new ColumnConstraints[numberOfMonths]; //http://docs.oracle.com/javafx/2/layout/size_align.htm
 
+
         //numberOfMonths = 6 //Periood, mitu kuud tagasi vaadatakse
 
         LocalDate today = LocalDate.now(); //http://www.java2s.com/Tutorials/Java/java.time/LocalDate/index.htm
@@ -58,24 +59,23 @@ public class Tables { //P2ringu tabelite jaoks
         }
 
         for (int j = 0; j < numberOfMonths; j++) {
+            column[j] = new ColumnConstraints();
             months[0][j] = new Label();
             column[j] = new ColumnConstraints();
             months[0][j].setText((today.getMonth().minus(numberOfMonths-j-1)).getDisplayName(TextStyle.SHORT, Locale.ROOT));
             months[0][j].setFont(Font.font("Arial", FontWeight.BOLD, 20));
             table.add(months[0][j],j+1,0);
-            if (j == 0) {
-                column[j].setPrefWidth(150);
-            } else {
-                column[j].setPrefWidth(100);
-            }
+            column[j].setPrefWidth(100);
+            table.getColumnConstraints().add(j,column[j]);
 
-            table.getColumnConstraints().addAll(column[j]);
         }
 
         for (int i = 0; i < categoryList.size(); i++) {
             int currentMonth = today.getMonthValue();
             for (int j = 0; j < numberOfMonths; j++) {
+
                 amounts[i][j] = new Label();
+
                 LocalDate startDate,endDate;
 
                 if (currentMonth > (numberOfMonths-1) ) {
@@ -98,7 +98,8 @@ public class Tables { //P2ringu tabelite jaoks
 
                 String category = categoryList.get(i).toString();
                 amounts[i][j].setText(db.getPeriodAmountByCategories(category, startDate, endDate).toString());
-                table.add(amounts[i][j],j+1,i+1);
+                table.add(amounts[i][j], j + 1, i + 1);
+
             }
         }
         db.closeConnection();

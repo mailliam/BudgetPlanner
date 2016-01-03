@@ -23,6 +23,7 @@ public class ProgramScreen {
     RadioMenuItem view3, view6, view12;
     Text heading;
     int months;
+    ToggleGroup viewPeriod;
 
 
     public ProgramScreen() {
@@ -71,11 +72,10 @@ public class ProgramScreen {
         settingsMenu.getItems().add(categories);
 
         Menu viewMenu = new Menu ("_View");
-        ToggleGroup viewPeriod = new ToggleGroup();
+        viewPeriod = new ToggleGroup();
         view3 = new RadioMenuItem("View last 3 months");
         view6 = new RadioMenuItem("View last 6 months");
         view6.setSelected(true);
-
         view12 = new RadioMenuItem("View last 12 months");
 
         view3.setToggleGroup(viewPeriod);
@@ -104,6 +104,14 @@ public class ProgramScreen {
         bp.setCenter(v);
 
         view12.setOnAction(event -> {
+            v.getChildren().removeAll(heading, table.amountLastMonthsByCategories(periodLength()), graph.amountByBuyers());
+            showMainTableAndGraph();
+        });
+        view6.setOnAction(event -> {
+            v.getChildren().removeAll(heading, table.amountLastMonthsByCategories(periodLength()), graph.amountByBuyers());
+            showMainTableAndGraph();
+        });
+        view3.setOnAction(event -> {
             v.getChildren().removeAll(heading, table.amountLastMonthsByCategories(periodLength()), graph.amountByBuyers());
             showMainTableAndGraph();
         });
@@ -139,7 +147,7 @@ public class ProgramScreen {
             months = 6;
         }
         if(view3.isSelected()){
-            months = 6;
+            months = 3;
         }
         return months;
     }
