@@ -26,23 +26,17 @@ public class Tables { //P2ringu tabelite jaoks
 
     }
 
-    public GridPane amountLastMonthsByCategories(int numberOfMonths) { //Arvutab kolme eelmise kuu ostud ja paneb need tabelisse (teoorias)
+    //Arvutab etteantud eelmiste kuude ostud kasutades Databases objekti meetodeid ja paneb need tabelisse
+    public GridPane amountLastMonthsByCategories(int numberOfMonths) {
         Databases db = new Databases();
         ArrayList categoryList = db.getCategoryList();
         GridPane table = new GridPane();
         table.setGridLinesVisible(true);
 
-        ColumnConstraints[] column = new ColumnConstraints[numberOfMonths]; //http://docs.oracle.com/javafx/2/layout/size_align.htm
-
-
         //numberOfMonths = 6 //Periood, mitu kuud tagasi vaadatakse
 
         LocalDate today = LocalDate.now(); //http://www.java2s.com/Tutorials/Java/java.time/LocalDate/index.htm
-        Month this_Month = today.getMonth(); //Kas kuup2evade jaoks v6iks ka eraldi klassi teha?
-        Month prev_1_Month = today.getMonth().minus(1);
-        Month prev_2_Month = today.getMonth().minus(2);
-        //LocalDate startDate = today.withDayOfMonth(1);
-        //LocalDate endDate = today.withDayOfMonth(today.lengthOfMonth());
+        int currentMonth = today.getMonthValue(); //Kas kuup2evade jaoks v6iks ka eraldi klassi teha?
 
         Label[][] months, categories, amounts;
 
@@ -55,23 +49,20 @@ public class Tables { //P2ringu tabelite jaoks
             categories[i][0] = new Label();
             categories[i][0].setText((categoryList.get(i)).toString());
             categories[i][0].setFont(Font.font("Arial", FontWeight.BOLD, 20));
+            categories[i][0].setPrefSize(150,25);
             table.add(categories[i][0], 0, i+1);
         }
 
         for (int j = 0; j < numberOfMonths; j++) {
-            column[j] = new ColumnConstraints();
             months[0][j] = new Label();
-            column[j] = new ColumnConstraints();
             months[0][j].setText((today.getMonth().minus(numberOfMonths-j-1)).getDisplayName(TextStyle.SHORT, Locale.ROOT));
             months[0][j].setFont(Font.font("Arial", FontWeight.BOLD, 20));
+            months[0][j].setPrefSize(100,25);
             table.add(months[0][j],j+1,0);
-            column[j].setPrefWidth(100);
-            table.getColumnConstraints().add(j,column[j]);
-
         }
 
         for (int i = 0; i < categoryList.size(); i++) {
-            int currentMonth = today.getMonthValue();
+
             for (int j = 0; j < numberOfMonths; j++) {
 
                 amounts[i][j] = new Label();
@@ -99,7 +90,6 @@ public class Tables { //P2ringu tabelite jaoks
                 String category = categoryList.get(i).toString();
                 amounts[i][j].setText(db.getPeriodAmountByCategories(category, startDate, endDate).toString());
                 table.add(amounts[i][j], j + 1, i + 1);
-
             }
         }
         db.closeConnection();

@@ -7,9 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -41,6 +39,7 @@ public class LoginScreen {
     //Esimene aken, kustkaudu saab sisselogida ja kasutajat registreerima hakata
     private void setupScene() { //Seadistab esimese akna vajalikud atribuudid ja tegevused nende kylge. Ilmselt tuleks pisut lahti kirjutada osasid, muidu tuleb yks pikk meetod.
 
+        BorderPane bp = new BorderPane();
         GridPane layoutMain = new GridPane();
         layoutMain.setAlignment(Pos.TOP_CENTER);
         layoutMain.setVgap(5);
@@ -55,7 +54,7 @@ public class LoginScreen {
         column2.setPrefWidth(200);
         layoutMain.getColumnConstraints().add(column2);
 
-        Scene sceneMain = new Scene(layoutMain,sceneWidth,sceneHeight);
+        Scene sceneMain = new Scene(bp,sceneWidth,sceneHeight);
         sceneMain.getStylesheets().add(getClass().getResource("css/main.css").toExternalForm());
         //http://stackoverflow.com/questions/16236641/javafx-add-dynamically-css-files,
         //http://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#introscenegraph
@@ -65,6 +64,9 @@ public class LoginScreen {
 
         Text programTitle = new Text("Family's cost tracker");
         programTitle.setId("Header");
+        bp.setTop(programTitle);
+        bp.setAlignment(programTitle, Pos.CENTER);
+        bp.setCenter(layoutMain);
 
         Label unLabel = new Label("Username");
         unLabel.setAlignment(Pos.CENTER_RIGHT);
@@ -118,7 +120,7 @@ public class LoginScreen {
             db.closeConnection();
         });
 
-        layoutMain.add(programTitle,0,0);
+
         layoutMain.add(unLabel,0, 1);
         layoutMain.add(fieldUsername,1,1);
         layoutMain.add(pwLabel,0,2);

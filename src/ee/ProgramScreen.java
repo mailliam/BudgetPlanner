@@ -98,7 +98,7 @@ public class ProgramScreen {
         months = periodLength();
         heading = new Text("Costs in last " +months+ " months by categories");
         heading.setFont(Font.font("Calibri", 30));
-        v.getChildren().addAll(heading, table.amountLastMonthsByCategories(periodLength()), graph.amountByBuyers());
+        v.getChildren().addAll(heading, table.amountLastMonthsByCategories(periodLength()), graph.amountLastMonthsByCategories(periodLength()));
 
         bp.setAlignment(v, Pos.CENTER);
         bp.setCenter(v);

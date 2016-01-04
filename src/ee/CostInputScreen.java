@@ -141,7 +141,7 @@ public class CostInputScreen {
     }
 
     private void purchaseBasketFields() {
-        tfBasket = new TextField[rowCounter+1][6]; //loob uue objekti igal korral, vanad sisestatud v22rtused kaovad sellega m2lust
+        tfBasket = new TextField[rowCounter+1][6]; //Iga kord, kui meetod esile kutsutakse, luuakse uus tfBasket[][], vanad sisestatud v22rtused kaovad sellega m2lust
 
         for (int i = rowCounter; i < rowCounter+1; i++) {
             if(rowCounter > 0) {   // asendab loodud objekti tyhjad v22rtused kasutaja poolt eelnevalt sisestatuga kuni viimase reani (v2ljaarvatud).
@@ -159,7 +159,7 @@ public class CostInputScreen {
                 basketFields.add(tfBasket[i][j], j, i);
                 basket.setContent(basketFields); //lisab ostukorvile, mis on ScrollPane, textFieldid
             }
-            tfBasket[rowCounter][2].setEditable(false);
+
             tfBasket[rowCounter][5].setEditable(false);
             tfBasketNew = tfBasket; //kopeerib kasutaja poolt varasemalt sisestatud v22rtuste massiivi
         }
@@ -193,6 +193,7 @@ public class CostInputScreen {
             String category = db.getCategoryForItem(item);
             if (db.checkItemExistance(item)) {
                 tfBasket[rowCounter][2].setText(category);
+                tfBasket[rowCounter][2].setEditable(false);
             } else {
                 tfBasket[i][2].setEditable(true);
             }
