@@ -13,9 +13,12 @@ import javafx.stage.Stage;
 
 /**
  * Created by Maila on 25/11/2015.
+ *
+ * Pohiline programmiaken, kust kasutaja naeb oma viimaste kuude kulusid, saab algatada uut ostu, teha paringuid
+ *
  */
 public class ProgramScreen {
-    //Siia tuleb see aken, kust saab valida, kas tahad kulusid sisestada v�i p�ringuid teha
+
     Stage programScreen = new Stage();
     BorderPane bp;
     int sceneHeight = 1000;
@@ -32,38 +35,41 @@ public class ProgramScreen {
         showMainTableAndGraph();
     }
 
+    //Programmiakna seadistus koos layoutiga
     private void setupScene() {
         programScreen.setTitle("Program");
         programScreen.setOnCloseRequest(event -> programScreen.close());
         bp = new BorderPane();
+
         Scene sc = new Scene(bp,sceneWidth,sceneHeight);
         sc.getStylesheets().add(getClass().getResource("css/main.css").toExternalForm());
         //CSS lisamiseks sain abi:
         //http://stackoverflow.com/questions/16236641/javafx-add-dynamically-css-files,
         //http://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#introscenegraph
 
-
         programScreen.setScene(sc);
         programScreen.show();
     }
 
+    //Programmi menüü loomine
     private void programMenu () {
-        //Menyy loomine JavaFX GUI Tutorial videode abil:
+
+        //Menüü loomine JavaFX GUI Tutorial videode abil:
         //https://www.youtube.com/watch?v=JBJ9MIEfU3k&index=21&list=PL6gx4Cwl9DGBzfXLWLSYVy8EbTdpGbUIG
         //https://www.youtube.com/watch?v=AP4e6Lxncp4&list=PL6gx4Cwl9DGBzfXLWLSYVy8EbTdpGbUIG&index=22
 
-        //Menüüpunktide loomine ja tegevuste seadistamine
+        //Menüüpunktide loomine ja nende tegevuste seadistamine
         Menu fileMenu = new Menu("_File");
 
-        MenuItem newPurchase = new MenuItem("New purchase");
+        MenuItem newPurchase = new MenuItem("New purchase");    //Valik avab ostu sisestamise akna
         fileMenu.getItems().add(newPurchase);
         newPurchase.setOnAction(event -> toCostInputScreen());
 
-        MenuItem query = new MenuItem("Query");
+        MenuItem query = new MenuItem("Query");                 //Valik avab ostu paringute akna
         fileMenu.getItems().add(query);
         query.setOnAction(event -> toQueryScreen());
 
-        MenuItem logout = new MenuItem("Log out");
+        MenuItem logout = new MenuItem("Log out");              //Valik logib valja - LoginScreenile
         fileMenu.getItems().add(logout);
         logout.setOnAction(event -> logoutUser());
 
@@ -71,11 +77,11 @@ public class ProgramScreen {
         MenuItem categories = new MenuItem("Categories");
         settingsMenu.getItems().add(categories);
 
-        Menu viewMenu = new Menu ("_View");
+        Menu viewMenu = new Menu ("_View");                     //Valik n2itab antud ekraanil erinevate perioodide kulutusi
         viewPeriod = new ToggleGroup();
         view3 = new RadioMenuItem("View last 3 months");
         view6 = new RadioMenuItem("View last 6 months");
-        view6.setSelected(true);
+        view6.setSelected(true);                                //Vaikimisi on valitud perioodiks 6 kuud
         view12 = new RadioMenuItem("View last 12 months");
 
         view3.setToggleGroup(viewPeriod);
@@ -88,21 +94,33 @@ public class ProgramScreen {
         menuBar.getMenus().addAll(fileMenu, settingsMenu, viewMenu);
 
         bp.setTop(menuBar);
+
     }
 
+    //Meetod kuvab ekraanile kasutaja poolt (View menüüst) valitud perioodi kulutused tabelina ja graafikuna
     private void showMainTableAndGraph() {
         VBox v = new VBox();
         v.setPadding(new Insets(20,20,20,20));
+        Databases db = new Databases();
         Graphs graph = new Graphs();
         Tables table = new Tables();
+        Text noPurchase = new Text("There are no purchases inserted: nothing to see yet.");
         months = periodLength();
         heading = new Text("Costs in last " +months+ " months by categories");
         heading.setFont(Font.font("Calibri", 30));
-        v.getChildren().addAll(heading, table.amountLastMonthsByCategories(periodLength()), graph.amountLastMonthsByCategories(periodLength()));
 
-        bp.setAlignment(v, Pos.CENTER);
+        //kontrollib, kas tabelis eksisteerib oste: kui jah, siis kuvatakse tabel+graafik.
+        if (!db.checkPurchaseExistance()) {
+            v.getChildren().add(noPurchase);
+        } else {
+            v.getChildren().addAll(heading, table.amountLastMonthsByCategories(periodLength()), graph.amountLastMonthsByCategories(periodLength()));
+        }
+
+        v.setAlignment(Pos.TOP_CENTER);
+        bp.setAlignment(v, Pos.TOP_CENTER);
         bp.setCenter(v);
 
+        //Iga kasutaja valiku puhul View menüüs kuvatakse ekraanile uue perioodi vaade
         view12.setOnAction(event -> {
             v.getChildren().removeAll(heading, table.amountLastMonthsByCategories(periodLength()), graph.amountByBuyers());
             showMainTableAndGraph();
@@ -138,6 +156,7 @@ public class ProgramScreen {
         new DeleteUserScreen();
     }
 
+    //Meetod määrab perioodi pikkuse vastavalt kasutaja valikule View menüüs
     private int periodLength() {
         months = 0;
         if(view12.isSelected()){

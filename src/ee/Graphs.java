@@ -69,9 +69,9 @@ public class Graphs {
         XYChart.Series[] series = new XYChart.Series[categoryList.size()];
 
         for (int i = 0; i < numberOfMonths; i++) {
-                String month = ((today.getMonth().minus(numberOfMonths-i-1)).getDisplayName(TextStyle.SHORT, Locale.ROOT));
-                monthList.add(month);
-            }
+            String month = ((today.getMonth().minus(numberOfMonths-i-1)).getDisplayName(TextStyle.SHORT, Locale.ROOT));
+            monthList.add(month);
+        }
 
         for (int i = 0; i < categoryList.size(); i++) {
             series[i] = new XYChart.Series(); //Kui see rida oli j-tsüklis, siis tuli väga kole pilt
@@ -83,23 +83,18 @@ public class Graphs {
 
                 LocalDate startDate,endDate;
 
-                if (currentMonth > (numberOfMonths-1) ) {
-                    int periodMonth = currentMonth-j;
+
+                if(j >= numberOfMonths-today.getMonthValue() ){
+                    int periodMonth = currentMonth-(numberOfMonths-j-1);
                     startDate = today.withMonth(periodMonth).withDayOfMonth(1);
                     endDate = today.withMonth(periodMonth).withDayOfMonth(today.withMonth(periodMonth).lengthOfMonth());
 
                 } else {
-                    if(j >= numberOfMonths-today.getMonthValue() ){
-                        int periodMonth = currentMonth-(numberOfMonths-j-1);
-                        startDate = today.withMonth(periodMonth).withDayOfMonth(1);
-                        endDate = today.withMonth(periodMonth).withDayOfMonth(today.withMonth(periodMonth).lengthOfMonth());
-
-                    } else {
-                        int periodMonth = 12 - (numberOfMonths-j-currentMonth-1);
-                        startDate = today.withYear(today.getYear()-1).withMonth(periodMonth).withDayOfMonth(1);
-                        endDate = today.withYear(today.getYear() - 1).withMonth(periodMonth).withDayOfMonth(today.withYear(today.getYear() - 1).withMonth(periodMonth).lengthOfMonth());
-                    }
+                    int periodMonth = 12 - (numberOfMonths-j-currentMonth-1);
+                    startDate = today.withYear(today.getYear()-1).withMonth(periodMonth).withDayOfMonth(1);
+                    endDate = today.withYear(today.getYear() - 1).withMonth(periodMonth).withDayOfMonth(today.withYear(today.getYear() - 1).withMonth(periodMonth).lengthOfMonth());
                 }
+
 
                 String category = categoryList.get(i).toString();
                 amounts[i][j] = (db.getPeriodAmountByCategories(category, startDate, endDate));
@@ -113,6 +108,8 @@ public class Graphs {
         db.closeConnection();
         return chart;
     }
+
+
 
 
 }

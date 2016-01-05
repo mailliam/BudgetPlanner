@@ -20,6 +20,9 @@ import java.util.Calendar;
 
 /**
  * Created by Maila on 27/12/2015.
+ *
+ * Aken, mis vıimaldab kasutajal sisestada uusi kulusid
+ *
  */
 public class CostInputScreen {
     Stage costInputScreen;
@@ -34,16 +37,15 @@ public class CostInputScreen {
 
     TextField tfBuyer, tfStore, tfPurchaseAmount;
     DatePicker dpDate;
-    //On see halb siin kirjeldada?
-
 
     public CostInputScreen() {
         setupScene(); //Loob stseeni ostu jaoks
-        purchaseHeader(); //Loob ostu p2ise
+        purchaseHeader(); //Loob ostu p‰ise
         purchaseBasketLabels(); //Loob ostukorvi pealkirjad ja teeb ettevalmistuse ostukorvi esimese rea lisamiseks
         purchaseBasketFields(); //Loob ostukorvi esimese rea
     }
 
+    //Stseeni seadistus koos peamise layoutiga
     private void setupScene() {
         costInputScreen = new Stage();
         costInputScreen.setTitle("Cost input");
@@ -51,6 +53,7 @@ public class CostInputScreen {
 
         Scene sc = new Scene(purchase, sceneWidth, sceneHeight);
         sc.getStylesheets().add(getClass().getResource("css/main.css").toExternalForm());
+        //CSS lisamine:
         //http://stackoverflow.com/questions/16236641/javafx-add-dynamically-css-files,
         //http://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#introscenegraph
 
@@ -63,6 +66,7 @@ public class CostInputScreen {
         });
     }
 
+    //Meetod loob ostup‰ise - kes, kus, millal, summa kokku
     private void purchaseHeader() {
 
         GridPane header = new GridPane();
@@ -74,7 +78,7 @@ public class CostInputScreen {
         column.setPrefWidth(sceneWidth/6.5);
 
         ColumnConstraints column3 = new ColumnConstraints();
-        column3.setPrefWidth(sceneWidth/5.5);
+        column3.setPrefWidth(sceneWidth/4);
         header.getColumnConstraints().addAll(column, column, column3);
 
         Label l1 = new Label ("Buyer");
@@ -91,13 +95,13 @@ public class CostInputScreen {
         header.add(tfStore,1,1);
         header.add(dpDate,2,1);
 
-        header.add(alertMessage, 0, 2); //Koht, kuhu saab hakata kasutajale veateateid kuvama
+        header.add(alertMessage, 0, 2);                 //Koht, kuhu saab hakata kasutajale veateateid kuvama
 
         Label totalAmount = new Label("Total amount");
         header.add(totalAmount,3,0);
 
         tfPurchaseAmount = new TextField();
-        tfPurchaseAmount.setEditable(false);
+        tfPurchaseAmount.setEditable(false);            //Kasutaja ei pea saama seda muuta, automaatne
         tfPurchaseAmount.setStyle("-fx-background-color: #DADBDE");
 
         header.add(tfPurchaseAmount,3,1);
@@ -112,6 +116,8 @@ public class CostInputScreen {
         purchase.getChildren().add(header);
     }
 
+    //Meetod loob ostukorvi pealkirjad ning lisaks defineerib esimese osturea muutujad/parameetrid ning lisab ostule
+    //ostukorvi basket, mis on ScrollPane. Vastasel korral tekiks j‰rgneva meetodi k‰itamisel duplicate children viga.
     private void purchaseBasketLabels() {
         basketLabels = new GridPane();
         basketLabels.setHgap(5);
@@ -132,7 +138,7 @@ public class CostInputScreen {
         label[5].setText("Amount");
         purchase.getChildren().add(basketLabels);
 
-        basketFields = new GridPane(); //Lisaks Labelitele lisab ka esimese osturea parameetrid, vastasel korral hakkasid tulema duplicate childreni veateated, sest sama asja lisati mitu korda.
+        basketFields = new GridPane();
         basketFields.setHgap(5);
         basketFields.setVgap(5);
         basketFields.setPadding(new Insets(10, 10, 10, 10));
@@ -140,50 +146,53 @@ public class CostInputScreen {
         purchase.getChildren().add(basket);
     }
 
+    //Meetod loob ostukorvi v‰ljad
     private void purchaseBasketFields() {
-        tfBasket = new TextField[rowCounter+1][6]; //Iga kord, kui meetod esile kutsutakse, luuakse uus tfBasket[][], vanad sisestatud v22rtused kaovad sellega m2lust
+        tfBasket = new TextField[rowCounter+1][6];              //Iga kord, kui meetod esile kutsutakse, luuakse uus TextFieldide massiiv tfBasket[][], vanad sisestatud v‰‰rtused kaovad sellega m‰lust
 
         for (int i = rowCounter; i < rowCounter+1; i++) {
-            if(rowCounter > 0) {   // asendab loodud objekti tyhjad v22rtused kasutaja poolt eelnevalt sisestatuga kuni viimase reani (v2ljaarvatud).
+            if(rowCounter > 0) {                                // asendab loodud objekti tyhjad v‰‰rtused kasutaja poolt eelnevalt sisestatuga kuni viimase reani (v‰ljaarvatud).
                 for (int k = 0; k < rowCounter; k++) {
                     for (int l = 0; l < 6; l++) {
                         tfBasket[k][l] = tfBasketNew[k][l];
                     }
                 }
             }
-            for (int j = 0; j < 6; j++) {
+            for (int j = 0; j < 6; j++) {                       //Loob massiivi konkreetsed v‰ljad
                 tfBasket[i][j] = new TextField();
                 tfBasket[i][j].setPrefWidth(sceneWidth/7);
                 tfBasket[i][0].setText(Integer.toString(rowCounter+1));
-                tfBasket[i][0].setEditable(false);
-                basketFields.add(tfBasket[i][j], j, i);
-                basket.setContent(basketFields); //lisab ostukorvile, mis on ScrollPane, textFieldid
+                tfBasket[i][0].setEditable(false);              //Rea nr on automaatne, kasutaja ei tohi seda muuta
+                basketFields.add(tfBasket[i][j], j, i);         //Lisab basketFieldsile, mis on GridPane, TextFieldid
+                basket.setContent(basketFields);                //lisab ostukorvile, mis on ScrollPane, GridPane, mis koosneb TextFieldidest
             }
 
-            tfBasket[rowCounter][5].setEditable(false);
-            tfBasketNew = tfBasket; //kopeerib kasutaja poolt varasemalt sisestatud v22rtuste massiivi
-        }
+            tfBasket[rowCounter][5].setEditable(false);         //rea summa on automaatne - kasutaja ei tohi seda muuta
+            tfBasketNew = tfBasket;                             //kopeerib kasutaja poolt varasemalt sisestatud v‰‰rtuste massiivi,
+        }                                                       //et oleks kust j2rgmise tfBasket objekti (kasutaja "enter" vajutamisel) loomisel v‰‰rtusi vıtta
 
-        tfBasket[rowCounter][4].setOnAction(event -> {
-            tfBasket[rowCounter][4].setOnAction(null);   //Yks vastustest: http://stackoverflow.com/questions/14927233/programmatically-remove-a-listener-added-using-fxml
+
+        tfBasket[rowCounter][4].setOnAction(event -> {          //Kasutaja "enter" vajutamisel p‰rast hinna sisestamist tekitab uue rea, kutsudes end uuesti esile
+            tfBasket[rowCounter][4].setOnAction(null);          //Kuidas "vıimet" eemaldada: http://stackoverflow.com/questions/14927233/programmatically-remove-a-listener-added-using-fxml
             rowCounter++;
             purchaseBasketFields();
         });
 
-        tfBasket[rowCounter][1].textProperty().addListener(((observable1, oldValue1, newValue1) ->{
+        tfBasket[rowCounter][1].textProperty().addListener(((observable1, oldValue1, newValue1) ->{ //Item: V‰‰rtuse muutumisel lisa kategooria (kui on lisada)
             getCategory();
         }));
 
-        tfBasket[rowCounter][3].textProperty().addListener((observable, oldValue, newValue) -> {
+        tfBasket[rowCounter][3].textProperty().addListener((observable, oldValue, newValue) -> {  //Quantity: V‰‰rtuse muutumisel arvuta rea summa
             calculateRowAmount();
         });
 
-        tfBasket[rowCounter][4].textProperty().addListener((observable, oldValue, newValue) -> {
+        tfBasket[rowCounter][4].textProperty().addListener((observable, oldValue, newValue) -> {  //Price: V‰‰rtuse muutumisel arvuta rea summa
             calculateRowAmount();
         });
 
     }
 
+    //Meetod leiab igal real asetleidnud muutuse korral vastava rea kategooria, juhul kui selline ese on juba kord ostetud
     private void getCategory() {
         Databases db = new Databases();
 
@@ -193,7 +202,7 @@ public class CostInputScreen {
             String category = db.getCategoryForItem(item);
             if (db.checkItemExistance(item)) {
                 tfBasket[rowCounter][2].setText(category);
-                tfBasket[rowCounter][2].setEditable(false);
+                tfBasket[rowCounter][2].setEditable(false); //Kui kategooria on leitud, siis kasutaja seda enam k‰sitsi muuta ei saa
             } else {
                 tfBasket[i][2].setEditable(true);
             }
@@ -203,11 +212,13 @@ public class CostInputScreen {
 
 
 
-    private void calculateRowAmount() { //Arvutab rea summa, korrutades hinna ja koguse
+    //Meetod arvutab rea summa, korrutades hinna ja koguse. Seejuures kontrollitakse, kas kasutaja on sisestanud numbrilised
+    //v‰‰rtuesd (kui mitte, siis veateade). Niipalju tuleb kasutajale vastu, et komad asendab punktiga.
+    private void calculateRowAmount() {
         BigDecimal purchaseAmount = new BigDecimal(0);
         for (int i = 0; i < rowCounter + 1; i++) {
 
-            if (!tfBasket[i][3].getText().isEmpty() && !tfBasket[i][4].getText().isEmpty()) { //Kontrollib, kas kasutaja on mılemad arvutuseks vajalikud v22rtused on sisestatud
+            if (!tfBasket[i][3].getText().isEmpty() && !tfBasket[i][4].getText().isEmpty()) { //Kontrollib, kas kasutaja on mılemad arvutuseks vajalikud v‰‰rtused on sisestatud
 
                 for (int u = 0; u < tfBasket[i][3].getText().length(); u++) {  //Asendab vajadusel koguse puhul kasutaja sisestatud ',' '.'.ga
                     String text = tfBasket[i][3].getText();
@@ -225,7 +236,7 @@ public class CostInputScreen {
                     }
                 }
 
-                try {
+                try {                                                           //Kontrollib numbrilist v‰‰rtust koguse ja hinna lahtris
                     BigDecimal quantity = new BigDecimal(tfBasket[i][3].getText());
                     BigDecimal price = new BigDecimal(tfBasket[i][4].getText());
                     BigDecimal amount = quantity.multiply(price);
@@ -234,7 +245,7 @@ public class CostInputScreen {
                     tfBasket[i][3].setStyle(null);
                     tfBasket[i][4].setStyle(null);
                     alertMessage.setText(null); //Kui kasutaja tuleb selle peale, et enne parandamist sisestada uus rida, siis kaob vahepeal alert 2ra.
-                } catch (java.lang.NumberFormatException e) { //Kontroll, kas numbri lahtrisse on sisestatud number
+                } catch (java.lang.NumberFormatException e) { //Kui saadakse viga, et lahtrisse pole sisestatud numbriline v‰‰rtus: veateade
                     alertMessage.setText("Quantity or price format is incorrect: must be number");
                     alertMessage.setFill(Color.RED);
                     tfBasket[i][3].setStyle("-fx-border-color: red ; -fx-border-width: 2px ;");
@@ -246,9 +257,12 @@ public class CostInputScreen {
 
     }
 
+    //Meetod kontrollib "Save" nupu vajutamisel, kas kıik p‰ise v‰ljad on t‰idetud ning kas kıik osturead on t‰ielikud
+    //Osturidades vıivad olla kas t‰iesti t¸hjad vıi t‰iesti t‰is read.
+    //Kui tagastatakse "false" siis ostu ei salvestata ja kuvatakse kasutajale veateade
     private boolean checkInsertionCorrectness () {
 
-        if(tfBuyer.getText().isEmpty() || tfStore.getText().isEmpty() || dpDate.getValue() == null) { //Kui kuup2ev pole valitud, siis == null: http://code.makery.ch/blog/javafx-8-date-picker/
+        if(tfBuyer.getText().isEmpty() || tfStore.getText().isEmpty() || dpDate.getValue() == null) { //Kui kuup‰ev pole valitud, siis == null: http://code.makery.ch/blog/javafx-8-date-picker/
             alertMessage.setText("Buyer, store and date must be selected");
             alertMessage.setFill(Color.RED);
             return false;
@@ -277,20 +291,20 @@ public class CostInputScreen {
         return true;
     }
 
+    //Meetod k‰sib andmebaasi objektil antud ost andmebaasi sisestada
     private void savePurchaseToDB() {
 
-        if (checkInsertionCorrectness()) { //Kui kontroll on andnud 6ige tulemuse
+        if (checkInsertionCorrectness()) { //Kui kontroll on andnud ıige tulemuse, siis..
 
-            for (int i = 0; i < rowCounter + 1; i++) { //Kordab seda tsyklit niikaua, kuni on k2idud l2bi k6ik t2idetud read.
+            for (int i = 0; i < rowCounter + 1; i++) { //Kordab seda ts¸klit niikaua, kuni on k‰idud l‰bi kıik t‰idetud read ja sorteerinud sealt v‰lja t‰idetud read
                 if  (!tfBasket[i][1].getText().isEmpty() && !tfBasket[i][2].getText().isEmpty() && !tfBasket[i][3]
                         .getText().isEmpty() && !tfBasket[i][4].getText().isEmpty() && !tfBasket[i][5].getText()
                         .isEmpty()) {
-                    Databases db = new Databases(); //Tundub kahtlane tsyklis connectionit avada
+                    Databases db = new Databases();
 
                     String buyer = tfBuyer.getText();
                     String date = dpDate.getValue().toString();
                     String store = tfStore.getText();
-
 
                     int basketRowNr = Integer.parseInt(tfBasket[i][0].getText());
                     String item = tfBasket[i][1].getText();
@@ -298,9 +312,9 @@ public class CostInputScreen {
                     BigDecimal quantity = new BigDecimal(tfBasket[i][3].getText());
                     BigDecimal basketRowAmount = new BigDecimal(tfBasket[i][5].getText());
 
-                    db.registerBuyer(buyer); //registreerib ostjate listi (vajalik p2ringu dropdown jaoks)
-                    db.savePurchaseBasket(basketRowNr, buyer, date, store, item, category, quantity, basketRowAmount);
-                    db.registerItem(item, category);
+                    db.registerBuyer(buyer);        //registreerib ostjate listi
+                    db.savePurchaseBasket(basketRowNr, buyer, date, store, item, category, quantity, basketRowAmount); //registreerib ostu enda
+                    db.registerItem(item, category); //registreerib esemete listi
                     db.closeConnection();
                 }
             }

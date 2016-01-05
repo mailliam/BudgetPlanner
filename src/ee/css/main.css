@@ -60,8 +60,36 @@
     -fx-border-color: #2B5581;
 }
 
+.chart-legend {
+   -fx-background-color: derive(#446C96,+20%);
+}
 
+.chart-legend-item-symbol{
+   -fx-background-radius: 10;
+}
 
+.chart-legend-item{
+    -fx-text-fill: #E5EDF5;
+}
+
+.chart-plot-background {
+    -fx-background-color: #C9DAEC;
+}
+
+#tableHeader {
+    -fx-font: bold 16pt "Calibri Light";
+    -fx-text-fill: #2B5581;
+}
+
+#tableData {
+    -fx-font: 14pt "Calibri Light";
+    -fx-text-fill: #2B5581;
+}
+
+#alert {
+    -fx-font: bold 16pt "Calibri Light";
+    -fx-text-inner-color: #FF01F3;
+}
 
 
 

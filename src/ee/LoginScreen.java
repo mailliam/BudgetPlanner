@@ -18,9 +18,15 @@ import java.math.BigDecimal;
 
 /**
  * Created by Maila on 14/11/2015.
+ *
+ * Esimene vaade - sisselogimine voi kasutajaks registreerimine
+ *
  */
+
 public class LoginScreen {
     Stage screenMain = new Stage();
+    BorderPane bp;
+    GridPane layoutMain;
     TextField fieldUsername;
     PasswordField fieldPassword;
     Button buttonLogin, buttonAddUser;
@@ -31,16 +37,17 @@ public class LoginScreen {
     Text alertMessage;
 
 
-    //katsetan esialgu selle Kristeri sql n�ite loogikaga, sest minu algne versioon meetodite viimisest Main alla tundub kohmakas ja kahtlane.
+    //Kasutatud sama loogikat, mis I200 sql naites
     public LoginScreen() {
         setupScene();
+        loginAndOtherFields(); //halb nimi
     }
 
-    //Esimene aken, kustkaudu saab sisselogida ja kasutajat registreerima hakata
-    private void setupScene() { //Seadistab esimese akna vajalikud atribuudid ja tegevused nende kylge. Ilmselt tuleks pisut lahti kirjutada osasid, muidu tuleb yks pikk meetod.
+    //Sisselogimisakna seadistus koos layoutidega
+    private void setupScene() {
 
-        BorderPane bp = new BorderPane();
-        GridPane layoutMain = new GridPane();
+        bp = new BorderPane();
+        layoutMain = new GridPane();
         layoutMain.setAlignment(Pos.TOP_CENTER);
         layoutMain.setVgap(5);
         layoutMain.setHgap(10);
@@ -56,28 +63,38 @@ public class LoginScreen {
 
         Scene sceneMain = new Scene(bp,sceneWidth,sceneHeight);
         sceneMain.getStylesheets().add(getClass().getResource("css/main.css").toExternalForm());
+        //CSS loomisel kasutasin:
         //http://stackoverflow.com/questions/16236641/javafx-add-dynamically-css-files,
         //http://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#introscenegraph
+        //http://hg.openjdk.java.net/openjfx/8/master/rt/file/f89b7dc932af/modules/controls/src/main/resources/com/sun/javafx/scene/control/skin/modena/modena.css
+        //https://docs.oracle.com/javafx/2/charts/css-styles.htm
+        //Kuidas fonti ja värvi seadistada: https://docs.oracle.com/javafx/2/text/jfxpub-text.htm
 
         screenMain.setTitle("Main window");
         screenMain.setOnCloseRequest(event -> screenMain.close());
+        screenMain.setScene(sceneMain);
+        screenMain.show();
+    }
 
+    //Node'de tekitamine ning lisamine vastavatesse layoutidesse
+    private void loginAndOtherFields () {
         Text programTitle = new Text("Family's cost tracker");
         programTitle.setId("Header");
         bp.setTop(programTitle);
         bp.setAlignment(programTitle, Pos.CENTER);
         bp.setCenter(layoutMain);
 
-        Label unLabel = new Label("Username");
-        unLabel.setAlignment(Pos.CENTER_RIGHT);
+        Label labelUsername = new Label("Username");
+        labelUsername.setAlignment(Pos.CENTER_RIGHT);
         fieldUsername = new TextField();
-        Label pwLabel = new Label ("Password");
-        pwLabel.setAlignment(Pos.CENTER_RIGHT);
+        Label labelPassword = new Label ("Password");
+        labelPassword.setAlignment(Pos.CENTER_RIGHT);
         fieldPassword = new PasswordField();
 
         alertMessage = new Text();
+        alertMessage.setId("alert"); //Id maaramine, et formaadi saaks css-ga paika panna. Millegiparast varv ei toimi
 
-        buttonLogin = new Button ("Log in");
+        buttonLogin = new Button ("Log in"); //nupp sisselogimiseks
         buttonLogin.setPrefWidth(buttonWidth);
         buttonLogin.setOnAction(event1 -> {
             toProgram();
@@ -100,67 +117,41 @@ public class LoginScreen {
             //db.checkPurchase();
             //System.out.println(db.getBuyerList());
             //tbl.amountLastMonthsByCategories();
-            tbl.kuup2evaKatsetus();
+            tbl.kuup2evaTestimine();
             //gr.amountLastMonthsByCategories();
-
-
         });
 
-        test = new Button("Test: db user output");
-        test.setOnAction(event -> {
-            Databases db = new Databases();
-            db.checkUser();
-            db.closeConnection();
-        });
-
-        test2 = new Button("Test: db purchase output");
-        test2.setOnAction(event -> {
-            Databases db = new Databases();
-            db.checkPurchase();
-            db.closeConnection();
-        });
-
-
-        layoutMain.add(unLabel,0, 1);
+        //Lisab k6ik node'd layoutMaini, mis on GridPane
+        layoutMain.add(labelUsername,0, 1);
         layoutMain.add(fieldUsername,1,1);
-        layoutMain.add(pwLabel,0,2);
+        layoutMain.add(labelPassword,0,2);
         layoutMain.add(fieldPassword,1,2);
         layoutMain.add(buttonLogin,1,3);
         layoutMain.add(alertMessage,1,4);
         layoutMain.add(ifUserNotExist,0,10);
         layoutMain.add(buttonAddUser,1,10);
         layoutMain.add(katseNupp,1,11); //2ra kustutada hiljem
-
-        screenMain.setScene(sceneMain);
-        screenMain.show();
     }
 
-
-
-    //Kui parool on 6ige, siis viska programmi aken lahti.
+    //Programmi paasemine: kontroll, kas vajalikud valjad on taidetud, kas kasutaja on olemas, kas parool on 6ige
     private void toProgram() {
         String s1 = fieldUsername.getText();
         String s2 = fieldPassword.getText();
         Databases dbUsers = new Databases();
         boolean userExists = dbUsers.checkUserExistance(s1);
         boolean passwordCorrect = dbUsers.checkPassword(s1, s2);
-        if (s1.isEmpty() || s2.isEmpty()) {
+        if (s1.isEmpty() || s2.isEmpty()) {                 //Kui valjad tuhjad: veateade
             alertMessage.setText("Username/password can not be empty");
-            alertMessage.setFont(Font.font("Calibri", 20)); //Kuidas fonti ja värvi seadistada: https://docs.oracle.com/javafx/2/text/jfxpub-text.htm
-            alertMessage.setFill(Color.RED);
+            alertMessage.setId("alert");
         } else {
-            if (!userExists) {
+            if (!userExists) {                              //Kui kasutajat pole: veateade
                 alertMessage.setText("User does not exist");
-                alertMessage.setFont(Font.font("Calibri", 20)); //Kuidas fonti ja värvi seadistada: https://docs.oracle.com/javafx/2/text/jfxpub-text.htm
-                alertMessage.setFill(Color.RED);
-            } else {
+            } else {                                        //Kui parool oige: ava programm
                 if (passwordCorrect) {
                     screenMain.close();
                     new ProgramScreen();
-                } else {
+                } else {                                    //Kui parool vale: veateade
                     alertMessage.setText("Incorrect Password");
-                    alertMessage.setFont(Font.font("Calibri", 20)); //Kuidas fonti ja värvi seadistada: https://docs.oracle.com/javafx/2/text/jfxpub-text.htm
-                    alertMessage.setFill(Color.RED);
                 }
 
                 dbUsers.closeConnection();

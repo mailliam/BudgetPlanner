@@ -157,6 +157,24 @@ public class Databases { //Kasutatud Kristeri sql alust
         return true;  //true, et vea korral midagi ei registreeritaks
     }
 
+    public boolean checkPurchaseExistance() { //Kontrollib, kas tabelis on m6ni ost
+        try {
+            Statement stat = conn.createStatement();
+            String sql = "SELECT EXISTS(SELECT 1 FROM BASKETS); ";
+            ResultSet rs = stat.executeQuery(sql);
+            Boolean dbPurchaseExists = rs.getBoolean(1);
+            System.out.println(dbPurchaseExists);
+
+            rs.close();
+            stat.close();
+            return dbPurchaseExists;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;  //false, et vea korral midagi ei kuvataks
+    }
+
     public boolean checkItemExistance(String item) { //Kontrollib, kas ese on olemas
         try {
             System.out.println(item);
@@ -195,7 +213,7 @@ public class Databases { //Kasutatud Kristeri sql alust
         return buyerAmount;
     }
 
-    public ArrayList getBuyerList() { //Ostjate tabel on tegelikult m6ttetu ja v6iks samamoodi distinktiivselt selekteerida.
+    public ArrayList getBuyerList() { //Ostjate tabel on tegelikult m6ttetu ja v6iks samamoodi distinktiivselt selekteerida. Samas kui on palju kirjeid, siis on moistlik neid luhemast listist otsida
         ArrayList buyerList = new ArrayList();
 
         try {

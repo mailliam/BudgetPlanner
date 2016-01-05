@@ -15,10 +15,14 @@ import javafx.stage.Stage;
 
 /**
  * Created by Maila on 24/11/2015.
+ *
+ * Registreerimisandmete t2itmine, sellise kasutaja mitteolemasolul tema registreerimine
+ *
  */
 public class RegisterScreen {
 
     Stage registerScreen = new Stage();
+    TilePane layout;
     TextField fieldUsername, fieldFirstname, fieldLastname;
     PasswordField fieldPassword;
     int sceneHeight = 600;
@@ -26,31 +30,41 @@ public class RegisterScreen {
     Button buttonRegUser;
     Text alertMessage;
 
-    int buttonWidth = sceneWidth/3;
-
     public RegisterScreen() {
         setupScene();
+        userRegistrationFields();
     }
 
-    private void setupScene() { //Registreerimisakna seadistus
-        TilePane layout = new TilePane();
+    //Registreerimisakna seadistus koos layoutidega
+    private void setupScene() {
+        layout = new TilePane();
         layout.setPadding(new Insets(15,10,0,0));
         layout.setHgap(10);
         layout.setVgap(5);
         Scene scene = new Scene(layout, sceneWidth, sceneHeight);
         scene.getStylesheets().add(getClass().getResource("css/main.css").toExternalForm());
+        //CSS lisamine:
         //http://stackoverflow.com/questions/16236641/javafx-add-dynamically-css-files,
         //http://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#introscenegraph
 
-
         registerScreen.setTitle("User registration");
-        Label un = new Label("Username");
+        registerScreen.setScene(scene);
+        registerScreen.show();
+        registerScreen.setOnCloseRequest(event -> {  //Registreerimisakna sulgemisel vii tagasi sisselogimisakna juurde
+            registerScreen.close();
+            new LoginScreen();
+        });
+    }
+
+    //Node'de tekitamine ning lisamine vastavatesse layoutidesse
+    private void userRegistrationFields(){
+        Label labelUsername = new Label("Username");
         fieldUsername = new TextField();
-        Label pw = new Label("Password");
+        Label labelPassword = new Label("Password");
         fieldPassword = new PasswordField();
-        Label fn = new Label("First name");
+        Label labelFirstname = new Label("First name");
         fieldFirstname = new TextField();
-        Label ln = new Label("Last name");
+        Label labelLastname = new Label("Last name");
         fieldLastname = new TextField();
 
         alertMessage = new Text();
@@ -60,17 +74,12 @@ public class RegisterScreen {
             registerUser();
         });
 
-        layout.getChildren().addAll(un, fieldUsername,pw, fieldPassword,fn, fieldFirstname, ln, fieldLastname, alertMessage, buttonRegUser);
-        registerScreen.setScene(scene);
-        registerScreen.show();
-        registerScreen.setOnCloseRequest(event -> {
-            registerScreen.close();
-            new LoginScreen();
-        });
+        layout.getChildren().addAll(labelUsername, fieldUsername,labelPassword, fieldPassword,labelFirstname,
+                                    fieldFirstname, labelLastname, fieldLastname, alertMessage, buttonRegUser);
     }
 
-
-    private void registerUser() { //Registreerimisnupu seadistus: kontrollib l�bi andmebaasi, kas kasutaja on olemas. kui ei, siis registreerib, kui jah, teavitab, et valitagu uus kasutajanimi
+    //Meetod kontrollib labi andmebaasi, kas kasutaja on olemas. Kui ei, siis registreerib, kui jah, teavitab, et valitagu uus kasutajanimi v6i logigu sisse
+    private void registerUser() {
         String s1 = fieldUsername.getText();
         String s2 = fieldPassword.getText();
         String s3 = fieldFirstname.getText();
@@ -78,19 +87,24 @@ public class RegisterScreen {
         Databases dbUsers = new Databases();
         boolean userExists = dbUsers.checkUserExistance(s1);
         System.out.println(userExists);
-        if (s1.isEmpty()||s2.isEmpty()||s3.isEmpty()||s4.isEmpty()){
+        if (s1.isEmpty()||s2.isEmpty()||s3.isEmpty()||s4.isEmpty()){ //Kui moni vali on tuhi: veateade
             alertMessage.setText("No fields can be left empty!");
             alertMessage.setFill(Color.RED);
-            fieldUsername.setStyle("-fx-border-color: red ; -fx-border-width: 2px ;"); //TextFieldi muutmine: http://stackoverflow.com/questions/24231610/javafx-red-border-for-text-field
         } else {
-            if (!userExists){
+            if (!userExists){                                       //Kui kasutajat pole: registreeri
                 dbUsers.registerUser(s1,s2,s3,s4);
                 dbUsers.closeConnection();
-                registerScreen.close();
-            } else {
                 AlertScreens as = new AlertScreens();
-                as.userAlreadyExists();
+                as.userRegistered();
+                registerScreen.close();
+            } else {                                                //Kui kasutaja on: veateade
                 dbUsers.closeConnection();
+                alertMessage.setText("User already exists.");
+                fieldUsername.clear();
+                fieldPassword.clear();
+                fieldFirstname.clear();
+                fieldLastname.clear();
+                alertMessage.setFill(Color.RED);
             }
         }
     }
