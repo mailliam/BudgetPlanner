@@ -291,6 +291,24 @@ public class Databases { //Kasutatud Kristeri sql alust
         return amount;
     }
 
+    public BigDecimal getPeriodAmountByBuyers(String buyer, LocalDate start, LocalDate end) {
+        BigDecimal amount = new BigDecimal(0);
+        try {
+            Statement stat = conn.createStatement();
+            String sql = "SELECT ROWAMOUNT FROM BASKETS WHERE BUYER = '"+buyer+"' AND DATE BETWEEN '"+start+"' and '"+end+"'; ";
+            ResultSet rs = stat.executeQuery(sql);
+            while (rs.next()) {
+                BigDecimal rowAmount = new BigDecimal(rs.getBigDecimal("ROWAMOUNT").toString());
+                amount = amount.add(rowAmount);
+            }
+            rs.close();
+            stat.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return amount;
+    }
+
     public BigDecimal getPeriodAmount(LocalDate start, LocalDate end){
         BigDecimal periodAmount = new BigDecimal(0);
 

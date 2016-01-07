@@ -78,7 +78,7 @@ public class LoginScreen {
 
     //Node'de tekitamine ning lisamine vastavatesse layoutidesse
     private void loginAndOtherFields () {
-        Text programTitle = new Text("Family's cost tracker");
+        Text programTitle = new Text("Family's Cost Tracker");
         programTitle.setId("Header");
         bp.setTop(programTitle);
         bp.setAlignment(programTitle, Pos.CENTER);

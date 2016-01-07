@@ -218,6 +218,7 @@ public class CostInputScreen {
         BigDecimal purchaseAmount = new BigDecimal(0);
         for (int i = 0; i < rowCounter + 1; i++) {
 
+
             if (!tfBasket[i][3].getText().isEmpty() && !tfBasket[i][4].getText().isEmpty()) { //Kontrollib, kas kasutaja on mõlemad arvutuseks vajalikud väärtused on sisestatud
 
                 for (int u = 0; u < tfBasket[i][3].getText().length(); u++) {  //Asendab vajadusel koguse puhul kasutaja sisestatud ',' '.'.ga
@@ -246,6 +247,7 @@ public class CostInputScreen {
                     tfBasket[i][4].setStyle(null);
                     alertMessage.setText(null); //Kui kasutaja tuleb selle peale, et enne parandamist sisestada uus rida, siis kaob vahepeal alert 2ra.
                 } catch (java.lang.NumberFormatException e) { //Kui saadakse viga, et lahtrisse pole sisestatud numbriline väärtus: veateade
+                    tfBasket[i][5].setText(null);
                     alertMessage.setText("Quantity or price format is incorrect: must be number");
                     alertMessage.setFill(Color.RED);
                     tfBasket[i][3].setStyle("-fx-border-color: red ; -fx-border-width: 2px ;");
@@ -296,7 +298,7 @@ public class CostInputScreen {
 
         if (checkInsertionCorrectness()) { //Kui kontroll on andnud õige tulemuse, siis..
 
-            for (int i = 0; i < rowCounter + 1; i++) { //Kordab seda tsüklit niikaua, kuni on käidud läbi kõik täidetud read ja sorteerinud sealt välja täidetud read
+            for (int i = 0; i < rowCounter + 1; i++) { //Kordab seda tsüklit niikaua, kuni on käidud läbi kõik read ja sorteerinud sealt välja täidetud read
                 if  (!tfBasket[i][1].getText().isEmpty() && !tfBasket[i][2].getText().isEmpty() && !tfBasket[i][3]
                         .getText().isEmpty() && !tfBasket[i][4].getText().isEmpty() && !tfBasket[i][5].getText()
                         .isEmpty()) {

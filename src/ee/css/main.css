@@ -13,6 +13,11 @@
     -fx-background-color: linear-gradient(to bottom, #446C96, derive(#446C96,+30%));    
 }
 
+.choice-box{
+    -fx-text-fill: #C9DAEC;
+    -fx-background-color: #446C96;
+}
+
 .button:hover{
     -fx-background-color: linear-gradient(to top, #446C96, derive(#446C96,+30%)); 
 }
@@ -27,7 +32,7 @@
 }
 
 .label{
-    -fx-text-fill: #E5EDF5;
+    -fx-text-fill: #2B5581;
 }
 
 .text-field{
@@ -77,7 +82,7 @@
 }
 
 #tableHeader {
-    -fx-font: bold 16pt "Calibri Light";
+    -fx-font: bold 14pt "Calibri";
     -fx-text-fill: #2B5581;
 }
 

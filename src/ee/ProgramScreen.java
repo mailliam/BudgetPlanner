@@ -38,7 +38,11 @@ public class ProgramScreen {
     //Programmiakna seadistus koos layoutiga
     private void setupScene() {
         programScreen.setTitle("Program");
-        programScreen.setOnCloseRequest(event -> programScreen.close());
+        programScreen.setOnCloseRequest(event -> {
+            programScreen.close();
+            new LoginScreen();
+        });
+
         bp = new BorderPane();
 
         Scene sc = new Scene(bp,sceneWidth,sceneHeight);
@@ -73,10 +77,6 @@ public class ProgramScreen {
         fileMenu.getItems().add(logout);
         logout.setOnAction(event -> logoutUser());
 
-        Menu settingsMenu = new Menu("_Settings");
-        MenuItem categories = new MenuItem("Categories");
-        settingsMenu.getItems().add(categories);
-
         Menu viewMenu = new Menu ("_View");                     //Valik n2itab antud ekraanil erinevate perioodide kulutusi
         viewPeriod = new ToggleGroup();
         view3 = new RadioMenuItem("View last 3 months");
@@ -91,7 +91,7 @@ public class ProgramScreen {
         viewMenu.getItems().addAll(view3, view6, view12);
 
         MenuBar menuBar = new MenuBar();
-        menuBar.getMenus().addAll(fileMenu, settingsMenu, viewMenu);
+        menuBar.getMenus().addAll(fileMenu, viewMenu);
 
         bp.setTop(menuBar);
 
@@ -107,7 +107,7 @@ public class ProgramScreen {
         Text noPurchase = new Text("There are no purchases inserted: nothing to see yet.");
         months = periodLength();
         heading = new Text("Costs in last " +months+ " months by categories");
-        heading.setFont(Font.font("Calibri", 30));
+        heading.setFont(Font.font("Calibri", 20));
 
         //kontrollib, kas tabelis eksisteerib oste: kui jah, siis kuvatakse tabel+graafik.
         if (!db.checkPurchaseExistance()) {
@@ -122,15 +122,12 @@ public class ProgramScreen {
 
         //Iga kasutaja valiku puhul View menüüs kuvatakse ekraanile uue perioodi vaade
         view12.setOnAction(event -> {
-            v.getChildren().removeAll(heading, table.amountLastMonthsByCategories(periodLength()), graph.amountByBuyers());
             showMainTableAndGraph();
         });
         view6.setOnAction(event -> {
-            v.getChildren().removeAll(heading, table.amountLastMonthsByCategories(periodLength()), graph.amountByBuyers());
             showMainTableAndGraph();
         });
         view3.setOnAction(event -> {
-            v.getChildren().removeAll(heading, table.amountLastMonthsByCategories(periodLength()), graph.amountByBuyers());
             showMainTableAndGraph();
         });
 

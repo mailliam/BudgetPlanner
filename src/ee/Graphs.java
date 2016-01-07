@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
 
 /**
@@ -28,7 +29,7 @@ public class Graphs {
 
     }
 
-    public PieChart amountByBuyers() {
+    public PieChart amountByPeriodByBuyers(LocalDate startDate, LocalDate endDate) {
         //Pirukagraafiku loomisel sain abi:
         //http://www.java2s.com/Tutorials/Java/javafx.scene.chart/PieChart/0040__PieChart.PieChart_.htm
         //http://docs.oracle.com/javase/8/javafx/user-interface-tutorial/pie-chart.htm#CIHFDADD
@@ -42,7 +43,8 @@ public class Graphs {
         for (int i = 0; i < buyersList.size(); i++) {
 
             String buyer = buyersList.get(i).toString();
-            double amount = (db.getBuyerAmount(buyersList.get(i).toString())).doubleValue();
+            double amount = (db.getPeriodAmountByBuyers(buyer, startDate, endDate)).doubleValue();
+            System.out.println(amount);
 
             data.addAll(new PieChart.Data(buyer,amount));
             chart.setData(data);
@@ -83,7 +85,6 @@ public class Graphs {
 
                 LocalDate startDate,endDate;
 
-
                 if(j >= numberOfMonths-today.getMonthValue() ){
                     int periodMonth = currentMonth-(numberOfMonths-j-1);
                     startDate = today.withMonth(periodMonth).withDayOfMonth(1);
@@ -94,7 +95,6 @@ public class Graphs {
                     startDate = today.withYear(today.getYear()-1).withMonth(periodMonth).withDayOfMonth(1);
                     endDate = today.withYear(today.getYear() - 1).withMonth(periodMonth).withDayOfMonth(today.withYear(today.getYear() - 1).withMonth(periodMonth).lengthOfMonth());
                 }
-
 
                 String category = categoryList.get(i).toString();
                 amounts[i][j] = (db.getPeriodAmountByCategories(category, startDate, endDate));
@@ -108,9 +108,6 @@ public class Graphs {
         db.closeConnection();
         return chart;
     }
-
-
-
 
 }
 

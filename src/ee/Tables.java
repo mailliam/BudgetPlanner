@@ -43,12 +43,12 @@ public class Tables { //P2ringu tabelite jaoks
         LocalDate today = LocalDate.now(); //http://www.java2s.com/Tutorials/Java/java.time/LocalDate/index.htm
         int currentMonth = today.getMonthValue(); //Kas kuup2evade jaoks v6iks ka eraldi klassi teha?
 
-        Label[][] months, categories, amounts;
+        Label[][] months, categories, amounts, totalAmount;
 
         categories = new Label[categoryList.size()][1];
         months = new Label[1][numberOfMonths];
-
         amounts = new Label[categoryList.size()][numberOfMonths];
+        totalAmount = new Label[1][numberOfMonths];
 
 
         for (int i = 0; i < categoryList.size(); i++) {
@@ -63,7 +63,6 @@ public class Tables { //P2ringu tabelite jaoks
         for (int j = 0; j < numberOfMonths; j++) {
             months[0][j] = new Label();
             months[0][j].setText((today.getMonth().minus(numberOfMonths-j-1)).getDisplayName(TextStyle.SHORT, Locale.ROOT));
-            months[0][j].setFont(Font.font("Arial", FontWeight.BOLD, 20));
             months[0][j].setPrefSize(100,25);
             months[0][j].setPadding(new Insets(0,15,0,15));
             months[0][j].setId("tableHeader");
@@ -94,8 +93,19 @@ public class Tables { //P2ringu tabelite jaoks
                 table.setAlignment(Pos.CENTER); //Et tabel oleks ProgramScreenil keskel, tuleb see ka siin ära määrata
                 table.setPadding(new Insets(10,0,10,0));
 
+                Label labelTotal = new Label("Total");
+                labelTotal.setId("tableHeader");
+                labelTotal.setPrefSize(150, 25);
+                labelTotal.setPadding(new Insets(0,15,0,15));
+                totalAmount[0][j] = new Label();
+                totalAmount[0][j].setId("tableHeader");
+                totalAmount[0][j].setPadding(new Insets(0,15,0,15));
+                totalAmount[0][j].setText(db.getPeriodAmount(startDate, endDate).toString());
+                table.add(labelTotal,0,categoryList.size()+1);
+                table.add(totalAmount[0][j], j+1, categoryList.size()+1);
             }
         }
+
         db.closeConnection();
         return table;
     }
@@ -135,5 +145,43 @@ public class Tables { //P2ringu tabelite jaoks
             }
         }
     }
+
+    public GridPane amountByPeriodByCategories(LocalDate startDate, LocalDate endDate) {
+        Databases db = new Databases();
+        ArrayList categoryList = db.getCategoryList();
+        GridPane table = new GridPane();
+        table.setGridLinesVisible(true);
+
+        Label[] categories, amounts;
+
+        categories = new Label[categoryList.size()];
+        amounts = new Label[categoryList.size()];
+
+        for (int i = 0; i < categoryList.size(); i++) {
+            categories[i] = new Label();
+            categories[i].setText((categoryList.get(i)).toString());
+            categories[i].setPrefSize(150, 25);
+            categories[i].setPadding(new Insets(0, 15, 0, 15));
+            categories[i].setId("tableHeader");
+            table.add(categories[i], 0, i + 1);
+        }
+
+        for (int i = 0; i < categoryList.size(); i++) {
+            amounts[i] = new Label();
+
+            String category = categoryList.get(i).toString();
+            amounts[i].setText(db.getPeriodAmountByCategories(category, startDate, endDate).toString());
+            amounts[i].setPadding(new Insets(0, 15, 0, 15));
+            amounts[i].setId("tableData");
+            table.add(amounts[i], 1, i + 1);
+            table.setAlignment(Pos.CENTER); //Et tabel oleks ProgramScreenil keskel, tuleb see ka siin ära määrata
+            table.setPadding(new Insets(10,0,10,0));
+
+        }
+
+        db.closeConnection();
+        return table;
+    }
+
 
 }
