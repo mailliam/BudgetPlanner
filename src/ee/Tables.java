@@ -12,6 +12,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 
@@ -146,42 +147,110 @@ public class Tables { //P2ringu tabelite jaoks
         }
     }
 
-    public GridPane amountByPeriodByCategories(LocalDate startDate, LocalDate endDate) {
+    public GridPane periodAmountByCategories(LocalDate startDate, LocalDate endDate) {
         Databases db = new Databases();
         ArrayList categoryList = db.getCategoryList();
         GridPane table = new GridPane();
         table.setGridLinesVisible(true);
 
-        Label[] categories, amounts;
-
-        categories = new Label[categoryList.size()];
-        amounts = new Label[categoryList.size()];
+        Label[][] tableFields = new Label[categoryList.size()][2];
+        Label totalAmount = new Label();
 
         for (int i = 0; i < categoryList.size(); i++) {
-            categories[i] = new Label();
-            categories[i].setText((categoryList.get(i)).toString());
-            categories[i].setPrefSize(150, 25);
-            categories[i].setPadding(new Insets(0, 15, 0, 15));
-            categories[i].setId("tableHeader");
-            table.add(categories[i], 0, i + 1);
+            for (int j = 0; j < 2; j++) {
+                String category = categoryList.get(i).toString();
+                BigDecimal amount = db.getPeriodAmountByCategories(category, startDate, endDate);
+                BigDecimal c = new BigDecimal("0");
+                tableFields[i][j] = new Label();
+                tableFields[i][j].setPadding(new Insets(0, 15, 0, 15));
+
+                if(!amount.equals(c)) {
+                    switch (j) {
+                        case 0:
+                            tableFields[i][0].setText(category);
+                            tableFields[i][0].setPrefSize(150,25);
+                            tableFields[i][0].setId("tableHeader");
+                            table.add(tableFields[i][0],0,i);
+                            break;
+                        case 1:
+                            tableFields[i][1].setText(amount.toString());
+                            tableFields[i][1].setId("tableData");
+                            table.add(tableFields[i][1],1,i);
+                            break;
+                    }
+                }
+            }
         }
 
-        for (int i = 0; i < categoryList.size(); i++) {
-            amounts[i] = new Label();
+        table.setAlignment(Pos.CENTER); //Et tabel oleks ProgramScreenil keskel, tuleb see ka siin ära määrata
+        table.setPadding(new Insets(10,0,10,0));
 
-            String category = categoryList.get(i).toString();
-            amounts[i].setText(db.getPeriodAmountByCategories(category, startDate, endDate).toString());
-            amounts[i].setPadding(new Insets(0, 15, 0, 15));
-            amounts[i].setId("tableData");
-            table.add(amounts[i], 1, i + 1);
-            table.setAlignment(Pos.CENTER); //Et tabel oleks ProgramScreenil keskel, tuleb see ka siin ära määrata
-            table.setPadding(new Insets(10,0,10,0));
+        Label labelTotal = new Label("Total");
+        labelTotal.setId("tableHeader");
+        labelTotal.setPrefSize(150, 25);
+        labelTotal.setPadding(new Insets(0,15,0,15));
 
-        }
+        totalAmount.setId("tableHeader");
+        totalAmount.setPadding(new Insets(0, 15, 0, 15));
+        totalAmount.setText(db.getPeriodAmount(startDate, endDate).toString());
+        table.add(labelTotal, 0, categoryList.size()+1);
+        table.add(totalAmount, 1, categoryList.size()+1);
 
         db.closeConnection();
         return table;
     }
 
+    public GridPane periodAmountByItemsInCategory (String category, LocalDate startDate, LocalDate endDate) {
+        Databases db = new Databases();
+        ArrayList itemList = db.getItemListForCategory(category);
+        GridPane table = new GridPane();
+        table.setGridLinesVisible(true);
+
+        Label[][] tableFields = new Label[itemList.size()][2];
+        Label totalAmount = new Label();
+
+        for (int i = 0; i < itemList.size(); i++) {
+            for (int j = 0; j < 2; j++) {
+                String item = itemList.get(i).toString();
+                BigDecimal amount = db.getPeriodAmountByItems(item, startDate, endDate);
+                BigDecimal c = new BigDecimal("0");
+                tableFields[i][j] = new Label();
+                tableFields[i][j].setPadding(new Insets(0, 15, 0, 15));
+
+                if(!amount.equals(c)) {
+                    switch (j) {
+                        case 0:
+                            tableFields[i][0].setText(item);
+                            tableFields[i][0].setPrefSize(150,25);
+                            tableFields[i][0].setId("tableHeader");
+                            table.add(tableFields[i][0],0,i);
+                            break;
+                        case 1:
+                            tableFields[i][1].setText(amount.toString());
+                            tableFields[i][1].setId("tableData");
+                            table.add(tableFields[i][1],1,i);
+                            break;
+                    }
+                }
+            }
+        }
+
+        table.setAlignment(Pos.CENTER); //Et tabel oleks ProgramScreenil keskel, tuleb see ka siin ära määrata
+        table.setPadding(new Insets(10,0,10,0));
+
+        Label labelTotal = new Label("Total");
+        labelTotal.setId("tableHeader");
+        labelTotal.setPrefSize(150, 25);
+        labelTotal.setPadding(new Insets(0,15,0,15));
+
+        totalAmount.setId("tableHeader");
+        totalAmount.setPadding(new Insets(0, 15, 0, 15));
+        totalAmount.setText(db.getPeriodAmountByCategories(category, startDate, endDate).toString());
+        table.add(labelTotal, 0, itemList.size()+1);
+        table.add(totalAmount, 1, itemList.size()+1);
+
+        db.closeConnection();
+        return table;
+    }
 
 }

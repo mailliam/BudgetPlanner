@@ -29,7 +29,7 @@ public class Graphs {
 
     }
 
-    public PieChart amountByPeriodByBuyers(LocalDate startDate, LocalDate endDate) {
+    public PieChart periodAmountByBuyers(LocalDate startDate, LocalDate endDate) {
         //Pirukagraafiku loomisel sain abi:
         //http://www.java2s.com/Tutorials/Java/javafx.scene.chart/PieChart/0040__PieChart.PieChart_.htm
         //http://docs.oracle.com/javase/8/javafx/user-interface-tutorial/pie-chart.htm#CIHFDADD
@@ -44,6 +44,30 @@ public class Graphs {
 
             String buyer = buyersList.get(i).toString();
             double amount = (db.getPeriodAmountByBuyers(buyer, startDate, endDate)).doubleValue();
+            System.out.println(amount);
+
+            data.addAll(new PieChart.Data(buyer,amount));
+            chart.setData(data);
+        }
+        db.closeConnection(); //Kui ma kasutan siin close connectionit ja db loomise teen klassi, siis ka see tekitab j2rgmise graafikuga probleeme?
+        return chart;
+    }
+
+    public PieChart periodAmountCategoryByBuyers(String category, LocalDate startDate, LocalDate endDate) {
+        //Pirukagraafiku loomisel sain abi:
+        //http://www.java2s.com/Tutorials/Java/javafx.scene.chart/PieChart/0040__PieChart.PieChart_.htm
+        //http://docs.oracle.com/javase/8/javafx/user-interface-tutorial/pie-chart.htm#CIHFDADD
+        //http://docs.oracle.com/javase/8/javafx/user-interface-tutorial/line-chart.htm#CIHGBCFI
+
+        Databases db = new Databases();
+        PieChart chart = new PieChart();
+        ArrayList buyersList = db.getBuyerList();
+
+        ObservableList<PieChart.Data> data = FXCollections.observableArrayList();
+        for (int i = 0; i < buyersList.size(); i++) {
+
+            String buyer = buyersList.get(i).toString();
+            double amount = (db.getPeriodAmountCategoryByBuyers(category, buyer, startDate, endDate)).doubleValue();
             System.out.println(amount);
 
             data.addAll(new PieChart.Data(buyer,amount));

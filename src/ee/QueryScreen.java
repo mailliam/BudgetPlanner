@@ -1,11 +1,7 @@
 package ee;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.Scene;
-import javafx.scene.chart.PieChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
@@ -17,7 +13,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -93,7 +88,8 @@ public class QueryScreen {
 
         queryResult = new GridPane();
         queryResult.setHgap(5);
-        queries.setCenter(periodResult());
+        //queries.setCenter(periodResult());
+        queries.setCenter(periodAndCategoryResult());
 
     }
 
@@ -107,10 +103,28 @@ public class QueryScreen {
 
         Tables tbl = new Tables();
         queryResult.add(heading,0,0);
-        queryResult.add(tbl.amountByPeriodByCategories(startDate, endDate),0,1);
+        queryResult.add(tbl.periodAmountByCategories(startDate, endDate),0,1);
 
         Graphs graph = new Graphs();
-        queryResult.add(graph.amountByPeriodByBuyers(startDate, endDate),1,1);
+        queryResult.add(graph.periodAmountByBuyers(startDate, endDate),1,1);
+        return queryResult;
+    }
+
+    private GridPane periodAndCategoryResult () {
+
+        LocalDate startDate = dpPeriodStartDate.getValue();
+        LocalDate endDate = dpPeriodEndDate.getValue();
+        String category = cbCategory.getValue().toString();
+
+        Text heading = new Text(category+ " costs from " +startDate+ " to " +endDate);
+        heading.setFont(Font.font("Calibri", 20));
+
+        Tables tbl = new Tables();
+        queryResult.add(heading,0,0);
+        queryResult.add(tbl.periodAmountByItemsInCategory(category, startDate, endDate),0,1);
+
+        Graphs graph = new Graphs();
+        queryResult.add(graph.periodAmountCategoryByBuyers(category, startDate, endDate),1,1);
         return queryResult;
     }
 

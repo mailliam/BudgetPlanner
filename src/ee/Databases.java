@@ -97,12 +97,12 @@ public class Databases { //Kasutatud Kristeri sql alust
             Statement stat = conn.createStatement();
             String sql = "SELECT EXISTS(SELECT 1 FROM USERS WHERE USERNAME = '"+username+"'); "; //http://stackoverflow.com/questions/9755860/valid-query-to-check-if-row-exists-in-sqlite3
             ResultSet rs = stat.executeQuery(sql);
-            Boolean dbUsername = rs.getBoolean(1);
-            System.out.println(dbUsername);
+            Boolean dbUserExists = rs.getBoolean(1);
+            System.out.println(dbUserExists);
 
             rs.close();
             stat.close();
-            return dbUsername;
+            return dbUserExists;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -144,12 +144,12 @@ public class Databases { //Kasutatud Kristeri sql alust
             Statement stat = conn.createStatement();
             String sql = "SELECT EXISTS(SELECT 1 FROM BUYERS WHERE BUYER = '"+buyer+"'); ";
             ResultSet rs = stat.executeQuery(sql);
-            Boolean dbBuyer = rs.getBoolean(1);
-            System.out.println(dbBuyer);
+            Boolean dbBuyerExists = rs.getBoolean(1);
+            System.out.println(dbBuyerExists);
 
             rs.close();
             stat.close();
-            return dbBuyer;
+            return dbBuyerExists;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -211,6 +211,26 @@ public class Databases { //Kasutatud Kristeri sql alust
             e.printStackTrace();
         }
         return buyerAmount;
+    }
+
+    public ArrayList getItemListForCategory(String category) { //Ostjate tabel on tegelikult m6ttetu ja v6iks samamoodi distinktiivselt selekteerida. Samas kui on palju kirjeid, siis on moistlik neid luhemast listist otsida
+        ArrayList itemList = new ArrayList();
+
+        try {
+            Statement stat = conn.createStatement();
+            String sql = "SELECT ITEM FROM ITEMS WHERE CATEGORY = '"+category+"';";
+            ResultSet rs = stat.executeQuery(sql);
+            while(rs.next()) {
+                String item = rs.getString("ITEM");
+                itemList.add(item);
+            }
+            rs.close();
+            stat.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return itemList;
     }
 
     public ArrayList getBuyerList() { //Ostjate tabel on tegelikult m6ttetu ja v6iks samamoodi distinktiivselt selekteerida. Samas kui on palju kirjeid, siis on moistlik neid luhemast listist otsida
@@ -309,6 +329,43 @@ public class Databases { //Kasutatud Kristeri sql alust
         return amount;
     }
 
+    public BigDecimal getPeriodAmountCategoryByBuyers(String category, String buyer, LocalDate start, LocalDate end) {
+        BigDecimal amount = new BigDecimal(0);
+        try {
+            Statement stat = conn.createStatement();
+            String sql = "SELECT ROWAMOUNT FROM BASKETS WHERE CATEGORY = '"+category+"' AND BUYER = '"+buyer+"' " +
+                    "AND DATE BETWEEN '"+start+"' and '"+end+"'; ";
+            ResultSet rs = stat.executeQuery(sql);
+            while (rs.next()) {
+                BigDecimal rowAmount = new BigDecimal(rs.getBigDecimal("ROWAMOUNT").toString());
+                amount = amount.add(rowAmount);
+            }
+            rs.close();
+            stat.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return amount;
+    }
+
+    public BigDecimal getPeriodAmountByItems(String item, LocalDate start, LocalDate end) {
+        BigDecimal amount = new BigDecimal(0);
+        try {
+            Statement stat = conn.createStatement();
+            String sql = "SELECT ROWAMOUNT FROM BASKETS WHERE ITEM = '"+item+"' AND DATE BETWEEN '"+start+"' and '"+end+"'; ";
+            ResultSet rs = stat.executeQuery(sql);
+            while (rs.next()) {
+                BigDecimal rowAmount = new BigDecimal(rs.getBigDecimal("ROWAMOUNT").toString());
+                amount = amount.add(rowAmount);
+            }
+            rs.close();
+            stat.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return amount;
+    }
+
     public BigDecimal getPeriodAmount(LocalDate start, LocalDate end){
         BigDecimal periodAmount = new BigDecimal(0);
 
@@ -327,58 +384,6 @@ public class Databases { //Kasutatud Kristeri sql alust
         }
         return periodAmount;
     }
-
-    public BigDecimal calculateCostgroupAmount(String costgroup, String buyer) { //Hetkel kasutu
-        BigDecimal amount = new BigDecimal(0);
-
-        try {
-            Statement stat = conn.createStatement();
-            String sql = "SELECT QUANTITY, PRICE FROM PURCHASE WHERE COSTGROUP = '"+costgroup+"' AND BUYER = '"+buyer+"' COLLATE NOCASE;"; //Tegelikult tuleks luua uus tabel ja sinna panna collate nocase
-            ResultSet rs = stat.executeQuery(sql);
-            while (rs.next()) {
-                BigDecimal quantity = new BigDecimal(rs.getBigDecimal("QUANTITY").toString());
-                BigDecimal price = new BigDecimal(rs.getBigDecimal("PRICE").toString());
-                BigDecimal rowAmount = quantity.multiply(price);
-                amount = amount.add(rowAmount);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return amount;
-    } //Jama
-
-    public ArrayList<BigDecimal> calculateCostgroupAmountByBuyers(String costgroup) { //Hetkel kasutu
-        ArrayList list = new ArrayList();
-        BigDecimal amountAvo = new BigDecimal(0);
-        BigDecimal amountMaila = new BigDecimal(0);
-
-        try {
-            Statement stat = conn.createStatement();
-            String sqlAvo = "SELECT QUANTITY, PRICE FROM PURCHASE WHERE COSTGROUP = '"+costgroup+"' AND BUYER = 'Avo' COLLATE NOCASE;";
-            String sqlMaila = "SELECT QUANTITY, PRICE FROM PURCHASE WHERE COSTGROUP = '"+costgroup+"' AND BUYER = 'Maila' COLLATE NOCASE;";; //Tegelikult tuleks luua uus tabel ja sinna panna collate nocase
-            ResultSet rsAvo = stat.executeQuery(sqlAvo);
-            while (rsAvo.next()) {
-                BigDecimal quantity = new BigDecimal(rsAvo.getBigDecimal("QUANTITY").toString());
-                BigDecimal price = new BigDecimal(rsAvo.getBigDecimal("PRICE").toString());
-                BigDecimal rowAmount = quantity.multiply(price);
-                amountAvo = amountAvo.add(rowAmount);
-                list.add(0,amountAvo);
-            }
-            ResultSet rsMaila = stat.executeQuery(sqlMaila);
-            while (rsMaila.next()) {
-                BigDecimal quantity = new BigDecimal(rsMaila.getBigDecimal("QUANTITY").toString());
-                BigDecimal price = new BigDecimal(rsMaila.getBigDecimal("PRICE").toString());
-                BigDecimal rowAmount = quantity.multiply(price);
-                amountMaila = amountMaila.add(rowAmount);
-                list.add(1,amountMaila);
-            }
-
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
-    } //Jama
 
     public void checkUser() { //see kood p�rineb http://www.tutorialspoint.com/sqlite/sqlite_java.htm
         //Katsetan, kas registreeritud tegelased eksisteerivad, see jupp on ainult testi jaoks
