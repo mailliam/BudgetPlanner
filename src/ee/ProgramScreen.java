@@ -107,7 +107,7 @@ public class ProgramScreen {
         Text noPurchase = new Text("There are no purchases inserted: nothing to see yet.");
         months = periodLength();
         heading = new Text("Costs in last " +months+ " months by categories");
-        heading.setFont(Font.font("Calibri", 20));
+        heading.setFont(Font.font("Calibri", 24));
 
         //kontrollib, kas tabelis eksisteerib oste: kui jah, siis kuvatakse tabel+graafik.
         if (!db.checkPurchaseExistance()) {

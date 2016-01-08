@@ -44,9 +44,11 @@ public class Graphs {
 
             String buyer = buyersList.get(i).toString();
             double amount = (db.getPeriodAmountByBuyers(buyer, startDate, endDate)).doubleValue();
-            System.out.println(amount);
 
-            data.addAll(new PieChart.Data(buyer,amount));
+            System.out.println(amount);
+            if (amount != 0.0){
+                data.addAll(new PieChart.Data(buyer,amount));
+            }
             chart.setData(data);
         }
         db.closeConnection(); //Kui ma kasutan siin close connectionit ja db loomise teen klassi, siis ka see tekitab j2rgmise graafikuga probleeme?
@@ -70,7 +72,10 @@ public class Graphs {
             double amount = (db.getPeriodAmountCategoryByBuyers(category, buyer, startDate, endDate)).doubleValue();
             System.out.println(amount);
 
-            data.addAll(new PieChart.Data(buyer,amount));
+            if (amount != 0) {
+                data.addAll(new PieChart.Data(buyer,amount));
+            }
+
             chart.setData(data);
         }
         db.closeConnection(); //Kui ma kasutan siin close connectionit ja db loomise teen klassi, siis ka see tekitab j2rgmise graafikuga probleeme?

@@ -22,7 +22,6 @@
     -fx-background-color: linear-gradient(to top, #446C96, derive(#446C96,+30%)); 
 }
 
-
 .text{
     -fx-text-fill: #2B5581;
 }
@@ -42,7 +41,7 @@
 
 
 .date-picker-popup > .month-year-pane {
-    -fx-background-color: #2B5581;
+    -fx-background-color: #C9DAEC;
 }
 
 .menu-bar {
@@ -58,6 +57,10 @@
 }
 
 .menu-item:hover {
+    -fx-background-color: #C9DAEC;
+}
+
+.menu-item:focused {
     -fx-background-color: #C9DAEC;
 }
 
@@ -91,11 +94,22 @@
     -fx-text-fill: #2B5581;
 }
 
-#alert {
-    -fx-font: bold 16pt "Calibri Light";
-    -fx-text-inner-color: #FF01F3;
+.text-area {
+    -fx-background-color: #9ABEE3;
 }
 
+.text-area .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.text-area .scroll-pane .viewport{
+    -fx-background-color: transparent;
+}
+
+
+.text-area .scroll-pane .content{
+    -fx-background-color: transparent;
+}
 
 
 

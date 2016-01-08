@@ -165,6 +165,7 @@ public class CostInputScreen {
                 tfBasket[i][0].setEditable(false);              //Rea nr on automaatne, kasutaja ei tohi seda muuta
                 basketFields.add(tfBasket[i][j], j, i);         //Lisab basketFieldsile, mis on GridPane, TextFieldid
                 basket.setContent(basketFields);                //lisab ostukorvile, mis on ScrollPane, GridPane, mis koosneb TextFieldidest
+
             }
 
             tfBasket[rowCounter][5].setEditable(false);         //rea summa on automaatne - kasutaja ei tohi seda muuta
@@ -184,10 +185,12 @@ public class CostInputScreen {
 
         tfBasket[rowCounter][3].textProperty().addListener((observable, oldValue, newValue) -> {  //Quantity: V‰‰rtuse muutumisel arvuta rea summa
             calculateRowAmount();
+
         });
 
         tfBasket[rowCounter][4].textProperty().addListener((observable, oldValue, newValue) -> {  //Price: V‰‰rtuse muutumisel arvuta rea summa
             calculateRowAmount();
+
         });
 
     }
@@ -197,13 +200,13 @@ public class CostInputScreen {
         Databases db = new Databases();
 
         for (int i = 0; i < rowCounter + 1; i++) {
-            String item = tfBasket[rowCounter][1].getText();
-
+            String item = tfBasket[i][1].getText();
             String category = db.getCategoryForItem(item);
             if (db.checkItemExistance(item)) {
-                tfBasket[rowCounter][2].setText(category);
-                tfBasket[rowCounter][2].setEditable(false); //Kui kategooria on leitud, siis kasutaja seda enam k‰sitsi muuta ei saa
+                tfBasket[i][2].setText(category);
+                tfBasket[i][2].setEditable(false); //Kui kategooria on leitud, siis kasutaja seda enam k‰sitsi muuta ei saa
             } else {
+                tfBasket[i][2].clear();
                 tfBasket[i][2].setEditable(true);
             }
         }
@@ -213,13 +216,14 @@ public class CostInputScreen {
 
 
     //Meetod arvutab rea summa, korrutades hinna ja koguse. Seejuures kontrollitakse, kas kasutaja on sisestanud numbrilised
-    //v‰‰rtuesd (kui mitte, siis veateade). Niipalju tuleb kasutajale vastu, et komad asendab punktiga.
+    //v‰‰rtused (kui mitte, siis veateade). Niipalju tuleb kasutajale vastu, et komad asendab punktiga.
     private void calculateRowAmount() {
         BigDecimal purchaseAmount = new BigDecimal(0);
         for (int i = 0; i < rowCounter + 1; i++) {
 
-
-            if (!tfBasket[i][3].getText().isEmpty() && !tfBasket[i][4].getText().isEmpty()) { //Kontrollib, kas kasutaja on mılemad arvutuseks vajalikud v‰‰rtused on sisestatud
+            if(tfBasket[i][3].getText().isEmpty() || tfBasket[i][4].getText().isEmpty()) { //Kui kogus vıi hind on t¸hi, t¸hjenda summa
+                tfBasket[i][5].clear();
+            } else {
 
                 for (int u = 0; u < tfBasket[i][3].getText().length(); u++) {  //Asendab vajadusel koguse puhul kasutaja sisestatud ',' '.'.ga
                     String text = tfBasket[i][3].getText();
@@ -247,13 +251,14 @@ public class CostInputScreen {
                     tfBasket[i][4].setStyle(null);
                     alertMessage.setText(null); //Kui kasutaja tuleb selle peale, et enne parandamist sisestada uus rida, siis kaob vahepeal alert 2ra.
                 } catch (java.lang.NumberFormatException e) { //Kui saadakse viga, et lahtrisse pole sisestatud numbriline v‰‰rtus: veateade
-                    tfBasket[i][5].setText(null);
                     alertMessage.setText("Quantity or price format is incorrect: must be number");
                     alertMessage.setFill(Color.RED);
                     tfBasket[i][3].setStyle("-fx-border-color: red ; -fx-border-width: 2px ;");
                     tfBasket[i][4].setStyle("-fx-border-color: red ; -fx-border-width: 2px ;");
                 }
             }
+
+
         }
         tfPurchaseAmount.setText(purchaseAmount.toString());
 
@@ -264,7 +269,7 @@ public class CostInputScreen {
     //Kui tagastatakse "false" siis ostu ei salvestata ja kuvatakse kasutajale veateade
     private boolean checkInsertionCorrectness () {
 
-        if(tfBuyer.getText().isEmpty() || tfStore.getText().isEmpty() || dpDate.getValue() == null) { //Kui kuup‰ev pole valitud, siis == null: http://code.makery.ch/blog/javafx-8-date-picker/
+        if(tfBuyer.getText().isEmpty() || tfStore.getText().isEmpty() || dpDate.getValue() == null) { //Kui kuup‰ev pole valitud, siis see vırdub null: http://code.makery.ch/blog/javafx-8-date-picker/
             alertMessage.setText("Buyer, store and date must be selected");
             alertMessage.setFill(Color.RED);
             return false;
@@ -285,6 +290,7 @@ public class CostInputScreen {
 
                     } else {
                         alertMessage.setText("You have uncompleted rows");
+                        alertMessage.setFill(Color.RED);
                         return false;
                     }
                 }
