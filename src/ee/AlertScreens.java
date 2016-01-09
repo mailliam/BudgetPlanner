@@ -12,17 +12,17 @@ import javafx.stage.Stage;
 
 /**
  * Created by Maila on 28/11/2015.
+ *
+ * Erinevad teavitusaknad
+ *
  */
-public class AlertScreens {  //Erinevad teavitusaknad
+public class AlertScreens {
     Stage alertScreen = new Stage();
     int sceneHeight = 100;
-    int sceneWidth = 400;
+    int sceneWidth = 300;
 
-
-
-    public void userRegistered() { //Teavitus, kui kasutaja on edukalt registreeritud
-
-
+    //Teavitus, kui kasutaja on edukalt registreeritud
+    public void userRegistered() {
         StackPane sp = new StackPane();
         Scene sc = new Scene(sp,sceneWidth,sceneHeight);
         sc.getStylesheets().add(getClass().getResource("css/main.css").toExternalForm());
@@ -38,47 +38,30 @@ public class AlertScreens {  //Erinevad teavitusaknad
         });
 
         alertScreen.setTitle("Notification");
-        alertScreen.setOnCloseRequest(event -> alertScreen.close());
-        sp.getChildren().addAll(message,buttonOK);
-        alertScreen.setScene(sc);
-        alertScreen.show();
-    }
-
-    public void userAlreadyExists() { //Teavitus kui selline kasutaja on juba olemas
-        StackPane sp = new StackPane();
-        Scene sc = new Scene(sp,sceneWidth,sceneHeight);
-        sc.getStylesheets().add(getClass().getResource("css/main.css").toExternalForm());
-        //http://stackoverflow.com/questions/16236641/javafx-add-dynamically-css-files,
-        //http://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#introscenegraph
-
-        Text message = new Text("Username already exists. Pick another username or log in");
-        sp.setAlignment(message, Pos.TOP_CENTER);
-        Button buttonOK = new Button("OK");
-        buttonOK.setOnAction(event -> {
+        alertScreen.setOnCloseRequest(event -> {
             alertScreen.close();
+            new LoginScreen();
         });
-
-        alertScreen.setTitle("Notification");
-        alertScreen.setOnCloseRequest(event -> alertScreen.close());
         sp.getChildren().addAll(message,buttonOK);
         alertScreen.setScene(sc);
         alertScreen.show();
     }
 
-    public void passwordIncorrect() { //Teavitus vale parooli sisestamisest
+    //Teavitus vale parooli sisestamisest
+    public void passwordIncorrect() {
         StackPane sp = new StackPane();
         Scene sc = new Scene (sp, sceneWidth,sceneHeight);
         sc.getStylesheets().add(getClass().getResource("css/main.css").toExternalForm());
         //http://stackoverflow.com/questions/16236641/javafx-add-dynamically-css-files,
         //http://docs.oracle.com/javafx/2/api/javafx/scene/doc-files/cssref.html#introscenegraph
-        Text message = new Text ("Incorrect fieldPassword. If you have forgotten your fieldPassword then try to remember it");
+        Text message = new Text ("Incorrect Password");
         sp.setAlignment(message, Pos.TOP_CENTER);
         Button buttonOK = new Button("OK");
         buttonOK.setOnAction(event -> {
             alertScreen.close();
         });
 
-        alertScreen.setTitle ("Wrong fieldPassword");
+        alertScreen.setTitle ("Incorrect Password");
         alertScreen.setOnCloseRequest(event -> alertScreen.close());
         sp.getChildren().addAll(message,buttonOK);
         alertScreen.setScene(sc);

@@ -30,14 +30,13 @@ public class LoginScreen {
     TextField fieldUsername;
     PasswordField fieldPassword;
     Button buttonLogin, buttonAddUser;
-    Button test, test2, katseNupp;
     int sceneHeight = 600;
     int sceneWidth = 800;
     int buttonWidth = sceneWidth/3;
     Text alertMessage;
 
 
-    //Kasutatud sama loogikat, mis I200 sql naites
+    //Kasutatud i200 sql näite loogikat
     public LoginScreen() {
         setupScene();
         loginAndOtherFields(); //halb nimi
@@ -92,9 +91,9 @@ public class LoginScreen {
         fieldPassword = new PasswordField();
 
         alertMessage = new Text();
-        alertMessage.setId("alert"); //Id maaramine, et formaadi saaks css-ga paika panna. Millegiparast varv ei toimi
+        alertMessage.setFill(Color.RED);
 
-        buttonLogin = new Button ("Log in"); //nupp sisselogimiseks
+        buttonLogin = new Button ("Log in");
         buttonLogin.setPrefWidth(buttonWidth);
         buttonLogin.setOnAction(event1 -> {
             toProgram();
@@ -109,18 +108,6 @@ public class LoginScreen {
             new RegisterScreen();
         });
 
-        katseNupp = new Button("katse");
-        katseNupp.setOnAction(event -> {
-            Databases db = new Databases();
-            Tables tbl = new Tables();
-            Graphs gr = new Graphs();
-            //db.checkPurchase();
-            //System.out.println(db.getBuyerList());
-            //tbl.amountLastMonthsByCategories();
-            tbl.kuup2evaTestimine();
-            //gr.amountLastMonthsByCategories();
-        });
-
         //Lisab k6ik node'd layoutMaini, mis on GridPane
         layoutMain.add(labelUsername,0, 1);
         layoutMain.add(fieldUsername,1,1);
@@ -130,10 +117,9 @@ public class LoginScreen {
         layoutMain.add(alertMessage,1,4);
         layoutMain.add(ifUserNotExist,0,10);
         layoutMain.add(buttonAddUser,1,10);
-        layoutMain.add(katseNupp,1,11); //2ra kustutada hiljem
     }
 
-    //Programmi paasemine: kontroll, kas vajalikud valjad on taidetud, kas kasutaja on olemas, kas parool on 6ige
+    //Programmi pääsemine: kontroll, kas vajalikud väljad on täidetud, kas kasutaja on olemas, kas parool on õige
     private void toProgram() {
         String s1 = fieldUsername.getText();
         String s2 = fieldPassword.getText();
@@ -142,7 +128,6 @@ public class LoginScreen {
         boolean passwordCorrect = dbUsers.checkPassword(s1, s2);
         if (s1.isEmpty() || s2.isEmpty()) {                 //Kui valjad tuhjad: veateade
             alertMessage.setText("Username/password can not be empty");
-            alertMessage.setId("alert");
         } else {
             if (!userExists) {                              //Kui kasutajat pole: veateade
                 alertMessage.setText("User does not exist");
@@ -153,7 +138,6 @@ public class LoginScreen {
                 } else {                                    //Kui parool vale: veateade
                     alertMessage.setText("Incorrect Password");
                 }
-
                 dbUsers.closeConnection();
             }
         }

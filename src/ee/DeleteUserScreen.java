@@ -10,14 +10,16 @@ import javafx.stage.Stage;
 
 /**
  * Created by Maila on 05/12/2015.
+ *
+ * Aken, kus kasutaja saab end andmebasist kustutada
+ *
  */
 public class DeleteUserScreen {
 
     public DeleteUserScreen() {
-     setupScene();
-     delete();
+        setupScene();
+        delete();
     }
-
 
     Label labelUN, labelPW;
     TextField fieldUsername;
@@ -25,14 +27,13 @@ public class DeleteUserScreen {
     Button delete;
     Stage deleteUserScreen;
 
-
-    private void setupScene() { //Kasutaja kustutamise akna seadistus
+    private void setupScene() {
         deleteUserScreen = new Stage();
         deleteUserScreen.setOnCloseRequest(event -> deleteUserScreen.close());
         VBox v = new VBox();
         labelUN = new Label("Username");
         fieldUsername = new TextField();
-        fieldUsername.setPromptText("ff"); //V6iks olla n�idatud, kes on sisse logitud, et see automaatselt
+        fieldUsername.setPromptText("ff");
         labelPW = new Label("Password");
         fieldPassword = new PasswordField();
         delete = new Button ("Delete user");
@@ -46,7 +47,7 @@ public class DeleteUserScreen {
         deleteUserScreen.show();
     }
 
-    private void delete() { //kustutamise nupu seadistus. Kontrollib l�bi andmebaasi, kas parool on �ige, ehk et kas kasutajal on �igus seda teha
+    private void delete() {
         delete.setOnAction(event -> {
             String s1 = fieldUsername.getText();
             String s2 = fieldPassword.getText();

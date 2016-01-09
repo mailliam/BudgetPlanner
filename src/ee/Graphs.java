@@ -20,15 +20,17 @@ import java.util.Locale;
 
 /**
  * Created by Maila on 31/12/2015.
+ *
+ * Klass, mis joonistab erinevate päringute kohta graafikuid
+ *
  */
 public class Graphs {
 
-
-
-    public Graphs() { //P2ringute graafikute joonistamise jaoks
+    public Graphs() {
 
     }
 
+    //Perioodi summa ostjate kaupa
     public PieChart periodAmountByBuyers(LocalDate startDate, LocalDate endDate) {
         //Pirukagraafiku loomisel sain abi:
         //http://www.java2s.com/Tutorials/Java/javafx.scene.chart/PieChart/0040__PieChart.PieChart_.htm
@@ -51,10 +53,11 @@ public class Graphs {
             }
             chart.setData(data);
         }
-        db.closeConnection(); //Kui ma kasutan siin close connectionit ja db loomise teen klassi, siis ka see tekitab j2rgmise graafikuga probleeme?
+        db.closeConnection();
         return chart;
     }
 
+    //Kategooria perioodi summa ostjate kaupa
     public PieChart periodAmountCategoryByBuyers(String category, LocalDate startDate, LocalDate endDate) {
         //Pirukagraafiku loomisel sain abi:
         //http://www.java2s.com/Tutorials/Java/javafx.scene.chart/PieChart/0040__PieChart.PieChart_.htm
@@ -75,13 +78,13 @@ public class Graphs {
             if (amount != 0) {
                 data.addAll(new PieChart.Data(buyer,amount));
             }
-
             chart.setData(data);
         }
-        db.closeConnection(); //Kui ma kasutan siin close connectionit ja db loomise teen klassi, siis ka see tekitab j2rgmise graafikuga probleeme?
+        db.closeConnection();
         return chart;
     }
 
+    //Eelmiste kuude ostud kategooriate kaupa
     public LineChart amountLastMonthsByCategories (int numberOfMonths) { //https://docs.oracle.com/javafx/2/charts/line-chart.htm
         Databases db = new Databases();
         LocalDate today = LocalDate.now();
@@ -129,9 +132,7 @@ public class Graphs {
                 amounts[i][j] = (db.getPeriodAmountByCategories(category, startDate, endDate));
 
                 series[i].getData().add(new XYChart.Data(monthList.get(j).toString(),amounts[i][j])); //Lisab andmed graafikule
-
             }
-
         }
 
         db.closeConnection();

@@ -22,6 +22,9 @@ import java.util.ArrayList;
 
 /**
  * Created by Maila on 25/12/2015.
+ *
+ * Aken, kus kasutaja saab oma ostude kohta detailsemaid päringuid teha
+ *
  */
 public class QueryScreen {
     Stage queryScreen;
@@ -36,11 +39,10 @@ public class QueryScreen {
     TextArea area;
     DateTimeFormatter format = DateTimeFormatter.ofPattern("MMM dd, uuuu");  //https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html
 
-
     public QueryScreen() {
         setupScene();
         queryHeaderAndInstruction();
-        queryOptions(); //Valikud, mille l6ikes p2ringuid teha
+        queryOptions();
     }
 
     private void setupScene() {
@@ -52,6 +54,7 @@ public class QueryScreen {
             queryScreen.close();
             new ProgramScreen();
         });
+
         Scene sc = new Scene(queries, sceneWidth, sceneHeight);
         sc.getStylesheets().add(getClass().getResource("css/main.css").toExternalForm());
         //http://stackoverflow.com/questions/16236641/javafx-add-dynamically-css-files,
@@ -77,7 +80,6 @@ public class QueryScreen {
         //Text-area background css: http://stackoverflow.com/questions/21936585/transparent-background-of-a-textarea-in-javafx-8
         area.setPadding(new Insets(10));
         queries.setCenter(area);
-
     }
 
     private void queryOptions() {
@@ -116,7 +118,7 @@ public class QueryScreen {
         queryResult.setPadding(new Insets(10));
 
         if (dpPeriodStartDate.getValue()==null || dpPeriodEndDate.getValue() == null) {
-            String alert = "Please choose period end and start dates.";
+            String alert = "Please choose period start and end dates.";
             area.setText(alert);
         } else {
             if(dpPeriodStartDate.getValue().isAfter(dpPeriodEndDate.getValue())||dpPeriodStartDate.getValue().isAfter(LocalDate.now())) {
@@ -132,11 +134,11 @@ public class QueryScreen {
         }
     }
 
+    //Tulemus, kui kasutaja valis ainult periood - tabelis summad kategooriate kaupa, graafikul ostjate kaupa
     private GridPane periodResult () {
 
         LocalDate startDate = dpPeriodStartDate.getValue();
         LocalDate endDate = dpPeriodEndDate.getValue();
-
 
         Text heading = new Text("Costs from " +startDate.format(format)+ " to " +endDate.format(format));
         heading.setFont(Font.font("Calibri", 24));
@@ -150,6 +152,7 @@ public class QueryScreen {
         return queryResult;
     }
 
+    //Tulemus, kui kasutaja valis perioodi ja kategooria - tabelis kategooria summad esemete kaupa, graafikul ostjate kaupa
     private GridPane periodAndCategoryResult () {
 
         LocalDate startDate = dpPeriodStartDate.getValue();
@@ -167,6 +170,5 @@ public class QueryScreen {
         queryResult.add(graph.periodAmountCategoryByBuyers(category, startDate, endDate),1,1);
         return queryResult;
     }
-
 
 }

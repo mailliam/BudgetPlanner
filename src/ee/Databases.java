@@ -7,19 +7,24 @@ import java.util.ArrayList;
 
 /**
  * Created by Maila on 25/11/2015.
+ *
+ * Andmebaasiga seotud toimingud
+ * Kasutatud i200 sql näite alust ja http://www.tutorialspoint.com/sqlite/sqlite_java.htm
+ *
  */
-public class Databases { //Kasutatud Kristeri sql alust
+public class Databases {
     Connection conn;
 
     public Databases() {
-        createConnection(); //tundub mõttetu luua kasutaja juures ostutabelit ja vastupidi
+        createConnection();
         createUsersTable(); //Kasutajate tabel koos paroolide, nime jms-ga
-        createBuyersTable(); //Ostjate tabel: ostja != alati kasutaja
+        createBuyersTable(); //Ostjate tabel
         createItemsTable(); //Kaupade tabel
-        createPurchaseBasketTable(); //Osturidade tabel, ehk mida-kui palju-mis hinnaga
+        createPurchaseBasketTable(); //Osturidade tabel
     }
 
-    private void createConnection() { //Loob ühenduse andmebaasiga
+    //Loob ühenduse andmebaasiga
+    private void createConnection() {
         try {
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection("jdbc:sqlite:budgetplanner.db");
@@ -33,39 +38,41 @@ public class Databases { //Kasutatud Kristeri sql alust
 
     //Collate nocase defineerimine, et ei tekiks uusi ridu, kui kasutaja kogemata valesti sisestab: http://stackoverflow.com/questions/973541/how-to-set-sqlite3-to-be-case-insensitive-when-string-comparing
 
-    private void createUsersTable() { //Tekitab kasutajate tabeli kui seda veel ei ole
+    private void createUsersTable() {
         String sql = "CREATE TABLE IF NOT EXISTS USERS (USERNAME TEXT COLLATE NOCASE, PASSWORD TEXT, FIRSTNAME TEXT COLLATE NOCASE, LASTNAME TEXT COLLATE NOCASE);";
         saveDB(sql);
     }
 
-    private void createBuyersTable() { //Tekitab ostjate tabeli kui seda veel ei ole
+    private void createBuyersTable() {
         String sql = "CREATE TABLE IF NOT EXISTS BUYERS (BUYER TEXT COLLATE NOCASE);";
         saveDB(sql);
     }
 
-    private void createItemsTable() { //Tekitab esemete tabeli kui seda veel ei ole
+    private void createItemsTable() {
         String sql = "CREATE TABLE IF NOT EXISTS ITEMS (ITEM TEXT COLLATE NOCASE, CATEGORY TEXT COLLATE NOCASE);";
         saveDB(sql);
     }
 
-    private void createPurchaseBasketTable() { //Tekitab osturidade tabeli kui seda veel ei ole
+    private void createPurchaseBasketTable() {
         String sql = "CREATE TABLE IF NOT EXISTS BASKETS (PURCHASEROWID INTEGER, BUYER TEXT COLLATE NOCASE, DATE TEXT, " +
                 "STORE TEXT COLLATE NOCASE, ITEM TEXT COLLATE NOCASE, CATEGORY TEXT COLLATE NOCASE, QUANTITY REAL, " +
                 "ROWAMOUNT REAL);";
         saveDB(sql);
     }
 
-    private void saveDB(String sql) { //sellise tegemise loogika p2rineb Krister V. sql n2itest. salvestab andmebaasi
+    //Salvestab andmebaasi.. Loogika pärineb i200 sql näitest.
+    private void saveDB(String sql) {
         try {
             Statement stat = conn.createStatement();
             stat.executeUpdate(sql);
             stat.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            System.exit(0);
         }
     }
 
-    public void registerUser(String userName, String password, String firstName, String lastName) { //sisestab kasutaja kirje kasutaja tabelisse
+    public void registerUser(String userName, String password, String firstName, String lastName) {
         AlertScreens as = new AlertScreens();
         String sql = "INSERT INTO USERS (USERNAME, PASSWORD, FIRSTNAME, LASTNAME) VALUES('"+userName+"','"+password+"','"+firstName+"','"+lastName+"')";
         saveDB(sql);
@@ -91,7 +98,8 @@ public class Databases { //Kasutatud Kristeri sql alust
         }
     }
 
-    public boolean checkUserExistance(String username) { //Kontrollib, kas kasutaja on olemas
+    //Kontrollib kasutaja olemasolu
+    public boolean checkUserExistance(String username) {
         try {
             System.out.println(username);
             Statement stat = conn.createStatement();
@@ -106,11 +114,13 @@ public class Databases { //Kasutatud Kristeri sql alust
 
         } catch (SQLException e) {
             e.printStackTrace();
+            System.exit(0);
         }
-        return true; //true, et vea korral midagi ei registreeritaks
+        return true;
     }
 
-    public boolean checkPassword(String username, String password) { //Kui kasutaja on olemas, siis kontrollib, kas parool sisselogimisel/kasutaja kustutamisel on õige
+    //Kontrollib kasutaja olemasolul parooli õigsust
+    public boolean checkPassword(String username, String password) {
         if(checkUserExistance(username)) {
             try {
                 Statement stat = conn.createStatement();
@@ -122,12 +132,14 @@ public class Databases { //Kasutatud Kristeri sql alust
                 return dbPassword.equals(password);
             } catch (SQLException e) {
                 e.printStackTrace();
+                System.exit(0);
             }
         }
         return false;
     }
 
-    public void deleteUser(String username) { //Kustutab kasutaja kasutajate tabelist //http://www.tutorialspoint.com/sqlite/sqlite_java.htm
+    //Kustutab kasutaja kasutajate tabelist
+    public void deleteUser(String username) {  //http://www.tutorialspoint.com/sqlite/sqlite_java.htm
         try {
             Statement stat = conn.createStatement();
             String sql = "DELETE FROM USERS WHERE USERNAME = '"+username+"';";
@@ -135,10 +147,12 @@ public class Databases { //Kasutatud Kristeri sql alust
             stat.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            System.exit(0);
         }
     }
 
-    public boolean checkBuyerExistance(String buyer) { //Kontrollib, kas kasutaja on olemas
+    //Kontrollib ostja olemasolu
+    public boolean checkBuyerExistance(String buyer) {
         try {
             System.out.println(buyer);
             Statement stat = conn.createStatement();
@@ -153,11 +167,13 @@ public class Databases { //Kasutatud Kristeri sql alust
 
         } catch (SQLException e) {
             e.printStackTrace();
+            System.exit(0);
         }
-        return true;  //true, et vea korral midagi ei registreeritaks
+        return true;
     }
 
-    public boolean checkPurchaseExistance() { //Kontrollib, kas tabelis on m6ni ost
+    //Kontrollib, kas tabelis on mõni ost
+    public boolean checkPurchaseExistance() {
         try {
             Statement stat = conn.createStatement();
             String sql = "SELECT EXISTS(SELECT 1 FROM BASKETS); ";
@@ -171,11 +187,13 @@ public class Databases { //Kasutatud Kristeri sql alust
 
         } catch (SQLException e) {
             e.printStackTrace();
+            System.exit(0);
         }
-        return false;  //false, et vea korral midagi ei kuvataks
+        return false;
     }
 
-    public boolean checkItemExistance(String item) { //Kontrollib, kas ese on olemas
+    //Kontrollib, kas ese on olemas
+    public boolean checkItemExistance(String item) {
         try {
             System.out.println(item);
             Statement stat = conn.createStatement();
@@ -190,30 +208,13 @@ public class Databases { //Kasutatud Kristeri sql alust
 
         } catch (SQLException e) {
             e.printStackTrace();
+            System.exit(0);
         }
-        return true;  //true, et vea korral midagi ei registreeritaks
+        return true;
     }
 
-    public BigDecimal getBuyerAmount (String buyer) {
-        BigDecimal buyerAmount = new BigDecimal(0);
-
-        try {
-            Statement stat = conn.createStatement();
-            String sql = "SELECT ROWAMOUNT FROM BASKETS WHERE BUYER = '"+buyer+"';";
-            ResultSet rs = stat.executeQuery(sql);
-            while (rs.next()) {
-                BigDecimal rowAmount = new BigDecimal(rs.getBigDecimal("ROWAMOUNT").toString());
-                buyerAmount = buyerAmount.add(rowAmount);
-            }
-            rs.close();
-            stat.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return buyerAmount;
-    }
-
-    public ArrayList getItemListForCategory(String category) { //Ostjate tabel on tegelikult m6ttetu ja v6iks samamoodi distinktiivselt selekteerida. Samas kui on palju kirjeid, siis on moistlik neid luhemast listist otsida
+    //Tekitab konkreetses kategoorias olevate esemente nimekirja
+    public ArrayList getItemListForCategory(String category) {
         ArrayList itemList = new ArrayList();
 
         try {
@@ -228,12 +229,13 @@ public class Databases { //Kasutatud Kristeri sql alust
             stat.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            System.exit(0);
         }
-
         return itemList;
     }
 
-    public ArrayList getBuyerList() { //Ostjate tabel on tegelikult m6ttetu ja v6iks samamoodi distinktiivselt selekteerida. Samas kui on palju kirjeid, siis on moistlik neid luhemast listist otsida
+    //Tekitab ostjate nimekirja
+    public ArrayList getBuyerList() {
         ArrayList buyerList = new ArrayList();
 
         try {
@@ -248,11 +250,12 @@ public class Databases { //Kasutatud Kristeri sql alust
             stat.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            System.exit(0);
         }
-
         return buyerList;
     }
 
+    //Leiab, millisesse kategooriasse ese kuulub
     public String getCategoryForItem(String item) {
         try {
             if(checkItemExistance(item)) {
@@ -269,16 +272,18 @@ public class Databases { //Kasutatud Kristeri sql alust
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            System.exit(0);
         }
         return null;
     }
 
+    //Tekitab kategooriate nimekirja
     public ArrayList getCategoryList() {
         ArrayList categoryList = new ArrayList();
 
         try {
             Statement stat = conn.createStatement();
-            String sql = "SELECT DISTINCT CATEGORY FROM ITEMS"; //unikaalsete v22rtuste leidmine: http://stackoverflow.com/questions/4790162/sqlite-select-distinct-values-of-a-column-without-ordering
+            String sql = "SELECT DISTINCT CATEGORY FROM ITEMS"; //unikaalsete väärtuste leidmine: http://stackoverflow.com/questions/4790162/sqlite-select-distinct-values-of-a-column-without-ordering
             ResultSet rs = stat.executeQuery(sql);
             while(rs.next()) {
                 String category = rs.getString("CATEGORY");
@@ -288,11 +293,12 @@ public class Databases { //Kasutatud Kristeri sql alust
             stat.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            System.exit(0);
         }
-
         return categoryList;
     }
 
+    //Arvutab perioodi summa kategooria kohta
     public BigDecimal getPeriodAmountByCategories(String category, LocalDate start, LocalDate end) {
         BigDecimal amount = new BigDecimal(0);
         try {
@@ -307,10 +313,12 @@ public class Databases { //Kasutatud Kristeri sql alust
             stat.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            System.exit(0);
         }
         return amount;
     }
 
+    //Arvutab perioodi summa ostja kohta
     public BigDecimal getPeriodAmountByBuyers(String buyer, LocalDate start, LocalDate end) {
         BigDecimal amount = new BigDecimal(0);
         try {
@@ -325,10 +333,12 @@ public class Databases { //Kasutatud Kristeri sql alust
             stat.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            System.exit(0);
         }
         return amount;
     }
 
+    //Arvutab perioodi summa ostja ja kategooria kohta
     public BigDecimal getPeriodAmountCategoryByBuyers(String category, String buyer, LocalDate start, LocalDate end) {
         BigDecimal amount = new BigDecimal(0);
         try {
@@ -344,10 +354,12 @@ public class Databases { //Kasutatud Kristeri sql alust
             stat.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            System.exit(0);
         }
         return amount;
     }
 
+    //Arvutab perioodi summa eseme kohta
     public BigDecimal getPeriodAmountByItems(String item, LocalDate start, LocalDate end) {
         BigDecimal amount = new BigDecimal(0);
         try {
@@ -362,13 +374,14 @@ public class Databases { //Kasutatud Kristeri sql alust
             stat.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            System.exit(0);
         }
         return amount;
     }
 
+    //Arvutab perioodi summa
     public BigDecimal getPeriodAmount(LocalDate start, LocalDate end){
         BigDecimal periodAmount = new BigDecimal(0);
-
         try {
             Statement stat = conn.createStatement();
             String sql = "SELECT ROWAMOUNT FROM BASKETS WHERE DATE BETWEEN '"+start+"' and '"+end+"';";
@@ -381,71 +394,19 @@ public class Databases { //Kasutatud Kristeri sql alust
             stat.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            System.exit(0);
         }
         return periodAmount;
     }
 
-    public void checkUser() { //see kood p�rineb http://www.tutorialspoint.com/sqlite/sqlite_java.htm
-        //Katsetan, kas registreeritud tegelased eksisteerivad, see jupp on ainult testi jaoks
-        try {
-            Statement stat = conn.createStatement();
-            ResultSet rs = stat.executeQuery("SELECT * FROM USERS;");
-            while (rs.next()) {
-                int id2 = rs.getRow();
-                int id = rs.getInt("id");
-                String nimi = rs.getString("Username");
-                String parool = rs.getString("Password");
-                System.out.println("ID get row= " +id2);
-                System.out.println("ID get int= " +id);
-                System.out.println("Name= " +nimi);
-                System.out.println("parool= "+parool);
-                System.out.println();
-            }
-            rs.close();
-            stat.close();
-            conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void closeConnection() { //sulgeb baasi ühenduse
+    //Sulgeb ühenduse
+    public void closeConnection() {
         try {
             conn.close();
             System.out.println("DB closed");
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-    }
-
-    public void checkPurchase() {
-        try {
-            Statement stat = conn.createStatement();
-            ResultSet rs = stat.executeQuery("SELECT * FROM BASKETS;");
-            while (rs.next()) {
-                int id2 = rs.getRow();
-                int reanr = rs.getInt("purchaserowid");
-                String item = rs.getString("item");
-                String ostja = rs.getString("buyer");
-                String date = rs.getString("date");
-                BigDecimal quantity = rs.getBigDecimal("quantity");
-
-                String costgroup = rs.getString("CATEGORY");
-                System.out.println("ID get row= " +id2);
-                System.out.println("ID get int= " +reanr);
-                System.out.println("Ese= " +item);
-                System.out.println("Grupp = " +costgroup);
-                System.out.println("Ostja= " +ostja);
-                System.out.println("Kuupev= "+date);
-                System.out.println("Kogus = "+quantity);
-
-                System.out.println();
-            }
-            rs.close();
-            stat.close();
-            conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+            System.exit(0);
         }
     }
 

@@ -1,6 +1,7 @@
 package ee;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
@@ -69,6 +70,8 @@ public class CostInputScreen {
     //Meetod loob ostup‰ise - kes, kus, millal, summa kokku
     private void purchaseHeader() {
 
+        int nodeWidth = sceneWidth/6;
+
         GridPane header = new GridPane();
         header.setHgap(5);
         header.setVgap(5);
@@ -95,18 +98,22 @@ public class CostInputScreen {
         header.add(tfStore,1,1);
         header.add(dpDate,2,1);
 
+        alertMessage.setText("To get a new line in basket, press Enter after price");
         header.add(alertMessage, 0, 2);                 //Koht, kuhu saab hakata kasutajale veateateid kuvama
 
         Label totalAmount = new Label("Total amount");
+        totalAmount.setPrefWidth(nodeWidth);
         header.add(totalAmount,3,0);
 
         tfPurchaseAmount = new TextField();
-        tfPurchaseAmount.setEditable(false);            //Kasutaja ei pea saama seda muuta, automaatne
+        tfPurchaseAmount.setPrefWidth(nodeWidth);
+        tfPurchaseAmount.setEditable(false);
         tfPurchaseAmount.setStyle("-fx-background-color: #DADBDE");
 
         header.add(tfPurchaseAmount,3,1);
 
-        Button btnSaveAndExit = new Button ("Save and finish");
+        Button btnSaveAndExit = new Button ("Save");
+        btnSaveAndExit.setPrefWidth(nodeWidth);
         btnSaveAndExit.setOnAction(event -> {
             savePurchaseToDB();
         });
@@ -162,10 +169,9 @@ public class CostInputScreen {
                 tfBasket[i][j] = new TextField();
                 tfBasket[i][j].setPrefWidth(sceneWidth/7);
                 tfBasket[i][0].setText(Integer.toString(rowCounter+1));
-                tfBasket[i][0].setEditable(false);              //Rea nr on automaatne, kasutaja ei tohi seda muuta
+                tfBasket[i][0].setEditable(false);
                 basketFields.add(tfBasket[i][j], j, i);         //Lisab basketFieldsile, mis on GridPane, TextFieldid
                 basket.setContent(basketFields);                //lisab ostukorvile, mis on ScrollPane, GridPane, mis koosneb TextFieldidest
-
             }
 
             tfBasket[rowCounter][5].setEditable(false);         //rea summa on automaatne - kasutaja ei tohi seda muuta
@@ -179,18 +185,16 @@ public class CostInputScreen {
             purchaseBasketFields();
         });
 
-        tfBasket[rowCounter][1].textProperty().addListener(((observable1, oldValue1, newValue1) ->{ //Item: V‰‰rtuse muutumisel lisa kategooria (kui on lisada)
+        tfBasket[rowCounter][1].textProperty().addListener(((observable, oldValue1, newValue1) ->{ //Item: V‰‰rtuse muutumisel lisa kategooria (kui on lisada)
             getCategory();
         }));
 
         tfBasket[rowCounter][3].textProperty().addListener((observable, oldValue, newValue) -> {  //Quantity: V‰‰rtuse muutumisel arvuta rea summa
             calculateRowAmount();
-
         });
 
         tfBasket[rowCounter][4].textProperty().addListener((observable, oldValue, newValue) -> {  //Price: V‰‰rtuse muutumisel arvuta rea summa
             calculateRowAmount();
-
         });
 
     }
@@ -205,15 +209,10 @@ public class CostInputScreen {
             if (db.checkItemExistance(item)) {
                 tfBasket[i][2].setText(category);
                 tfBasket[i][2].setEditable(false); //Kui kategooria on leitud, siis kasutaja seda enam k‰sitsi muuta ei saa
-            } else {
-                tfBasket[i][2].clear();
-                tfBasket[i][2].setEditable(true);
             }
         }
         db.closeConnection();
     }
-
-
 
     //Meetod arvutab rea summa, korrutades hinna ja koguse. Seejuures kontrollitakse, kas kasutaja on sisestanud numbrilised
     //v‰‰rtused (kui mitte, siis veateade). Niipalju tuleb kasutajale vastu, et komad asendab punktiga.
@@ -244,24 +243,21 @@ public class CostInputScreen {
                 try {                                                           //Kontrollib numbrilist v‰‰rtust koguse ja hinna lahtris
                     BigDecimal quantity = new BigDecimal(tfBasket[i][3].getText());
                     BigDecimal price = new BigDecimal(tfBasket[i][4].getText());
-                    BigDecimal amount = quantity.multiply(price);
+                    BigDecimal amount = quantity.multiply(price).setScale(2, BigDecimal.ROUND_HALF_UP); //http://stackoverflow.com/questions/12460482/how-to-round-0-745-to-0-75-using-bigdecimal-round-half-up
                     purchaseAmount = purchaseAmount.add(amount);
                     tfBasket[i][5].setText(amount.toString());
                     tfBasket[i][3].setStyle(null);
                     tfBasket[i][4].setStyle(null);
                     alertMessage.setText(null); //Kui kasutaja tuleb selle peale, et enne parandamist sisestada uus rida, siis kaob vahepeal alert 2ra.
                 } catch (java.lang.NumberFormatException e) { //Kui saadakse viga, et lahtrisse pole sisestatud numbriline v‰‰rtus: veateade
-                    alertMessage.setText("Quantity or price format is incorrect: must be number");
+                    alertMessage.setText("Quantity/price format incorrect: must be number");
                     alertMessage.setFill(Color.RED);
                     tfBasket[i][3].setStyle("-fx-border-color: red ; -fx-border-width: 2px ;");
                     tfBasket[i][4].setStyle("-fx-border-color: red ; -fx-border-width: 2px ;");
                 }
             }
-
-
         }
         tfPurchaseAmount.setText(purchaseAmount.toString());
-
     }
 
     //Meetod kontrollib "Save" nupu vajutamisel, kas kıik p‰ise v‰ljad on t‰idetud ning kas kıik osturead on t‰ielikud
@@ -281,7 +277,7 @@ public class CostInputScreen {
                 alertMessage.setFill(Color.RED);
                 return false;
             } else {
-                for (int i = 0; i < rowCounter+1; i++) { //Selle lohe asemel v6iks midagi normaalset olla
+                for (int i = 0; i < rowCounter+1; i++) {
                     if( (tfBasket[i][1].getText().isEmpty() && tfBasket[i][2].getText().isEmpty() && tfBasket[i][3]
                             .getText().isEmpty() && tfBasket[i][4].getText().isEmpty() && tfBasket[i][5].getText()
                             .isEmpty()) || (!tfBasket[i][1].getText().isEmpty() && !tfBasket[i][2].getText().isEmpty()

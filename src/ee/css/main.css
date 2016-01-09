@@ -14,7 +14,7 @@
 }
 
 .choice-box{
-    -fx-text-fill: #C9DAEC;
+    -fx-text-fill: #2B5581;
     -fx-background-color: #446C96;
 }
 
@@ -38,7 +38,6 @@
     -fx-text-fill: #2B5581;
     -fx-background-color: #C9DAEC;
 }
-
 
 .date-picker-popup > .month-year-pane {
     -fx-background-color: #C9DAEC;
@@ -105,7 +104,6 @@
 .text-area .scroll-pane .viewport{
     -fx-background-color: transparent;
 }
-
 
 .text-area .scroll-pane .content{
     -fx-background-color: transparent;

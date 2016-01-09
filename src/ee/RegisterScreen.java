@@ -16,7 +16,7 @@ import javafx.stage.Stage;
 /**
  * Created by Maila on 24/11/2015.
  *
- * Registreerimisandmete t2itmine, sellise kasutaja mitteolemasolul tema registreerimine
+ * Registreerimisandmete taitmine, sellise kasutaja mitteolemasolul tema registreerimine
  *
  */
 public class RegisterScreen {
@@ -94,8 +94,6 @@ public class RegisterScreen {
             if (!userExists){                                       //Kui kasutajat pole: registreeri
                 dbUsers.registerUser(s1,s2,s3,s4);
                 dbUsers.closeConnection();
-                AlertScreens as = new AlertScreens();
-                as.userRegistered();
                 registerScreen.close();
             } else {                                                //Kui kasutaja on: veateade
                 dbUsers.closeConnection();

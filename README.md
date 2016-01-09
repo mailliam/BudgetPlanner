@@ -15,7 +15,7 @@ Luua vahend kulutuste kirjapanekuks ning nende jälgimiseks
    	* täita tuleb ostu andmed - ostja, kauplus, kuupäev
 	* täita tuleb ostukorvi andmed - ese, kategooria, kogus, hind
 
-  3.1. Ostukorvi täitmine
+    **Ostukorvi täitmine**
 	* eseme esmakordsel sisestamisel tuleb valida kategooria, mis on edaspidi selle eseme grupeerimise aluseks.
 	  Järgnevatel sama eseme ostudel tekib kategooria automaatselt ning ostu sisestamise käigus seda muuta ei saa.
 	* rea summa arvutatakse automaatselt sisestatud koguse ning hinna põhjal
@@ -23,5 +23,7 @@ Luua vahend kulutuste kirjapanekuks ning nende jälgimiseks
 	* sisestamise lõppedes kontrolli, kas sisestatud ostukorvi kogusumma on õige (Total purchase amount)
 	* salvesta ost
 
+4. Kulusid saab jälgida nii programmiaknas avanevas tabelis ja graafikus (View menüü valikud 3, 6, 12 kuud) kui ka detailsemalt.
+Viimaseks vali File menüüst --> Query. Valikuid saab teha perioodi- või perioodi-ja kategooriapõhiselt.
  
 	

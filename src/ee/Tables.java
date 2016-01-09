@@ -25,24 +25,28 @@ import java.util.Locale;
 
 /**
  * Created by Maila on 31/12/2015.
+ *
+ * Klass, mis loob erinevate p‰ringute jaoks tabeleid
+ *
  */
-public class Tables { //P2ringu tabelite jaoks
+public class Tables {
+    int categoryWidth = 200;
+    int dataWidth = 100;
+    int height = 25;
 
     public Tables() {
 
     }
 
-    //Arvutab etteantud eelmiste kuude ostud kasutades Databases objekti meetodeid ja paneb need tabelisse
+    //Arvutab etteantud arvu eelmiste kuude ostud kasutades Databases objekti meetodeid ja paneb need tabelisse
     public GridPane amountLastMonthsByCategories(int numberOfMonths) {
         Databases db = new Databases();
         ArrayList categoryList = db.getCategoryList();
         GridPane table = new GridPane();
         table.setGridLinesVisible(true);
 
-        //numberOfMonths = 6 //Periood, mitu kuud tagasi vaadatakse
-
         LocalDate today = LocalDate.now(); //http://www.java2s.com/Tutorials/Java/java.time/LocalDate/index.htm
-        int currentMonth = today.getMonthValue(); //Kas kuup2evade jaoks v6iks ka eraldi klassi teha?
+        int currentMonth = today.getMonthValue();
 
         Label[][] months, categories, amounts, totalAmount;
 
@@ -51,32 +55,34 @@ public class Tables { //P2ringu tabelite jaoks
         amounts = new Label[categoryList.size()][numberOfMonths];
         totalAmount = new Label[1][numberOfMonths];
 
-
+        //Kategooriad tabelisse
         for (int i = 0; i < categoryList.size(); i++) {
             categories[i][0] = new Label();
             categories[i][0].setText((categoryList.get(i)).toString());
-            categories[i][0].setPrefSize(150, 25);
+            categories[i][0].setPrefSize(categoryWidth, height);
             categories[i][0].setPadding(new Insets(0, 15, 0, 15));
             categories[i][0].setId("tableHeader");
             table.add(categories[i][0], 0, i + 1);
         }
 
+        //Kuud tabelisse
         for (int j = 0; j < numberOfMonths; j++) {
             months[0][j] = new Label();
             months[0][j].setText((today.getMonth().minus(numberOfMonths-j-1)).getDisplayName(TextStyle.SHORT, Locale.ROOT));
-            months[0][j].setPrefSize(100,25);
+            months[0][j].setPrefSize(dataWidth,height);
             months[0][j].setPadding(new Insets(0,15,0,15));
             months[0][j].setId("tableHeader");
             table.add(months[0][j],j+1,0);
         }
 
+        //Vastavate kuude ja kategooriate summad tabelisse
         for (int i = 0; i < categoryList.size(); i++) {
             for (int j = 0; j < numberOfMonths; j++) {
 
                 amounts[i][j] = new Label();
                 LocalDate startDate,endDate;
 
-
+                //Arvutus eelnevate kuude algus- ja lıppkuup‰evade kohta
                 if(j >= numberOfMonths-today.getMonthValue() ){
                     int periodMonth = currentMonth-(numberOfMonths-j-1);
                     startDate = today.withMonth(periodMonth).withDayOfMonth(1);
@@ -94,9 +100,10 @@ public class Tables { //P2ringu tabelite jaoks
                 table.setAlignment(Pos.CENTER); //Et tabel oleks ProgramScreenil keskel, tuleb see ka siin ‰ra m‰‰rata
                 table.setPadding(new Insets(10,0,10,0));
 
+                //Kogusumma arvutus ja tabelisse panek
                 Label labelTotal = new Label("Total");
                 labelTotal.setId("tableHeader");
-                labelTotal.setPrefSize(150, 25);
+                labelTotal.setPrefSize(categoryWidth, height);
                 labelTotal.setPadding(new Insets(0,15,0,15));
                 totalAmount[0][j] = new Label();
                 totalAmount[0][j].setId("tableHeader");
@@ -111,42 +118,7 @@ public class Tables { //P2ringu tabelite jaoks
         return table;
     }
 
-    public void kuup2evaTestimine() {
-        //http://www.java2s.com/Tutorials/Java/java.time/LocalDate/index.htm
-
-        int numberOfMonths = 12;
-
-        for (int i = 1; i < 13; i++) {
-            for (int j = 0; j < numberOfMonths; j++) {
-                LocalDate today = LocalDate.now().withMonth(i);
-                LocalDate startDate,endDate;
-                ArrayList kuud = new ArrayList();
-                int currentMonth = today.getMonthValue(); //Kas kuup2evade jaoks v6iks ka eraldi klassi teha?
-
-                if (currentMonth > (85) ) {
-                    int periodMonth = currentMonth-j;
-                    startDate = today.withMonth(periodMonth).withDayOfMonth(1);
-                    endDate = today.withMonth(periodMonth).withDayOfMonth(today.withMonth(periodMonth).lengthOfMonth());
-
-                } else {
-                    if(j >= numberOfMonths-today.getMonthValue() ){
-                        int periodMonth = currentMonth-(numberOfMonths-j-1);
-                        startDate = today.withMonth(periodMonth).withDayOfMonth(1);
-                        endDate = today.withMonth(periodMonth).withDayOfMonth(today.withMonth(periodMonth).lengthOfMonth());
-
-                    } else {
-                        int periodMonth = 12 - (numberOfMonths-j-currentMonth-1);
-                        startDate = today.withYear(today.getYear()-1).withMonth(periodMonth).withDayOfMonth(1);
-                        endDate = today.withYear(today.getYear() - 1).withMonth(periodMonth).withDayOfMonth(today.withYear(today.getYear() - 1).withMonth(periodMonth).lengthOfMonth());
-                    }
-                }
-                kuud.add(startDate);
-                System.out.print("Alguskuu on: " +i+ "   ");
-                System.out.println(kuud);
-            }
-        }
-    }
-
+    //Perioodi summa kategooriate kaupa
     public GridPane periodAmountByCategories(LocalDate startDate, LocalDate endDate) {
         Databases db = new Databases();
         ArrayList categoryList = db.getCategoryList();
@@ -164,11 +136,12 @@ public class Tables { //P2ringu tabelite jaoks
                 tableFields[i][j] = new Label();
                 tableFields[i][j].setPadding(new Insets(0, 15, 0, 15));
 
+                //Sisestab tabelisse ainult need read, kus vastaval perioodil on oste toimunud
                 if(!amount.equals(c)) {
                     switch (j) {
                         case 0:
                             tableFields[i][0].setText(category);
-                            tableFields[i][0].setPrefSize(150,25);
+                            tableFields[i][0].setPrefSize(categoryWidth,height);
                             tableFields[i][0].setId("tableHeader");
                             table.add(tableFields[i][0],0,i);
                             break;
@@ -185,9 +158,10 @@ public class Tables { //P2ringu tabelite jaoks
         table.setAlignment(Pos.CENTER); //Et tabel oleks ProgramScreenil keskel, tuleb see ka siin ‰ra m‰‰rata
         table.setPadding(new Insets(10,0,10,0));
 
+        //Kogusumma arvutus ja tabelisse lisamine
         Label labelTotal = new Label("Total");
         labelTotal.setId("tableHeader");
-        labelTotal.setPrefSize(150, 25);
+        labelTotal.setPrefSize(categoryWidth, height);
         labelTotal.setPadding(new Insets(0,15,0,15));
 
         totalAmount.setId("tableHeader");
@@ -200,6 +174,7 @@ public class Tables { //P2ringu tabelite jaoks
         return table;
     }
 
+    //Perioodi summad kategoorias olevate esemete kaupa
     public GridPane periodAmountByItemsInCategory (String category, LocalDate startDate, LocalDate endDate) {
         Databases db = new Databases();
         ArrayList itemList = db.getItemListForCategory(category);
@@ -217,11 +192,12 @@ public class Tables { //P2ringu tabelite jaoks
                 tableFields[i][j] = new Label();
                 tableFields[i][j].setPadding(new Insets(0, 15, 0, 15));
 
+                //Lisab tabelisse ainult need read, kus on antud perioodil oste olnud
                 if(!amount.equals(c)) {
                     switch (j) {
                         case 0:
                             tableFields[i][0].setText(item);
-                            tableFields[i][0].setPrefSize(150,25);
+                            tableFields[i][0].setPrefSize(categoryWidth,height);
                             tableFields[i][0].setId("tableHeader");
                             table.add(tableFields[i][0],0,i);
                             break;
@@ -238,9 +214,10 @@ public class Tables { //P2ringu tabelite jaoks
         table.setAlignment(Pos.CENTER); //Et tabel oleks ProgramScreenil keskel, tuleb see ka siin ‰ra m‰‰rata
         table.setPadding(new Insets(10,0,10,0));
 
+        //Kogusumma arvutamine ja tabelisse panek
         Label labelTotal = new Label("Total");
         labelTotal.setId("tableHeader");
-        labelTotal.setPrefSize(150, 25);
+        labelTotal.setPrefSize(250, 25);
         labelTotal.setPadding(new Insets(0,15,0,15));
 
         totalAmount.setId("tableHeader");

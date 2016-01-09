@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 /**
  * Created by Maila on 25/11/2015.
  *
- * Pohiline programmiaken, kust kasutaja naeb oma viimaste kuude kulusid, saab algatada uut ostu, teha paringuid
+ * Põhiline programmiaken, kust kasutaja näeb oma viimaste kuude kulusid, saab algatada uut ostu, teha päringuid
  *
  */
 public class ProgramScreen {
@@ -22,12 +22,11 @@ public class ProgramScreen {
     Stage programScreen = new Stage();
     BorderPane bp;
     int sceneHeight = 1000;
-    int sceneWidth = 1000;
+    int sceneWidth = 1200;
     RadioMenuItem view3, view6, view12;
     Text heading;
     int months;
     ToggleGroup viewPeriod;
-
 
     public ProgramScreen() {
         setupScene();
@@ -65,7 +64,7 @@ public class ProgramScreen {
         //Menüüpunktide loomine ja nende tegevuste seadistamine
         Menu fileMenu = new Menu("_File");
 
-        MenuItem newPurchase = new MenuItem("New purchase");    //Valik avab ostu sisestamise akna
+        MenuItem newPurchase = new MenuItem("New Purchase");    //Valik avab ostu sisestamise akna
         fileMenu.getItems().add(newPurchase);
         newPurchase.setOnAction(event -> toCostInputScreen());
 
@@ -73,11 +72,15 @@ public class ProgramScreen {
         fileMenu.getItems().add(query);
         query.setOnAction(event -> toQueryScreen());
 
-        MenuItem logout = new MenuItem("Log out");              //Valik logib valja - LoginScreenile
+        MenuItem logout = new MenuItem("Log out");              //Valik logib välja - LoginScreenile
         fileMenu.getItems().add(logout);
         logout.setOnAction(event -> logoutUser());
 
-        Menu viewMenu = new Menu ("_View");                     //Valik n2itab antud ekraanil erinevate perioodide kulutusi
+        MenuItem deleteUser = new MenuItem("Delete Account");   //Valik kasutaja kustutamiseks
+        fileMenu.getItems().add(deleteUser);
+        deleteUser.setOnAction(event -> deleteAccount());
+
+        Menu viewMenu = new Menu ("_View");                     //Valik näitab antud ekraanil erinevate perioodide kulutusi
         viewPeriod = new ToggleGroup();
         view3 = new RadioMenuItem("View last 3 months");
         view6 = new RadioMenuItem("View last 6 months");
@@ -97,7 +100,7 @@ public class ProgramScreen {
 
     }
 
-    //Meetod kuvab ekraanile kasutaja poolt (View menüüst) valitud perioodi kulutused tabelina ja graafikuna
+    //Kuvab ekraanile kasutaja poolt (View menüüst) valitud perioodi kulutused tabelina ja graafikuna
     private void showMainTableAndGraph() {
         VBox v = new VBox();
         v.setPadding(new Insets(20,20,20,20));
@@ -130,7 +133,6 @@ public class ProgramScreen {
         view3.setOnAction(event -> {
             showMainTableAndGraph();
         });
-
     }
 
     private void toCostInputScreen() {
@@ -153,7 +155,7 @@ public class ProgramScreen {
         new DeleteUserScreen();
     }
 
-    //Meetod määrab perioodi pikkuse vastavalt kasutaja valikule View menüüs
+    //Määrab perioodi pikkuse vastavalt kasutaja valikule View menüüs
     private int periodLength() {
         months = 0;
         if(view12.isSelected()){
